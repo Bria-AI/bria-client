@@ -19,6 +19,11 @@ dependencies = [
     { name = "redis" },
 ]
 
+[package.optional-dependencies]
+redis = [
+    { name = "redis" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "fakeredis" },
@@ -30,7 +35,11 @@ redis = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "redis", specifier = ">=6.2.0" }]
+requires-dist = [
+    { name = "redis", specifier = ">=6.2.0" },
+    { name = "redis", marker = "extra == 'redis'", specifier = ">=6.2.0" },
+]
+provides-extras = ["redis"]
 
 [package.metadata.requires-dev]
 dev = [

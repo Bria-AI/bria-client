@@ -7,13 +7,16 @@ authors = [
     { name = "omri", email = "omriassa@bria.ai" }
 ]
 requires-python = ">=3.10"
-dependencies = [
-    "redis>=6.2.0",
-]
+dependencies = []
 
 include = [
     "src/**/*",
     "!src/**/*_tests.py"
+]
+
+[project.optional-dependencies]
+redis = [
+    "redis>=6.2.0",
 ]
 
 
@@ -27,6 +30,4 @@ dev = [
     "pytest>=8.4.0",
     "pytest-mock>=3.14.1",
 ]
-redis = [
-    "redis>=6.2.0",
-]
+
