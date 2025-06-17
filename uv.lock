@@ -15,9 +15,6 @@ wheels = [
 name = "bria-internal"
 version = "0.1.0"
 source = { editable = "." }
-dependencies = [
-    { name = "redis" },
-]
 
 [package.optional-dependencies]
 redis = [
@@ -30,15 +27,9 @@ dev = [
     { name = "pytest" },
     { name = "pytest-mock" },
 ]
-redis = [
-    { name = "redis" },
-]
 
 [package.metadata]
-requires-dist = [
-    { name = "redis", specifier = ">=6.2.0" },
-    { name = "redis", marker = "extra == 'redis'", specifier = ">=6.2.0" },
-]
+requires-dist = [{ name = "redis", marker = "extra == 'redis'", specifier = ">=3.5.3" }]
 provides-extras = ["redis"]
 
 [package.metadata.requires-dev]
@@ -47,7 +38,6 @@ dev = [
     { name = "pytest", specifier = ">=8.4.0" },
     { name = "pytest-mock", specifier = ">=3.14.1" },
 ]
-redis = [{ name = "redis", specifier = ">=6.2.0" }]
 
 [[package]]
 name = "colorama"

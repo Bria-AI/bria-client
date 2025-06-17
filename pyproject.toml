@@ -16,7 +16,7 @@ include = [
 
 [project.optional-dependencies]
 redis = [
-    "redis>=6.2.0",
+    "redis>=3.5.3",
 ]
 
 
