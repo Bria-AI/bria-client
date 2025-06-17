@@ -8,7 +8,7 @@ from typing import Any, Optional
 
 from redis import Redis
 
-from src.bria_internal.common.singleton_meta import SingletonMeta
+from bria_internal.common.singleton_meta import SingletonMeta
 
 DEFAULT_TTL = 3600
 
