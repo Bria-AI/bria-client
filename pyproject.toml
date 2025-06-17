@@ -12,8 +12,8 @@ dependencies = [
 ]
 
 include = [
-    "src/bria_internal/**/*",
-    "!src/bria_internal/**/*_tests.py"
+    "src/**/*",
+    "!src/**/*_tests.py"
 ]
 
 
