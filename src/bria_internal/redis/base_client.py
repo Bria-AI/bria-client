@@ -20,7 +20,7 @@ class RedisBaseClient(ABC, metaclass=SingletonMeta):
         self.client = Redis(host=host, port=port, socket_timeout=10)
 
     @abstractmethod
-    def _get_key(self, key):
+    def _get_key(self, key: str) -> str:
         return key
 
     def set(self, key: str, value: Any, ttl: int = DEFAULT_TTL):
