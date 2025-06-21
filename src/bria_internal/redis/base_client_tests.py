@@ -5,12 +5,11 @@ from bria_internal.redis.base_client import RedisBaseClient
 
 
 class FakeRedisClient(RedisBaseClient):
-
     def __init__(self):
         super().__init__(host="localhost", port=6379)
 
-class TestRedisClient:
 
+class TestRedisClient:
     @pytest.fixture
     def fake_redis(self, mocker):
         fake = FakeRedis()
@@ -28,7 +27,6 @@ class TestRedisClient:
         client2 = FakeRedisClient()
         # Assert
         assert client1 is client2
-
 
     def test_get_on_non_existing_key_should_return_none(self, fake_client):
         # Arrange

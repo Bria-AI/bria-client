@@ -1,9 +1,4 @@
-
-
-
-
 import pickle
-from abc import ABC, abstractmethod
 from typing import Any, Optional
 
 from redis import Redis
@@ -14,7 +9,6 @@ DEFAULT_TTL = 3600
 
 
 class RedisBaseClient(metaclass=SingletonABCMeta):
-
     def __init__(self, host: str, port: int = 6379):
         assert host is not None, "redis host cannot be None"
         self.client = Redis(host=host, port=port, socket_timeout=10)
@@ -31,8 +25,10 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
             return self.__deserialize(data)
         return None
 
-    def __serialize(self, value: Any) -> bytes:
+    @staticmethod
+    def __serialize(value: Any) -> bytes:
         return pickle.dumps(value)
 
-    def __deserialize(self, data: bytes) -> Any:
+    @staticmethod
+    def __deserialize(data: bytes) -> Any:
         return pickle.loads(data)

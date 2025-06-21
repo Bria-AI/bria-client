@@ -1,5 +1,6 @@
 from abc import ABCMeta
 
+
 class SingletonABCMeta(ABCMeta):
     _instances = {}
 

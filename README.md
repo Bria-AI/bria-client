@@ -4,8 +4,9 @@ ___
 
 
 # First time, here's a checklist:
->### Install:
->* pip install pre-commit
+>### Run:
+>* uv pip install pre-commit
+>* pre-commit install
 
 >### Tests:
 > * each test file should be placed near its tested file

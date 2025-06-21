@@ -36,25 +36,18 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/bria_internal"]
 
-[tool.pyright]
-include = ["src/bria_internal"]
-venvPath = "."
-venv = ".venv"
-strict = ["src/bria_internal/**/*.py"]
 
 [tool.ruff.lint]
 select = ["C4", "E", "F", "I", "PERF", "UP"]
 ignore = ["PERF203"]
 
 [tool.ruff]
-line-length = 120
-target-version = "py310"
-
+line-length = 160
+target-version = "py38"
 
 [dependency-groups]
 dev = [
     "fakeredis>=2.29.0",
-    "pyright>=0.0.1",
     "pytest>=8.4.0",
     "pytest-mock>=3.14.1",
     "ruff>=0.12.0",
