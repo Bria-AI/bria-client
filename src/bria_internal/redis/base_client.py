@@ -17,7 +17,9 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
         return key
 
     def set(self, key: str, value: Any, ttl: Optional[int] = DEFAULT_TTL):
-        self.client.set(self._get_key(key), self.__serialize(value), ex=ttl)
+        key = self._get_key(key)
+        self.client.set(key, self.__serialize(value), ex=ttl)
+        return key
 
     def get(self, key: str) -> Optional[Any]:
         data = self.client.get(self._get_key(key))
