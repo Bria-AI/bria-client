@@ -1,5 +1,6 @@
 # bria-internal
-internal tools for general use
+internal tools for general use  
+to show pkg versions run: `sh ./scripts/show_releases.sh`
 ___
 
 # First time, here's a checklist:
