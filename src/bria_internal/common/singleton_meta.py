@@ -1,8 +1,6 @@
 from abc import ABCMeta
 
-
-class SingletonMeta(ABCMeta):
-    """A metaclass for creating singleton classes."""
+class SingletonABCMeta(ABCMeta):
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

@@ -5,6 +5,7 @@ from bria_internal.redis.base_client import RedisBaseClient
 
 
 class FakeRedisClient(RedisBaseClient):
+
     def __init__(self):
         super().__init__(host="localhost", port=6379)
 

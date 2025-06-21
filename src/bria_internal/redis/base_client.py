@@ -8,18 +8,17 @@ from typing import Any, Optional
 
 from redis import Redis
 
-from bria_internal.common.singleton_meta import SingletonMeta
+from bria_internal.common.singleton_meta import SingletonABCMeta
 
 DEFAULT_TTL = 3600
 
 
-class RedisBaseClient(ABC, metaclass=SingletonMeta):
+class RedisBaseClient(metaclass=SingletonABCMeta):
 
     def __init__(self, host: str, port: int = 6379):
         assert host is not None, "redis host cannot be None"
         self.client = Redis(host=host, port=port, socket_timeout=10)
 
-    @abstractmethod
     def _get_key(self, key: str) -> str:
         return key
 

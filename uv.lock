@@ -17,6 +17,9 @@ version = "0.1.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
+all = [
+    { name = "redis" },
+]
 redis = [
     { name = "redis" },
 ]
@@ -31,8 +34,11 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "redis", marker = "extra == 'redis'", specifier = ">=3.5.3" }]
-provides-extras = ["redis"]
+requires-dist = [
+    { name = "redis", marker = "extra == 'all'", specifier = ">=6.2.0" },
+    { name = "redis", marker = "extra == 'redis'", specifier = ">=3.5.3" },
+]
+provides-extras = ["redis", "all"]
 
 [package.metadata.requires-dev]
 dev = [

@@ -15,14 +15,17 @@ include = [
     "**/*",
     "!src/**/*_tests.py"
 ]
-#
+
 #[project.scripts]
 #test = "pytest ."
-
+#
 
 [project.optional-dependencies]
 redis = [
     "redis>=3.5.3",
+]
+all = [
+    "redis>=6.2.0",
 ]
 
 
@@ -57,3 +60,6 @@ dev = [
     "ruff>=0.12.0",
 ]
 
+[tool.pytest.ini_options]
+log_cli = true
+python_files = "**/*_tests.py"
