@@ -27,10 +27,10 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
             return self.__deserialize(data)
         return None
 
-    def get_keys(self, prefix: Optional[str] = None) -> List[str]:
-        if prefix is None:
-            prefix = ""
-        return list(self.client.scan_iter(match=f"{prefix}*"))
+    def get_keys(self, wildcard: Optional[str] = None) -> List[str]:
+        if wildcard is None:
+            wildcard = ""
+        return list(self.client.scan_iter(match=f"*{wildcard}*"))
 
     @staticmethod
     def __serialize(value: Any) -> bytes:
