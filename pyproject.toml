@@ -16,9 +16,6 @@ include = [
     "!src/**/*_tests.py"
 ]
 
-#[project.scripts]
-#test = "pytest ."
-#
 
 [project.optional-dependencies]
 redis = [

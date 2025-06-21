@@ -12,17 +12,10 @@ ___
 > * each test file should be placed near its tested file
 > * test file name should follow: *_tests.py
 
-___
-
-
-
-# adding packages
-
-### for common packages that needs to be installed everytime 
-    uv add [my-package]
-
-### for grouped dependencies:
-    uv add [my-package] --optional all
-    uv add [my-package] --optional [my-group]
-
+>### adding packages
+>## common packages that needs to be installed everytime 
+>* uv add [my-package]
+>## for grouped dependencies:
+>> uv add [my-package] --optional all </br>
+>> uv add [my-package] --optional [my-group]
 
