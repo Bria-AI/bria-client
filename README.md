@@ -22,3 +22,10 @@ ___
 >   > uv add [my-package] --optional all  
 >   > uv add [my-package] --optional [my-group]
 >   
+> ### Release
+> 
+>   > change the version in the pyproject.toml  
+>   > run the release workflow manually from the ui
+>   > preferablly name the commit of the relase as ->   
+>   > release: \<release version\>
+> 
