@@ -1,5 +1,5 @@
 import pickle
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from redis import Redis
 
@@ -26,6 +26,11 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
         if data is not None:
             return self.__deserialize(data)
         return None
+
+    def get_keys(self, prefix: Optional[str] = None) -> List[str]:
+        if prefix is None:
+            prefix = ""
+        return list(self.client.scan_iter(match=f"{prefix}*"))
 
     @staticmethod
     def __serialize(value: Any) -> bytes:
