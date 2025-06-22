@@ -27,6 +27,9 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
             return self.__deserialize(data)
         return None
 
+    def delete(self, key: str):
+        return self.client.delete(self._get_key(key))
+
     def get_keys(self, wildcard: Optional[str] = None) -> List[str]:
         if wildcard is None:
             wildcard = ""
