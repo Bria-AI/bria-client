@@ -12,7 +12,7 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
     def __init__(self, host: str, port: int = 6379):
         assert host is not None, "redis host cannot be None"
         self.client = Redis(host=host, port=port, socket_timeout=10)
-        assert self.client.ping() == "PONG", f"redis connection failed for {self.__class__.__name__}"
+        assert self.client.ping(), f"redis connection failed for {self.__class__.__name__}"
 
     def set(self, key: str, value: Any, ttl: Optional[int] = DEFAULT_TTL):
         self.client.set(key, self.__serialize(value), ex=ttl)
