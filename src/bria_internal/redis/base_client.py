@@ -14,27 +14,23 @@ class RedisBaseClient(metaclass=SingletonABCMeta):
         self.client = Redis(host=host, port=port, socket_timeout=10)
         assert self.client.ping() == "PONG", f"redis connection failed for {self.__class__.__name__}"
 
-    def _get_key(self, key: str) -> str:
-        return key
-
     def set(self, key: str, value: Any, ttl: Optional[int] = DEFAULT_TTL):
-        key = self._get_key(key)
         self.client.set(key, self.__serialize(value), ex=ttl)
         return key
 
     def get(self, key: str) -> Optional[Any]:
-        data = self.client.get(self._get_key(key))
+        data = self.client.get(key)
         if data is not None:
             return self.__deserialize(data)
         return None
 
     def delete(self, key: str):
-        return self.client.delete(self._get_key(key))
+        return self.client.delete(key)
 
     def get_keys(self, wildcard: Optional[str] = None) -> List[str]:
         if wildcard is None:
             wildcard = ""
-        return list(self.client.scan_iter(match=f"*{wildcard}*"))
+        return [key.decode() for key in self.client.scan_iter(match=f"*{wildcard}*")]
 
     @staticmethod
     def __serialize(value: Any) -> bytes:
