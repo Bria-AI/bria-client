@@ -1,6 +1,6 @@
 [project]
 name = "bria-internal"
-version = "0.1.1"
+version = "0.1.2"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -21,10 +21,18 @@ include = [
 redis = [
     "redis>=3.5.3",
 ]
+firebase = [
+    "firebase_admin>=6.4.0",
+    "python-core",
+]
 all = [
     "redis>=6.2.0",
+    "firebase_admin>=6.4.0",
+    "python-core",
 ]
 
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [build-system]
 requires = ["hatchling"]
@@ -53,3 +61,6 @@ dev = [
 [tool.pytest.ini_options]
 log_cli = true
 python_files = "**/*_tests.py"
+
+[tool.uv.sources]
+python-core = { git = "https://github.com/Bria-AI/python_core.git", rev = "4bc0c3afb515096c0136d447aa29143c9aba4075" }
