@@ -59,9 +59,9 @@ class Firebase(metaclass=SingletonABCMeta):
             raise Exception("Invalid customer token key")
         return org
 
-    def update_user_info(self, user_id: str, new_profile_picture_url: str, user_name: str, userRole: str):
+    def update_user_info(self, user_id: str, new_profile_picture_url: str, user_name: str, userRole: str, user_company: str = None):
         user_ref = db.reference(f"users/{user_id}")
-        user_ref.update({"profile_picture": new_profile_picture_url, "user_name": user_name, "userRole": userRole})
+        user_ref.update({"profile_picture": new_profile_picture_url, "user_name": user_name, "userRole": userRole, "company": user_company})
         return True
 
     def is_user_permitted_to_organization(self, firebase_user: dict, org_id: str, allowed_org_user_roles: List[OrgUserRoles]) -> bool:
