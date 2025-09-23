@@ -54,7 +54,7 @@ class Firebase(metaclass=SingletonABCMeta):
         orgs = db.reference(f"{ORGS_DB_NAME}").get().values()
         for org in orgs:
             for key in org["api_keys"]:
-                if key["api_token"] == api_token and key["status"] == "active":
+                if key["api_token"] == api_token and key["status"] == ApiKeyStatus.ACTIVE.value:
                     selected_org = org
         return selected_org
 

@@ -42,7 +42,7 @@ wheels = [
 
 [[package]]
 name = "bria-internal"
-version = "0.1.5"
+version = "0.1.6"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -54,6 +54,11 @@ all = [
 firebase = [
     { name = "firebase-admin" },
     { name = "python-core" },
+]
+platform = [
+    { name = "firebase-admin" },
+    { name = "python-core" },
+    { name = "redis" },
 ]
 redis = [
     { name = "redis" },
@@ -71,12 +76,15 @@ dev = [
 requires-dist = [
     { name = "firebase-admin", marker = "extra == 'all'", specifier = ">=6.4.0" },
     { name = "firebase-admin", marker = "extra == 'firebase'", specifier = ">=6.4.0" },
+    { name = "firebase-admin", marker = "extra == 'platform'", specifier = ">=6.4.0" },
     { name = "python-core", marker = "extra == 'all'", git = "https://github.com/Bria-AI/python_core.git?rev=1.4" },
     { name = "python-core", marker = "extra == 'firebase'", git = "https://github.com/Bria-AI/python_core.git?rev=1.4" },
+    { name = "python-core", marker = "extra == 'platform'", git = "https://github.com/Bria-AI/python_core.git?rev=1.4" },
     { name = "redis", marker = "extra == 'all'", specifier = ">=6.2.0" },
+    { name = "redis", marker = "extra == 'platform'", specifier = ">=3.5.3" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=3.5.3" },
 ]
-provides-extras = ["redis", "firebase", "all"]
+provides-extras = ["redis", "firebase", "platform", "all"]
 
 [package.metadata.requires-dev]
 dev = [

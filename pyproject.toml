@@ -1,6 +1,6 @@
 [project]
 name = "bria-internal"
-version = "0.1.5"
+version = "0.1.6"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -23,12 +23,17 @@ redis = [
 ]
 firebase = [
     "firebase_admin>=6.4.0",
-    "python-core",
+    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+]
+platform = [
+    "redis>=3.5.3",
+    "firebase_admin>=6.4.0",
+    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
 ]
 all = [
     "redis>=6.2.0",
     "firebase_admin>=6.4.0",
-    "python-core",
+    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
 ]
 
 [tool.hatch.metadata]
@@ -61,6 +66,3 @@ dev = [
 [tool.pytest.ini_options]
 log_cli = true
 python_files = "**/*_tests.py"
-
-[tool.uv.sources]
-python-core = { git = "https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git", rev = "1.4" }
