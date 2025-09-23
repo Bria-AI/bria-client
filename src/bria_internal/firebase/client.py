@@ -1,6 +1,7 @@
 import json
 import os
 import urllib.parse
+from datetime import datetime
 from typing import Dict, List
 from uuid import uuid4
 
@@ -11,9 +12,13 @@ from firebase_admin import auth, credentials, db
 from bria_internal.common.singleton_meta import SingletonABCMeta
 from bria_internal.firebase.constants import ORGS_DB_NAME, USERS_DB_NAME, USERS_INVITATION_DB_NAME
 from bria_internal.firebase.enums import (
+    ApiKeyStatus,
+    ApiSubscriptionStatuses,
+    ApiSubscriptionTypes,
     InvitationStatus,
     OrgUserRoles,
     OrgUserStatus,
+    SubscriptionPeriods,
     UserRoles,
     VDRImageState,
 )
@@ -416,12 +421,12 @@ class Firebase(metaclass=SingletonABCMeta):
         self,
         org_name: str,
         owner_uid: str,
-        plan,
-        api_subscription_status,
-        api_subscription_period,
-        start_date,
+        plan: ApiSubscriptionTypes = ApiSubscriptionTypes.STARTER,
+        api_subscription_status: ApiSubscriptionStatuses = ApiSubscriptionStatuses.ACTIVE,
+        api_subscription_period: SubscriptionPeriods = SubscriptionPeriods.DEFAULT,
+        start_date: datetime = datetime.now(),
         uid: str | None = None,
-        default_api_key_status=None,
+        default_api_key_status: ApiKeyStatus = ApiKeyStatus.INACTIVE,
     ):
         org_uid = uid or str(uuid4())
         ref = db.reference(f"{ORGS_DB_NAME}/{org_uid}")
