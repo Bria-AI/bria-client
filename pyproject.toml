@@ -1,6 +1,6 @@
 [project]
 name = "bria-internal"
-version = "0.1.3"
+version = "0.1.4"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -63,4 +63,4 @@ log_cli = true
 python_files = "**/*_tests.py"
 
 [tool.uv.sources]
-python-core = { git = "https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git", rev = "4bc0c3afb515096c0136d447aa29143c9aba4075" }
+python-core = { git = "https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git", rev = "1.4" }

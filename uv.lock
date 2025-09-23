@@ -42,7 +42,7 @@ wheels = [
 
 [[package]]
 name = "bria-internal"
-version = "0.1.3"
+version = "0.1.4"
 source = { editable = "." }
 
 [package.optional-dependencies]
@@ -71,8 +71,8 @@ dev = [
 requires-dist = [
     { name = "firebase-admin", marker = "extra == 'all'", specifier = ">=6.4.0" },
     { name = "firebase-admin", marker = "extra == 'firebase'", specifier = ">=6.4.0" },
-    { name = "python-core", marker = "extra == 'all'", git = "https://github.com/Bria-AI/python_core.git?rev=4bc0c3afb515096c0136d447aa29143c9aba4075" },
-    { name = "python-core", marker = "extra == 'firebase'", git = "https://github.com/Bria-AI/python_core.git?rev=4bc0c3afb515096c0136d447aa29143c9aba4075" },
+    { name = "python-core", marker = "extra == 'all'", git = "https://github.com/Bria-AI/python_core.git?rev=1.4" },
+    { name = "python-core", marker = "extra == 'firebase'", git = "https://github.com/Bria-AI/python_core.git?rev=1.4" },
     { name = "redis", marker = "extra == 'all'", specifier = ">=6.2.0" },
     { name = "redis", marker = "extra == 'redis'", specifier = ">=3.5.3" },
 ]
@@ -1178,7 +1178,7 @@ wheels = [
 [[package]]
 name = "python-core"
 version = "1.0.0"
-source = { git = "https://github.com/Bria-AI/python_core.git?rev=4bc0c3afb515096c0136d447aa29143c9aba4075#4bc0c3afb515096c0136d447aa29143c9aba4075" }
+source = { git = "https://github.com/Bria-AI/python_core.git?rev=1.4#eeb5ef74421b162ee5105f1314b4b2e73d6ad270" }
 dependencies = [
     { name = "graphene" },
     { name = "imagehash" },
