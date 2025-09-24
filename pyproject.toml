@@ -1,6 +1,6 @@
 [project]
 name = "bria-internal"
-version = "0.1.6"
+version = "0.1.7"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -23,17 +23,26 @@ redis = [
 ]
 firebase = [
     "firebase_admin>=6.4.0",
-    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+    "python_core @ git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+]
+ses = [
+    "boto3>=1.34.0",
+]
+slack = [
+    "slack_sdk==3.26.1",
 ]
 platform = [
     "redis>=3.5.3",
     "firebase_admin>=6.4.0",
-    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+    "python_core @ git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+    "boto3>=1.34.0",
 ]
 all = [
     "redis>=6.2.0",
     "firebase_admin>=6.4.0",
-    "python_core@git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+    "python_core @ git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
+    "boto3>=1.34.0",
+    "slack_sdk==3.26.1",
 ]
 
 [tool.hatch.metadata]
@@ -66,3 +75,5 @@ dev = [
 [tool.pytest.ini_options]
 log_cli = true
 python_files = "**/*_tests.py"
+
+
