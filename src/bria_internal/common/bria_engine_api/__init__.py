@@ -6,7 +6,6 @@ import httpx
 
 from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PROD_URL
 from bria_internal.common.env_config import env_config
-from bria_internal.common.singleton_meta import SingletonABCMeta
 
 
 def running_in_async_context() -> bool:
@@ -20,7 +19,7 @@ def running_in_async_context() -> bool:
         return False
 
 
-class BriaEngineRequest(metaclass=SingletonABCMeta):
+class BriaEngineRequest:
     api_token: str
     jwt_token: str | None
     custom_headers: dict | None

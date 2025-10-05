@@ -10,17 +10,16 @@ from bria_internal.schemas.status_api import StatusAPIResponse
 
 
 @enable_run_synchronously
-async def remove_background_by_image_url_v2(payload: BackgroundRemoveRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
+async def remove_background_by_image_url_v2(
+    payload: BackgroundRemoveRequestPayload, wait_for_status: bool = False, engine_request_client: BriaEngineRequest | None = None
+) -> Response | StatusAPIResponse:
     """
     Remove the background from the image
 
     Args:
-        api_token: str - Bria Engine API token
-        jwt_token: str - Bria Engine JWT token
-        image: str - Image URL or Base64 encoded image
-        content_moderation: bool - Whether to enable content moderation
-        sync: bool - Whether to run the API synchronously (API payload)
+        payload: BackgroundRemoveRequestPayload - The payload for the background remove request
         wait_for_status: bool - Whether to wait for the status request (locally)
+        engine_request_client: BriaEngineRequest - The engine request client to use
 
     Returns:
         dict - httpx.Response from the API,
@@ -31,7 +30,7 @@ async def remove_background_by_image_url_v2(payload: BackgroundRemoveRequestPayl
         ContentModerationError: If the content moderation fails (status code 422)
     """
     try:
-        engine_request = BriaEngineRequest()
+        engine_request: BriaEngineRequest = engine_request_client or BriaEngineRequest()
         response: Response = await engine_request.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REMOVE_BACKGROUND, payload.model_dump())
         response_body = response.json()
 

@@ -12,10 +12,10 @@ from bria_internal.schemas.status_api import StatusAPIResponse, StatusAPIState
 
 @enable_run_synchronously
 async def wait_for_status_request(
-    request_id: str, engine_request_client: BriaEngineRequest = BriaEngineRequest(), timeout: int = 120, interval: int = 2
+    request_id: str, engine_request_client: BriaEngineRequest = None, timeout: int = 120, interval: int = 2
 ) -> Awaitable[StatusAPIResponse] | StatusAPIResponse:
-    if not request_id:
-        raise ValueError("Request ID is required")
+    if not request_id or not engine_request_client:
+        raise ValueError("Request ID and engine_request_client are required")
 
     start_time = time.time()
     while time.time() - start_time < timeout:
