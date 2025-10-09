@@ -29,7 +29,7 @@ class BackgroundRemoveAPI:
             StatusAPIResponse if the wait_for_status is True, else returns the httpx.Response from the API,
 
         Raises:
-            ContentModerationError: If the content moderation fails (status code 422)
+            EngineAPIBaseException: When returned status code 422
             TimeoutError: If the timeout is reached while waiting for the status request
         """
         try:
