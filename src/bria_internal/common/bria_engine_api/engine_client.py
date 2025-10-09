@@ -105,4 +105,7 @@ class BriaEngineClient(AsyncHTTPClient):
 
     @property
     def jwt_token(self) -> str | None:
+        if self.jwt_token_ctx is None:
+            return None
+
         return self.jwt_token_ctx.get()

@@ -44,7 +44,7 @@ class BackgroundRemoveAPI:
             if e.response.status_code == 422:
                 # TODO: Add content moderation specific check here
                 raise EngineAPIBaseException(
-                    message="Content moderation failed", route=BriaEngineAPIRoutes.V2_IMAGE_EDIT_REMOVE_BACKGROUND, error_object=e.response.json()
+                    message="Bria Engine API failed", route=BriaEngineAPIRoutes.V2_IMAGE_EDIT_REMOVE_BACKGROUND, error_object=e.response.json()
                 )
 
             raise e
