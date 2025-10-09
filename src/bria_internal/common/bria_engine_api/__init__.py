@@ -79,13 +79,13 @@ class BriaEngineRequest:
         else:
             return self._sync_request(method, route, payload, **kwargs)
 
-    async def _async_request(self, method: str, url: str, payload: dict, **kwargs) -> httpx.Response:
+    async def _async_request(self, method: str, url: str, payload: dict | None, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient() as client:
             response = await client.request(method, url, headers=self._get_headers(), json=payload, **kwargs)
             response.raise_for_status()
             return response
 
-    def _sync_request(self, method: str, url: str, payload: dict, **kwargs) -> httpx.Response:
+    def _sync_request(self, method: str, url: str, payload: dict | None, **kwargs) -> httpx.Response:
         with httpx.Client() as client:
             response = client.request(method, url, headers=self._get_headers(), json=payload, **kwargs)
             response.raise_for_status()
