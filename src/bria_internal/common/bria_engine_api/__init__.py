@@ -25,10 +25,9 @@ class BriaEngineRequest:
     custom_headers: dict | None
 
     def __init__(self, api_token: str = None, jwt_token: str | None = None, custom_headers: dict | None = None, custom_base_url: str | None = None) -> None:
-        try:
-            if api_token is None and env_config.BRIA_ENGINE_API_KEY:
-                api_token = env_config.BRIA_ENGINE_API_KEY
-        except ValueError:
+        if api_token is None and env_config.BRIA_ENGINE_API_KEY:
+            api_token = env_config.BRIA_ENGINE_API_KEY
+        elif api_token is None:
             raise ValueError("Bria Engine API key in not provided")
 
         self.api_token = api_token
@@ -64,6 +63,9 @@ class BriaEngineRequest:
         return BRIA_ENGINE_INTEGRATION_URL
 
     def _get_headers(self) -> dict:
+        if not self.api_token and not self.jwt_token:
+            raise ValueError("Bria Engine API key in not provided")
+
         headers = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
         if self.custom_headers:
             headers.update(self.custom_headers)
@@ -98,8 +100,8 @@ class BriaEngineRequest:
     def put(self, route: str, payload: dict, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.request(route, "PUT", payload=payload, **kwargs)
 
-    def delete(self, route: str, params: dict, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
-        return self.request(route, "DELETE", params=params, **kwargs)
+    def delete(self, route: str, url_params: dict, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
+        return self.request(route, "DELETE", params=url_params, **kwargs)
 
     def upload(self, route: str, image: str | Tuple[str, Tuple[str, BinaryIO, str]], **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.post(
