@@ -2,7 +2,14 @@ import asyncio
 import functools
 from typing import Awaitable, Callable, ParamSpec, TypeVar
 
-from bria_internal.common.bria_engine_api import running_in_async_context
+
+def running_in_async_context() -> bool:
+    try:
+        asyncio.get_running_loop()
+        return True
+    except RuntimeError:
+        return False
+
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -29,34 +36,8 @@ def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T |
         if running_in_async_context():
             # Already in async context, return the coroutine
             return func(*args, **kwargs)
-        else:
-            # Not in async context, run in new event loop
-            return asyncio.run(func(*args, **kwargs))
 
-    return wrapper
-
-
-def enable_run_synchronously_method(func: Callable[P, Awaitable[T]]) -> Callable[P, T | Awaitable[T]]:
-    """
-    Decorator for async methods that automatically executes
-    within an asyncio event loop if not already in an async context.
-
-    Similar to `enable_run_synchronously` but designed for class methods.
-
-    Args:
-        func: The async method to decorate
-
-    Returns:
-        A method that can be called from both sync and async contexts
-    """
-
-    @functools.wraps(func)
-    def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T] | T:
-        if running_in_async_context():
-            # Already in async context, return the coroutine
-            return func(self, *args, **kwargs)
-        else:
-            # Not in async context, run in new event loop
-            return asyncio.run(func(self, *args, **kwargs))
+        # Not in async context, run in new event loop
+        return asyncio.run(func(*args, **kwargs))
 
     return wrapper

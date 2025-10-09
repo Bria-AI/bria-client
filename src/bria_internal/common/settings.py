@@ -7,7 +7,7 @@ load_dotenv()
 
 
 class BriaEngineSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="BRIA_ENGINE", extra="ignore")
+    model_config = SettingsConfigDict(env_prefix="BRIA_ENGINE_", extra="ignore")
     _env: Env = Env()
 
     URL: HttpUrl | None = None
