@@ -22,12 +22,11 @@ async def remove_background_by_image_url_v2(
         engine_request_client: BriaEngineRequest - The engine request client to use
 
     Returns:
-        dict - httpx.Response from the API,
-
-        if sync returns the result image, else returns the request id
+        StatusAPIResponse if the wait_for_status is True, else returns the httpx.Response from the API,
 
     Raises:
         ContentModerationError: If the content moderation fails (status code 422)
+        TimeoutError: If the timeout is reached while waiting for the status request
     """
     try:
         engine_request: BriaEngineRequest = engine_request_client or BriaEngineRequest()
