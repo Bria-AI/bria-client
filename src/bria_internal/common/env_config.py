@@ -22,7 +22,7 @@ class EnvConfig(BaseSettings):
     @computed_field
     @property
     def IS_PRODUCTION(self) -> bool:
-        return self.ENVIRONMENT == Environment.PRODUCTION.value
+        return self.ENVIRONMENT == Environment.PRODUCTION
 
     @field_validator("ENVIRONMENT", mode="before")
     @classmethod

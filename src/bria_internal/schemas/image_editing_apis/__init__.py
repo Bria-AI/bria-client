@@ -1,8 +1,6 @@
 import base64
 import re
 
-from pydantic import ValidationError
-
 
 def base64_pre_process(string: str) -> str:
     """
@@ -30,12 +28,12 @@ def validate_base64(data: str) -> None:
         data: str - Data to validate
 
     Raises:
-        ValidationError: If the data is not a valid base64 string
+        ValueError: If the data is not a valid base64 string
     """
     try:
         base64.b64decode(data)
     except Exception:
-        raise ValidationError("Invalid base64 file: file argument should be in base64 format.")
+        raise ValueError("Invalid base64 file: file argument should be in base64 format.")
 
 
 def validate_url_or_base64(data: str) -> None:
@@ -46,7 +44,7 @@ def validate_url_or_base64(data: str) -> None:
         data: str - Data to validate
 
     Raises:
-        ValidationError: If the data is not a valid URL or base64 string
+        ValueError: If the data is not a valid URL or base64 string
     """
     if re.match(r"^https?://", data):
         return

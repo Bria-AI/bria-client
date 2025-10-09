@@ -8,7 +8,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T]:
+def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T | Awaitable[T]]:
     """
     Decorator that enables execution of an async function in a sync context (synchronously).
 
@@ -25,7 +25,7 @@ def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T]:
     """
 
     @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Awaitable[T] | T:
         if running_in_async_context():
             # Already in async context, return the coroutine
             return func(*args, **kwargs)
@@ -36,7 +36,7 @@ def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T]:
     return wrapper
 
 
-def enable_run_synchronously_method(func: Callable[P, Awaitable[T]]) -> Callable[P, T]:
+def enable_run_synchronously_method(func: Callable[P, Awaitable[T]]) -> Callable[P, T | Awaitable[T]]:
     """
     Decorator for async methods that automatically executes
     within an asyncio event loop if not already in an async context.
@@ -51,7 +51,7 @@ def enable_run_synchronously_method(func: Callable[P, Awaitable[T]]) -> Callable
     """
 
     @functools.wraps(func)
-    def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> T:
+    def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T] | T:
         if running_in_async_context():
             # Already in async context, return the coroutine
             return func(self, *args, **kwargs)

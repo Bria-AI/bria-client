@@ -50,7 +50,7 @@ class BriaEngineRequest:
                 custom_base_url: Optional custom base URL to use
 
         Returns:
-                The determined base URL
+            The determined base URL
         """
         if custom_base_url is not None:
             return custom_base_url
@@ -79,14 +79,12 @@ class BriaEngineRequest:
 
     async def _async_request(self, method: str, url: str, payload: dict, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient() as client:
-            print("requesting asyncly:", url)
             response = await client.request(method, url, headers=self._get_headers(), json=payload, **kwargs)
             response.raise_for_status()
             return response
 
     def _sync_request(self, method: str, url: str, payload: dict, **kwargs) -> httpx.Response:
         with httpx.Client() as client:
-            print("requesting syncly:", url)
             response = client.request(method, url, headers=self._get_headers(), json=payload, **kwargs)
             response.raise_for_status()
             return response

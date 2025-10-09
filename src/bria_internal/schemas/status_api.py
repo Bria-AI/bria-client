@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import AnyHttpUrl, BaseModel, ValidationError, field_validator, model_validator
+from pydantic import AnyHttpUrl, BaseModel, field_validator, model_validator
 
 
 class StatusAPIState(str, Enum):
@@ -20,7 +20,7 @@ class StatusAPIResultBody(BaseModel):
     @model_validator(mode="after")
     def should_have_url(self):
         if not self.image_url and not self.video_url:
-            raise ValidationError("At least one of 'image_url' or 'video_url' must be provided.")
+            raise ValueError("At least one of 'image_url' or 'video_url' must be provided.")
         return self
 
 
@@ -40,17 +40,17 @@ class StatusAPIResponse(BaseModel):
     @classmethod
     def validate_status(cls, value: str):
         if value not in [status.value for status in StatusAPIState]:
-            raise ValidationError(f"Invalid status: {value}")
+            raise ValueError(f"Invalid status: {value}")
         return value
 
     @model_validator(mode="after")
     def validate_result(self):
         # If status is COMPLETED, should have result
         if self.status == StatusAPIState.COMPLETED.value and self.result is None:
-            raise ValidationError("COMPLETED status requires a result")
+            raise ValueError("COMPLETED status requires a result")
 
         # If status is ERROR, should have error
         if self.status == StatusAPIState.ERROR.value and self.error is None:
-            raise ValidationError("ERROR status requires an error")
+            raise ValueError("ERROR status requires an error")
 
         return self
