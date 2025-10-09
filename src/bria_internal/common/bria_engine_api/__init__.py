@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 import httpx
 
 from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PROD_URL
-from bria_internal.common.env_config import env_config
+from bria_internal.common.settings import engine_settings
 
 
 def running_in_async_context() -> bool:
@@ -25,8 +25,8 @@ class BriaEngineRequest:
     custom_headers: dict | None
 
     def __init__(self, api_token: str = None, jwt_token: str | None = None, custom_headers: dict | None = None, custom_base_url: str | None = None) -> None:
-        if api_token is None and env_config.BRIA_ENGINE_API_KEY:
-            api_token = env_config.BRIA_ENGINE_API_KEY
+        if api_token is None and engine_settings.API_KEY:
+            api_token = engine_settings.API_KEY
         elif api_token is None:
             raise ValueError("Bria Engine API key in not provided")
 
@@ -54,10 +54,10 @@ class BriaEngineRequest:
         if custom_base_url is not None:
             return custom_base_url
 
-        if env_config.BRIA_ENGINE_URL:
-            return str(env_config.BRIA_ENGINE_URL)
+        if engine_settings.URL:
+            return str(engine_settings.URL)
 
-        if env_config.IS_PRODUCTION:
+        if engine_settings.IS_PRODUCTION:
             return BRIA_ENGINE_PROD_URL
 
         return BRIA_ENGINE_INTEGRATION_URL
