@@ -1,10 +1,9 @@
 from httpx import HTTPStatusError, Response
 
+from bria_internal.common.bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
-from bria_internal.common.bria_engine_api.routes_constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.status.status import StatusAPI
-from bria_internal.exceptions.engine_api_exception import EngineAPIBaseException
 from bria_internal.schemas.image_editing_apis.background_remove import BackgroundRemoveRequestPayload
 from bria_internal.schemas.status_api import StatusAPIResponse
 
@@ -27,22 +26,20 @@ class BackgroundRemoveAPI:
             StatusAPIResponse if the wait_for_status is True, else returns the httpx.Response from the API,
 
         Raises:
-            EngineAPIBaseException: When returned status code 422
+            EngineAPIBaseException: In cases error is returned from the API
             TimeoutError: If the timeout is reached while waiting for the status request
         """
         try:
             response: Response = await self.engine_api.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REMOVE_BACKGROUND, payload.model_dump())
-            response_body = response.json()
 
             if wait_for_status:
+                response_body = response.json()
                 response = await self.status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
         except HTTPStatusError as e:
             if e.response.status_code == 422:
                 # TODO: Add content moderation specific check here
-                raise EngineAPIBaseException(
-                    message="Bria Engine API failed", route=BriaEngineAPIRoutes.V2_IMAGE_EDIT_REMOVE_BACKGROUND, error_object=e.response.json()
-                )
+                pass
 
             raise e

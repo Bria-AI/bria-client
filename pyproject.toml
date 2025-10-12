@@ -51,6 +51,7 @@ all = [
     "slack_sdk==3.26.1",
     "httpx==0.28.1",
     "pydantic==2.11.10",
+    "python_dotenv==1.1.1",
     "pydantic-settings==2.11.0",
 ]
 

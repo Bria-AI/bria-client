@@ -8,10 +8,11 @@ import httpx
 from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
 from bria_internal.common.bria_engine_api.enable_sync_decorator import running_in_async_context
 from bria_internal.common.settings import engine_settings
+from bria_internal.exceptions.engine_api_exception import EngineAPIException
 
 
 class AsyncHTTPClient(ABC):
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str) -> None:
         self.base_url = base_url
 
     @property
@@ -22,6 +23,22 @@ class AsyncHTTPClient(ABC):
     def request(
         self, route: str, method: str, payload: dict | None = None, custom_headers: dict | None = None, **kwargs
     ) -> Awaitable[httpx.Response] | httpx.Response:
+        """
+        Make a request using Bria Engine Client
+
+        Args:
+            route: str - The route to make the request to
+            method: str - The method to use for the request
+            payload: dict | None - The payload to send with the request
+            custom_headers: dict | None - The custom headers to send with the request
+            **kwargs: dict - Additional keyword arguments to pass to the request
+
+        Returns:
+            Awaitable[httpx.Response] | httpx.Response - The response from the request
+
+        Raises:
+            EngineAPIException: When the request fails
+        """
         route = urljoin(self.base_url, route)
         headers: dict = self._merge_headers(custom_headers)
 
@@ -38,15 +55,21 @@ class AsyncHTTPClient(ABC):
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient() as client:
-            response = await client.request(method, url, headers=headers, json=payload, **kwargs)
-            response.raise_for_status()
-            return response
+            try:
+                response = await client.request(method, url, headers=headers, json=payload, **kwargs)
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as e:
+                raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         with httpx.Client() as client:
-            response = client.request(method, url, headers=headers, json=payload, **kwargs)
-            response.raise_for_status()
-            return response
+            try:
+                response = client.request(method, url, headers=headers, json=payload, **kwargs)
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as e:
+                raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
 
     def get(self, route: str, custom_headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.request(route, "GET", custom_headers=custom_headers, **kwargs)
@@ -62,7 +85,7 @@ class AsyncHTTPClient(ABC):
 
 
 class BriaEngineClient(AsyncHTTPClient):
-    def __init__(self, api_token_ctx: ContextVar[str] = None, jwt_token_ctx: ContextVar[str] | None = None) -> None:
+    def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None) -> None:
         if api_token_ctx is None and engine_settings.API_KEY:
             api_token_ctx = ContextVar("bria_engine_api_token", default=engine_settings.API_KEY)
         elif api_token_ctx is None and jwt_token_ctx is None:
@@ -85,11 +108,18 @@ class BriaEngineClient(AsyncHTTPClient):
 
     @property
     def api_token(self) -> str:
-        return self.api_token_ctx.get()
+        try:
+            return self.api_token_ctx.get()
+        except LookupError:
+            raise ValueError("API token is not set")
 
     @property
     def jwt_token(self) -> str | None:
-        if self.jwt_token_ctx is None:
-            return None
+        try:
+            if self.jwt_token_ctx is None:
+                return None
 
-        return self.jwt_token_ctx.get()
+            return self.jwt_token_ctx.get()
+        except LookupError:
+            # ContextVar not exists but not initialized yet
+            return None

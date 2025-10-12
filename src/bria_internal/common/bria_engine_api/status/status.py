@@ -4,9 +4,9 @@ from typing import Awaitable
 
 from httpx import Response
 
+from bria_internal.common.bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
-from bria_internal.common.bria_engine_api.routes_constants import BriaEngineAPIRoutes
 from bria_internal.schemas.status_api import StatusAPIResponse, StatusAPIState
 
 
@@ -28,6 +28,7 @@ class StatusAPI:
             StatusAPIResponse - The status response body (error or result properties will be populated)
 
         Raises:
+            EngineAPIException: When the status request fails
             TimeoutError: If the timeout is reached while waiting for the status request
         """
         start_time = time.time()
