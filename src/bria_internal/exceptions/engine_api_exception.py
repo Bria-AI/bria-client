@@ -17,3 +17,12 @@ class EngineAPIException(HTTPStatusError):
         else:
             # Fallback if no http_status_error is provided
             super().__init__(message="Engine API Error", request=None, response=None)
+
+
+class ContentModerationException(EngineAPIException):
+    def __init__(self, url: str, base_url: str | None = None, http_status_error: HTTPStatusError | None = None, **kwargs):
+        super().__init__(url, base_url, http_status_error, **kwargs)
+
+    @classmethod
+    def from_engine_api_exception(cls, engine_api_exception: EngineAPIException) -> "ContentModerationException":
+        return cls(url=engine_api_exception.route, base_url=engine_api_exception.base_url, **engine_api_exception.kwargs)

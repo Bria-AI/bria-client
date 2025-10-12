@@ -6,22 +6,22 @@ from bria_internal.common.bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
 from bria_internal.common.bria_engine_api.status.status import StatusAPI
-from bria_internal.schemas.image_editing_apis.canvas_editing import GetMasksRequestPayload, ObjectEraserRequestPayload, ObjectGenFillRequestPayload
+from bria_internal.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
 from bria_internal.schemas.status_api import StatusAPIResponse
 
 
-class CanvasEditingAPI:
+class ForegroundEditingAPI:
     def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
         self.__engine_client = engine_client
         self.__status_api = status_api
 
     @enable_run_synchronously
-    async def erase(self, payload: ObjectEraserRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def replace(self, payload: ReplaceForegroundRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
         """
-        Erase an object from an image using a mask
+        Replace the foreground of an image
 
         Args:
-            `payload: ObjectEraserRequestPayload` - The payload for the object eraser request
+            `payload: ReplaceForegroundRequestPayload` - The payload for the replace foreground request
             `wait_for_status: bool` - Whether to wait for the status request (locally)
 
         Returns:
@@ -35,7 +35,7 @@ class CanvasEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REPLACE_FOREGROUND, payload.model_dump(mode="json"))
 
             if wait_for_status:
                 response_body = response.json()
@@ -46,12 +46,12 @@ class CanvasEditingAPI:
             raise BriaEngineClient.handle_custom_exceptions(e, payload)
 
     @enable_run_synchronously
-    async def gen_fill(self, payload: ObjectGenFillRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def crop_out(self, payload: CropOutRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
         """
-        Generate a fill for the provided image using a mask and a prompt to fill the masked area
+        Crop out the foreground of an image
 
         Args:
-            `payload: ObjectGenFillRequestPayload` - The payload for the object gen fill request
+            `payload: CropOutRequestPayload` - The payload for the crop out request
             `wait_for_status: bool` - Whether to wait for the status request (locally)
 
         Returns:
@@ -65,7 +65,7 @@ class CanvasEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_OUT, payload.model_dump(mode="json"))
 
             if wait_for_status:
                 response_body = response.json()
@@ -74,25 +74,3 @@ class CanvasEditingAPI:
             return response
         except HTTPStatusError as e:
             raise BriaEngineClient.handle_custom_exceptions(e, payload)
-
-    @enable_run_synchronously
-    async def get_masks(self, payload: GetMasksRequestPayload) -> Awaitable[Response]:
-        """
-        Get all the masks for an image in a package
-
-        Args:
-            `payload: GetMasksRequestPayload` - The payload for the get masks request
-
-        Returns:
-            `Response` - Response with the masks `.zip` file
-
-        Raises:
-            `HTTPStatusError` - In cases error is returned from the API
-
-            `PollingException` - If the file polling fails
-        """
-        response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V1_IMAGE_EDIT_GET_MASKS, payload.model_dump(mode="json"))
-        if not payload.sync:
-            await self.__engine_client.file_polling(response.json()["objects_masks"])
-
-        return response

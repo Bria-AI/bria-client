@@ -1,7 +1,8 @@
 from enum import Enum
 
-from pydantic import Base64Str, BaseModel
 from pydantic_core import Url
+
+from bria_internal.schemas.image_editing_apis import APIPayloadModel, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class CanvasOperationMaskType(str, Enum):
@@ -9,30 +10,25 @@ class CanvasOperationMaskType(str, Enum):
     AUTOMATIC = "automatic"
 
 
-class ObjectEraserRequestPayload(BaseModel):
-    image: Base64Str | Url
-    mask: Base64Str | Url
+class ObjectEraserRequestPayload(ContentModeratedPayloadModel):
+    image: str
+    mask: str
     mask_type: CanvasOperationMaskType
     preserve_alpha: bool | None = None
     sync: bool | None = None
-    visual_input_content_moderation: bool | None = None
-    visual_output_content_moderation: bool | None = None
 
 
-class ObjectGenFillRequestPayload(BaseModel):
-    image: Base64Str | Url
-    mask: Base64Str | Url
+class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
+    image: str
+    mask: str
     mask_type: CanvasOperationMaskType
     prompt: str
-    prompt_content_moderation: bool | None = None
     negative_prompt: str | None = None
     preserve_alpha: bool | None = None
     sync: bool | None = None
     seed: int | None = None
-    visual_input_content_moderation: bool | None = None
-    visual_output_content_moderation: bool | None = None
 
 
-class GetMasksRequestPayload(BaseModel):
-    image_url: str
+class GetMasksRequestPayload(APIPayloadModel):
+    image_url: Url
     sync: bool = True

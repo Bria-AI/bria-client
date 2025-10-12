@@ -11,8 +11,9 @@ from core.env import Environment
 from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
 from bria_internal.common.bria_engine_api.enable_sync_decorator import running_in_async_context
 from bria_internal.common.settings import engine_settings
-from bria_internal.exceptions.engine_api_exception import EngineAPIException
+from bria_internal.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
 from bria_internal.exceptions.polling_exception import PollingException, PollingFileStatus
+from bria_internal.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class AsyncHTTPClient(ABC):
@@ -21,8 +22,8 @@ class AsyncHTTPClient(ABC):
         Initialize the AsyncHTTPClient
 
         Args:
-            base_url: str - The base URL to make the request to
-            default_request_timeout: int - The default request timeout timeout for reading response from the server (client side rejection)
+            `base_url: str` - The base URL to make the request to
+            `default_request_timeout: int` - The default request timeout for reading response from the server (client side rejection)
         """
         self.base_url = base_url
         self.default_request_timeout = default_request_timeout
@@ -36,20 +37,21 @@ class AsyncHTTPClient(ABC):
         self, route: str, method: str, payload: dict | None = None, custom_headers: dict | None = None, **kwargs
     ) -> Awaitable[httpx.Response] | httpx.Response:
         """
-        Make a request using Bria Engine Client
+        Make an http request using Bria Engine Client
 
         Args:
-            route: str - The route to make the request to
-            method: str - The method to use for the request
-            payload: dict | None - The payload to send with the request
-            custom_headers: dict | None - The custom headers to send with the request
-            **kwargs: dict - Additional keyword arguments to pass to the request
+            `route: str` - The route to make the request to
+            `method: str` - The method to use for the request
+            `payload: dict | None` - The payload to send with the request
+            `custom_headers: dict | None` - The custom headers to send with the request
+
+            `**kwargs` - Additional `httpx.request` compatible keyword arguments to pass to the request
 
         Returns:
-            Awaitable[httpx.Response] | httpx.Response - The response from the request
+            `Awaitable[httpx.Response] | httpx.Response` - The response from the request
 
         Raises:
-            EngineAPIException: When the request fails
+            `EngineAPIException` - When the request fails
         """
         route = urljoin(self.base_url, route)
         headers: dict = self._merge_headers(custom_headers)
@@ -96,19 +98,6 @@ class AsyncHTTPClient(ABC):
         return self.request(route, "DELETE", params=url_params, custom_headers=custom_headers, **kwargs)
 
     def _check_polling_status(self, response: httpx.Response) -> bool:
-        """
-        Check the v1 file polling response
-
-        Args:
-            response: httpx.Response - The response object of the target resource
-
-        Returns:
-            True - If the file is ready
-            False - If the file is not ready
-
-        Raises:
-            PollingException: If the file is not ready
-        """
         if response.status_code in (200, 206):
             content_length = int(response.headers.get("Content-Length", 0))
             if content_length > 0:
@@ -136,7 +125,7 @@ class AsyncHTTPClient(ABC):
         start_time: float = time.time()
         while time.time() - start_time < timeout:
             with httpx.Client() as client:
-                response: httpx.Response = client.stream("GET", file_url, timeout=self.default_request_timeout, payload=None, headers=headers)
+                response: httpx.Response = client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers)
                 if self._check_polling_status(response):
                     return
 
@@ -149,12 +138,14 @@ class AsyncHTTPClient(ABC):
         Polling the file from the file URL until the file is ready
 
         Args:
-            file_url: str - The URL of the file to poll
-            timeout: int - The timeout in seconds
-            interval: int - The interval in seconds
+            `file_url: str` - The URL of the file to poll
+            `timeout: int` - The timeout in seconds
+            `interval: int` - The interval in seconds
 
         Raises:
-            PollingException: If the file is not ready
+            `PollingException[Timeout]` - If the file is not accessible after the timeout
+
+            `PollingException[ZeroByteImage]` - If the file is a zero byte image
         """
         headers: dict = {"Range": "bytes=0-0"}
         if running_in_async_context():
@@ -205,5 +196,26 @@ class BriaEngineClient(AsyncHTTPClient):
 
             return self.jwt_token_ctx.get()
         except LookupError:
-            # ContextVar not exists but not initialized yet
+            # ContextVar exists but not initialized yet
             return None
+
+    @staticmethod
+    def handle_custom_exceptions(e: EngineAPIException, payload: ContentModeratedPayloadModel) -> EngineAPIException:
+        """
+        Converting the Broader EngineAPIException to the more specific custom exceptions models.
+
+        Args:
+            `e: EngineAPIException` - The exception to convert
+            `payload: ContentModeratedPayloadModel` - The payload that was used to make the request
+
+        Raises:
+            `ContentModerationException` - If the request is not suitable for content moderation
+
+            `EngineAPIException` - If the request is not suitable for content moderation
+        """
+        if e.response.status_code == 422:
+            if isinstance(payload, ContentModeratedPayloadModel) and payload.is_moderated:
+                raise ContentModerationException.from_engine_api_exception(e)
+            if isinstance(payload, PromptContentModeratedPayloadModel) and payload.is_moderated:
+                raise ContentModerationException.from_engine_api_exception(e)
+        raise e

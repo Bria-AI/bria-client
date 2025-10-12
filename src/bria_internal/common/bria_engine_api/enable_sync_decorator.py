@@ -25,10 +25,10 @@ def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T |
     new event loop which will block the thread (will execute synchronously).
 
     Args:
-        func: The async function to decorate
+        `func: Callable[P, Awaitable[T]]` - The async function to decorate
 
     Returns:
-        A function that can be called from both sync and async contexts
+        `Callable[P, T | Awaitable[T]]` - A function that can be called from both sync and async contexts
     """
 
     @functools.wraps(func)

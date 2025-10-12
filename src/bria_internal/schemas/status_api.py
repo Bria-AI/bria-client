@@ -1,6 +1,8 @@
 from enum import Enum
 
-from pydantic import AnyHttpUrl, BaseModel
+from pydantic import AnyHttpUrl
+
+from bria_internal.schemas.image_editing_apis import APIPayloadModel
 
 
 class StatusAPIState(str, Enum):
@@ -10,7 +12,7 @@ class StatusAPIState(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class StatusAPIResultBody(BaseModel):
+class StatusAPIResultBody(APIPayloadModel):
     image_url: AnyHttpUrl | None = None
     video_url: AnyHttpUrl | None = None
     seed: int | None = None
@@ -18,13 +20,13 @@ class StatusAPIResultBody(BaseModel):
     refined_prompt: str | None = None
 
 
-class StatusAPIErrorBody(BaseModel):
+class StatusAPIErrorBody(APIPayloadModel):
     code: int
     message: str
     details: str
 
 
-class StatusAPIResponse(BaseModel):
+class StatusAPIResponse(APIPayloadModel):
     request_id: str
     status: StatusAPIState
     result: StatusAPIResultBody | None = None
