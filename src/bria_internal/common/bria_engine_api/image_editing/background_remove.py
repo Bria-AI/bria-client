@@ -1,7 +1,7 @@
 from httpx import HTTPStatusError, Response
 
-from bria_internal.common.bria_engine_api import BriaEngineClient
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
+from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
 from bria_internal.common.bria_engine_api.routes_constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.status.status import StatusAPI
 from bria_internal.exceptions.engine_api_exception import EngineAPIBaseException
