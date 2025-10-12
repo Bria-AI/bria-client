@@ -1,19 +1,31 @@
+import asyncio
+import time
 from abc import ABC, abstractmethod
 from contextvars import ContextVar
 from typing import Awaitable
 from urllib.parse import urljoin
 
 import httpx
+from core.env import Environment
 
 from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
 from bria_internal.common.bria_engine_api.enable_sync_decorator import running_in_async_context
 from bria_internal.common.settings import engine_settings
 from bria_internal.exceptions.engine_api_exception import EngineAPIException
+from bria_internal.exceptions.polling_exception import PollingException, PollingFileStatus
 
 
 class AsyncHTTPClient(ABC):
-    def __init__(self, base_url: str) -> None:
+    def __init__(self, base_url: str, default_request_timeout: int = 30) -> None:
+        """
+        Initialize the AsyncHTTPClient
+
+        Args:
+            base_url: str - The base URL to make the request to
+            default_request_timeout: int - The default request timeout timeout for reading response from the server (client side rejection)
+        """
         self.base_url = base_url
+        self.default_request_timeout = default_request_timeout
 
     @property
     @abstractmethod
@@ -56,7 +68,7 @@ class AsyncHTTPClient(ABC):
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient() as client:
             try:
-                response = await client.request(method, url, headers=headers, json=payload, **kwargs)
+                response = await client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
                 response.raise_for_status()
                 return response
             except httpx.HTTPStatusError as e:
@@ -65,7 +77,7 @@ class AsyncHTTPClient(ABC):
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         with httpx.Client() as client:
             try:
-                response = client.request(method, url, headers=headers, json=payload, **kwargs)
+                response = client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
                 response.raise_for_status()
                 return response
             except httpx.HTTPStatusError as e:
@@ -83,6 +95,73 @@ class AsyncHTTPClient(ABC):
     def delete(self, route: str, url_params: dict, custom_headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.request(route, "DELETE", params=url_params, custom_headers=custom_headers, **kwargs)
 
+    def _check_polling_status(self, response: httpx.Response) -> bool:
+        """
+        Check the v1 file polling response
+
+        Args:
+            response: httpx.Response - The response object of the target resource
+
+        Returns:
+            True - If the file is ready
+            False - If the file is not ready
+
+        Raises:
+            PollingException: If the file is not ready
+        """
+        if response.status_code in (200, 206):
+            content_length = int(response.headers.get("Content-Length", 0))
+            if content_length > 0:
+                return True
+            else:
+                raise PollingException(PollingFileStatus.ZERO_BYTE_IMAGE_ERROR)
+        elif response.status_code == 416:
+            raise PollingException(PollingFileStatus.ZERO_BYTE_IMAGE_ERROR)
+        else:
+            return False
+
+    async def _async_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> Awaitable[None]:
+        start_time: float = time.time()
+        while time.time() - start_time < timeout:
+            async with httpx.AsyncClient() as client:
+                async with client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers) as response:
+                    if self._check_polling_status(response):
+                        return
+
+            await asyncio.sleep(interval)
+
+        raise PollingException(PollingFileStatus.TIMEOUT_ERROR)
+
+    def _sync_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> None:
+        start_time: float = time.time()
+        while time.time() - start_time < timeout:
+            with httpx.Client() as client:
+                response: httpx.Response = client.stream("GET", file_url, timeout=self.default_request_timeout, payload=None, headers=headers)
+                if self._check_polling_status(response):
+                    return
+
+            time.sleep(interval)
+
+        raise PollingException(PollingFileStatus.TIMEOUT_ERROR)
+
+    def file_polling(self, file_url: str, timeout: int = 120, interval: int = 2) -> Awaitable[None] | None:
+        """
+        Polling the file from the file URL until the file is ready
+
+        Args:
+            file_url: str - The URL of the file to poll
+            timeout: int - The timeout in seconds
+            interval: int - The interval in seconds
+
+        Raises:
+            PollingException: If the file is not ready
+        """
+        headers: dict = {"Range": "bytes=0-0"}
+        if running_in_async_context():
+            return self._async_file_polling(file_url, headers, timeout, interval)
+        else:
+            return self._sync_file_polling(file_url, headers, timeout, interval)
+
 
 class BriaEngineClient(AsyncHTTPClient):
     def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None) -> None:
@@ -94,12 +173,17 @@ class BriaEngineClient(AsyncHTTPClient):
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
 
-        super().__init__(base_url=str(engine_settings.URL) or self._get_env_based_url())
+        super().__init__(base_url=self._get_env_based_url())
 
     def _get_env_based_url(self) -> str:
-        if engine_settings.IS_PRODUCTION:
+        if engine_settings.URL:
+            return str(engine_settings.URL)
+        if engine_settings.ENVIRONMENT == Environment.PRODUCTION:
             return BRIA_ENGINE_PRODUCTION_URL
-        return BRIA_ENGINE_INTEGRATION_URL
+        elif engine_settings.ENVIRONMENT == Environment.INTEGRATION:
+            return BRIA_ENGINE_INTEGRATION_URL
+        elif engine_settings.ENVIRONMENT == Environment.LOCAL:
+            raise ValueError("URL is not provided for local environment")
 
     @property
     def headers(self) -> dict:
