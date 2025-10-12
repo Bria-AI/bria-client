@@ -1,14 +1,12 @@
 from abc import ABC, abstractmethod
 from contextvars import ContextVar
-from typing import Awaitable, BinaryIO, Tuple
+from typing import Awaitable
 from urllib.parse import urljoin
 
 import httpx
 
-from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PROD_URL
+from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
 from bria_internal.common.bria_engine_api.enable_sync_decorator import running_in_async_context
-from bria_internal.common.bria_engine_api.image_editing.background_remove import BackgroundRemoveAPI
-from bria_internal.common.bria_engine_api.status.status import StatusAPI
 from bria_internal.common.settings import engine_settings
 
 
@@ -18,17 +16,19 @@ class AsyncHTTPClient(ABC):
 
     @property
     @abstractmethod
-    def headers(self) -> dict: ...
+    def headers(self) -> dict:
+        pass
 
     def request(
         self, route: str, method: str, payload: dict | None = None, custom_headers: dict | None = None, **kwargs
     ) -> Awaitable[httpx.Response] | httpx.Response:
         route = urljoin(self.base_url, route)
+        headers: dict = self._merge_headers(custom_headers)
 
         if running_in_async_context():
-            return self._async_request(method, route, payload, custom_headers=custom_headers, **kwargs)
+            return self._async_request(method, route, payload, headers=headers, **kwargs)
         else:
-            return self._sync_request(method, route, payload, custom_headers=custom_headers, **kwargs)
+            return self._sync_request(method, route, payload, headers=headers, **kwargs)
 
     def _merge_headers(self, custom_headers: dict | None = None) -> dict:
         headers: dict = self.headers
@@ -36,15 +36,15 @@ class AsyncHTTPClient(ABC):
             headers.update(custom_headers)
         return headers
 
-    async def _async_request(self, method: str, url: str, payload: dict | None, custom_headers: dict | None = None, **kwargs) -> httpx.Response:
+    async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient() as client:
-            response = await client.request(method, url, headers=self._merge_headers(custom_headers), json=payload, **kwargs)
+            response = await client.request(method, url, headers=headers, json=payload, **kwargs)
             response.raise_for_status()
             return response
 
-    def _sync_request(self, method: str, url: str, payload: dict | None, custom_headers: dict | None = None, **kwargs) -> httpx.Response:
+    def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         with httpx.Client() as client:
-            response = client.request(method, url, headers=self._merge_headers(custom_headers), json=payload, **kwargs)
+            response = client.request(method, url, headers=headers, json=payload, **kwargs)
             response.raise_for_status()
             return response
 
@@ -60,17 +60,6 @@ class AsyncHTTPClient(ABC):
     def delete(self, route: str, url_params: dict, custom_headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.request(route, "DELETE", params=url_params, custom_headers=custom_headers, **kwargs)
 
-    def upload(
-        self, route: str, image: str | Tuple[str, Tuple[str, BinaryIO, str]], custom_headers: dict | None = None, **kwargs
-    ) -> Awaitable[httpx.Response] | httpx.Response:
-        return self.post(
-            route=route,
-            data={"image_url": image} if isinstance(image, str) else {},
-            files=[image] if not isinstance(image, str) else None,
-            custom_headers=custom_headers,
-            **kwargs,
-        )
-
 
 class BriaEngineClient(AsyncHTTPClient):
     def __init__(self, api_token_ctx: ContextVar[str] = None, jwt_token_ctx: ContextVar[str] | None = None) -> None:
@@ -82,16 +71,11 @@ class BriaEngineClient(AsyncHTTPClient):
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
 
-        # Initialize the APIs
-        self.status = StatusAPI(self)
-        self.background_remove_api = BackgroundRemoveAPI(self)
-
         super().__init__(base_url=str(engine_settings.URL) or self._get_env_based_url())
 
     def _get_env_based_url(self) -> str:
         if engine_settings.IS_PRODUCTION:
-            return BRIA_ENGINE_PROD_URL
-
+            return BRIA_ENGINE_PRODUCTION_URL
         return BRIA_ENGINE_INTEGRATION_URL
 
     @property

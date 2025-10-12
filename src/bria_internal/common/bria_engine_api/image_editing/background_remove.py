@@ -1,20 +1,18 @@
-from typing import TYPE_CHECKING
-
 from httpx import HTTPStatusError, Response
 
+from bria_internal.common.bria_engine_api import BriaEngineClient
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.routes_constants import BriaEngineAPIRoutes
+from bria_internal.common.bria_engine_api.status.status import StatusAPI
 from bria_internal.exceptions.engine_api_exception import EngineAPIBaseException
 from bria_internal.schemas.image_editing_apis.background_remove import BackgroundRemoveRequestPayload
 from bria_internal.schemas.status_api import StatusAPIResponse
 
-if TYPE_CHECKING:
-    from bria_internal.common.bria_engine_api import BriaEngineClient
-
 
 class BackgroundRemoveAPI:
-    def __init__(self, engine_api: "BriaEngineClient"):
+    def __init__(self, engine_api: BriaEngineClient, status_api: StatusAPI):
         self.engine_api = engine_api
+        self.status_api = status_api
 
     @enable_run_synchronously
     async def remove_background_by_image_url_v2(self, payload: BackgroundRemoveRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
@@ -37,7 +35,7 @@ class BackgroundRemoveAPI:
             response_body = response.json()
 
             if wait_for_status:
-                response = await self.engine_api.status.wait_for_status_request(request_id=response_body["request_id"])
+                response = await self.status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
         except HTTPStatusError as e:

@@ -1,19 +1,17 @@
 import asyncio
 import time
-from typing import TYPE_CHECKING, Awaitable
+from typing import Awaitable
 
 from httpx import Response
 
+from bria_internal.common.bria_engine_api import BriaEngineClient
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.routes_constants import BriaEngineAPIRoutes
 from bria_internal.schemas.status_api import StatusAPIResponse, StatusAPIState
 
-if TYPE_CHECKING:
-    from bria_internal.common.bria_engine_api import BriaEngineClient
-
 
 class StatusAPI:
-    def __init__(self, engine_requests_client: "BriaEngineClient"):
+    def __init__(self, engine_requests_client: BriaEngineClient):
         self.engine_api = engine_requests_client
 
     @enable_run_synchronously
