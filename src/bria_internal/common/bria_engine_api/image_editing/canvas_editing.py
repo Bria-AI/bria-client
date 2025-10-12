@@ -34,7 +34,7 @@ class CanvasEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.payload_dump())
 
             if wait_for_status:
                 response_body = response.json()
@@ -64,7 +64,7 @@ class CanvasEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.payload_dump())
 
             if wait_for_status:
                 response_body = response.json()
@@ -90,7 +90,7 @@ class CanvasEditingAPI:
 
             `PollingException` - If the file polling fails
         """
-        response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V1_IMAGE_EDIT_GET_MASKS, payload.model_dump(mode="json"))
+        response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V1_IMAGE_EDIT_GET_MASKS, payload.payload_dump())
         if not payload.sync:
             await self.__engine_client.file_polling(response.json()["objects_masks"])
 

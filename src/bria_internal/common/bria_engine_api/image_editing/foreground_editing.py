@@ -34,7 +34,7 @@ class ForegroundEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REPLACE_FOREGROUND, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REPLACE_FOREGROUND, payload.payload_dump())
 
             if wait_for_status:
                 response_body = response.json()
@@ -64,7 +64,7 @@ class ForegroundEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_OUT, payload.model_dump(mode="json"))
+            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_OUT, payload.payload_dump())
 
             if wait_for_status:
                 response_body = response.json()
