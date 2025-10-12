@@ -25,7 +25,7 @@ class ReplaceBackgroundRequestPayload(PromptContentModeratedPayloadModel):
     prompt: str | None = None
     refine_prompt: bool | None = None
     negative_prompt: str | None = None
-    original_quality: bool | None
+    original_quality: bool | None = None
     force_background_detection: bool | None = None
     sync: bool | None = None
     seed: int | None = None

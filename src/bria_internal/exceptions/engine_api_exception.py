@@ -3,7 +3,7 @@ from httpx import HTTPStatusError
 
 class EngineAPIException(HTTPStatusError):
     def __init__(self, url: str, base_url: str | None = None, http_status_error: HTTPStatusError | None = None, **kwargs):
-        self.route = url.replace(base_url, "")
+        self.route = url.replace(base_url or "", "")
         self.base_url = base_url
         self.kwargs = kwargs
 

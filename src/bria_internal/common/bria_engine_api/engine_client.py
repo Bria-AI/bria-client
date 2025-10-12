@@ -125,9 +125,9 @@ class AsyncHTTPClient(ABC):
         start_time: float = time.time()
         while time.time() - start_time < timeout:
             with httpx.Client() as client:
-                response: httpx.Response = client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers)
-                if self._check_polling_status(response):
-                    return
+                with client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers) as response:
+                    if self._check_polling_status(response):
+                        return
 
             time.sleep(interval)
 
