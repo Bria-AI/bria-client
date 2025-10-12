@@ -178,15 +178,21 @@ class BriaEngineClient(AsyncHTTPClient):
 
     @property
     def headers(self) -> dict:
+        if self.api_token is None and self.jwt_token is None:
+            raise ValueError("Authentication token is not set")
+
         headers: dict = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
         return headers
 
     @property
     def api_token(self) -> str:
         try:
+            if self.api_token_ctx is None:
+                return None
+
             return self.api_token_ctx.get()
         except LookupError:
-            raise ValueError("API token is not set")
+            return None
 
     @property
     def jwt_token(self) -> str | None:
