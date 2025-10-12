@@ -206,7 +206,7 @@ class BriaEngineClient(AsyncHTTPClient):
             return None
 
     @staticmethod
-    def handle_custom_exceptions(e: EngineAPIException, payload: ContentModeratedPayloadModel) -> EngineAPIException:
+    def get_custom_exception(e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         """
         Converting the Broader EngineAPIException to the more specific custom exceptions models.
 
@@ -214,14 +214,14 @@ class BriaEngineClient(AsyncHTTPClient):
             `e: EngineAPIException` - The exception to convert
             `payload: ContentModeratedPayloadModel` - The payload that was used to make the request
 
-        Raises:
+        Returns:
             `ContentModerationException` - If the request is not suitable for content moderation
 
             `EngineAPIException` - If the request is not suitable for content moderation
         """
         if e.response.status_code == 422:
             if isinstance(payload, ContentModeratedPayloadModel) and payload.is_moderated:
-                raise ContentModerationException.from_engine_api_exception(e)
+                return ContentModerationException.from_engine_api_exception(e)
             if isinstance(payload, PromptContentModeratedPayloadModel) and payload.is_moderated:
-                raise ContentModerationException.from_engine_api_exception(e)
-        raise e
+                return ContentModerationException.from_engine_api_exception(e)
+        return e

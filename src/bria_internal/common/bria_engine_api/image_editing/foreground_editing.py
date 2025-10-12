@@ -1,11 +1,10 @@
-from typing import Awaitable
-
-from httpx import HTTPStatusError, Response
+from httpx import Response
 
 from bria_internal.common.bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
 from bria_internal.common.bria_engine_api.status.status import StatusAPI
+from bria_internal.exceptions.engine_api_exception import EngineAPIException
 from bria_internal.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
 from bria_internal.schemas.status_api import StatusAPIResponse
 
@@ -16,7 +15,7 @@ class ForegroundEditingAPI:
         self.__status_api = status_api
 
     @enable_run_synchronously
-    async def replace(self, payload: ReplaceForegroundRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def replace(self, payload: ReplaceForegroundRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
         """
         Replace the foreground of an image
 
@@ -42,11 +41,11 @@ class ForegroundEditingAPI:
                 response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
-        except HTTPStatusError as e:
-            raise BriaEngineClient.handle_custom_exceptions(e, payload)
+        except EngineAPIException as e:
+            raise BriaEngineClient.get_custom_exception(e, payload)
 
     @enable_run_synchronously
-    async def crop_out(self, payload: CropOutRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def crop_out(self, payload: CropOutRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
         """
         Crop out the foreground of an image
 
@@ -72,5 +71,5 @@ class ForegroundEditingAPI:
                 response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
-        except HTTPStatusError as e:
-            raise BriaEngineClient.handle_custom_exceptions(e, payload)
+        except EngineAPIException as e:
+            raise BriaEngineClient.get_custom_exception(e, payload)

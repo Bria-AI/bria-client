@@ -1,11 +1,10 @@
-from typing import Awaitable
-
-from httpx import HTTPStatusError, Response
+from httpx import Response
 
 from bria_internal.common.bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_internal.common.bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_internal.common.bria_engine_api.engine_client import BriaEngineClient
 from bria_internal.common.bria_engine_api.status.status import StatusAPI
+from bria_internal.exceptions.engine_api_exception import EngineAPIException
 from bria_internal.schemas.image_editing_apis.background_editing import (
     BlurBackgroundRequestPayload,
     RemoveBackgroundRequestPayload,
@@ -20,7 +19,7 @@ class BackgroundEditingAPI:
         self.__status_api = status_api
 
     @enable_run_synchronously
-    async def remove(self, payload: RemoveBackgroundRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def remove(self, payload: RemoveBackgroundRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
         """
         Remove background from image
 
@@ -46,11 +45,11 @@ class BackgroundEditingAPI:
                 response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
-        except HTTPStatusError as e:
-            raise BriaEngineClient.handle_custom_exceptions(e, payload)
+        except EngineAPIException as e:
+            raise BriaEngineClient.get_custom_exception(e, payload)
 
     @enable_run_synchronously
-    async def replace(self, payload: ReplaceBackgroundRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def replace(self, payload: ReplaceBackgroundRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
         """
         Replace the background of the image
 
@@ -76,11 +75,11 @@ class BackgroundEditingAPI:
                 response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
-        except HTTPStatusError as e:
-            raise BriaEngineClient.handle_custom_exceptions(e, payload)
+        except EngineAPIException as e:
+            raise BriaEngineClient.get_custom_exception(e, payload)
 
     @enable_run_synchronously
-    async def blur(self, payload: BlurBackgroundRequestPayload, wait_for_status: bool = False) -> Awaitable[Response | StatusAPIResponse]:
+    async def blur(self, payload: BlurBackgroundRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
         """
         Blur the background of the image
 
@@ -106,5 +105,5 @@ class BackgroundEditingAPI:
                 response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
 
             return response
-        except HTTPStatusError as e:
-            raise BriaEngineClient.handle_custom_exceptions(e, payload)
+        except EngineAPIException as e:
+            raise BriaEngineClient.get_custom_exception(e, payload)

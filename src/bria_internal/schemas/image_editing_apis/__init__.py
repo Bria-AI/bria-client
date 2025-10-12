@@ -12,7 +12,7 @@ class ContentModeratedPayloadModel(APIPayloadModel):
 
     @property
     def is_moderated(self) -> bool:
-        return self.visual_input_content_moderation or self.visual_output_content_moderation
+        return bool(self.visual_input_content_moderation or self.visual_output_content_moderation)
 
 
 class PromptContentModeratedPayloadModel(ContentModeratedPayloadModel):
@@ -20,4 +20,4 @@ class PromptContentModeratedPayloadModel(ContentModeratedPayloadModel):
 
     @property
     def is_moderated(self) -> bool:
-        return super().is_moderated or self.prompt_content_moderation
+        return bool(super().is_moderated or self.prompt_content_moderation)
