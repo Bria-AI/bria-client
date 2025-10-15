@@ -2,10 +2,14 @@ from enum import Enum
 
 from pydantic_core import Url
 
-from bria_engine_api.schemas.image_editing_apis import APIPayloadModel, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_engine_api.schemas.base_models import (
+    APIPayloadModel,
+    ContentModeratedPayloadModel,
+    PromptContentModeratedPayloadModel,
+)
 
 
-class CanvasOperationMaskType(str, Enum):
+class MaskType(str, Enum):
     MANUAL = "manual"
     AUTOMATIC = "automatic"
 
@@ -13,7 +17,7 @@ class CanvasOperationMaskType(str, Enum):
 class ObjectEraserRequestPayload(ContentModeratedPayloadModel):
     image: str
     mask: str
-    mask_type: CanvasOperationMaskType
+    mask_type: MaskType
     preserve_alpha: bool | None = None
     sync: bool | None = None
 
@@ -21,7 +25,7 @@ class ObjectEraserRequestPayload(ContentModeratedPayloadModel):
 class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
     image: str
     mask: str
-    mask_type: CanvasOperationMaskType
+    mask_type: MaskType
     prompt: str
     negative_prompt: str | None = None
     preserve_alpha: bool | None = None

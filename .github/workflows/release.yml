@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  PACKAGE_NAME: "bria-internal"
+  PACKAGE_NAME: "bria-sdk"
   OWNER: "Bria.ai"
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
         python-version: ["3.10"]
         include:
           - os: ubuntu-latest
-            python-version: "3.8"
+            python-version: "3.10"
           - os: ubuntu-latest
             python-version: "3.11"
           - os: ubuntu-latest

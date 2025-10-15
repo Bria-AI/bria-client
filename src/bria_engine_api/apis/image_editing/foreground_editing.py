@@ -1,6 +1,6 @@
 from httpx import Response
 
-from bria_engine_api.apis.status.status import StatusAPI
+from bria_engine_api.apis.status import StatusAPI
 from bria_engine_api.constants import BriaEngineAPIRoutes
 from bria_engine_api.enable_sync_decorator import enable_run_synchronously
 from bria_engine_api.engine_client import BriaEngineClient
