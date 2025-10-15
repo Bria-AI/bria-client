@@ -1,17 +1,16 @@
 from enum import Enum
-from typing import Tuple
 
 from pydantic import Field
 
-from bria_internal.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class ExpandImageRequestPayload(PromptContentModeratedPayloadModel):
     image: str
     aspect_ratio: str | float | None = None
-    canvas_size: Tuple[int, int] | None = None
-    original_image_size: Tuple[int, int] | None = None
-    original_image_location: Tuple[int, int] | None = None
+    canvas_size: tuple[int, int] | None = None
+    original_image_size: tuple[int, int] | None = None
+    original_image_location: tuple[int, int] | None = None
     prompt: str | None = None
     seed: int | None = None
     negative_prompt: str | None = None

@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic_core import Url
 
-from bria_internal.schemas.image_editing_apis import APIPayloadModel, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_engine_api.schemas.image_editing_apis import APIPayloadModel, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class CanvasOperationMaskType(str, Enum):

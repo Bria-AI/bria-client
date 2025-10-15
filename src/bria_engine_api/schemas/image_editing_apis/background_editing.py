@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import Field
 
-from bria_internal.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class RemoveBackgroundRequestPayload(ContentModeratedPayloadModel):

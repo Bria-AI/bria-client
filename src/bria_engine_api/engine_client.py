@@ -1,19 +1,19 @@
 import asyncio
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Awaitable
 from contextvars import ContextVar
-from typing import Awaitable
 from urllib.parse import urljoin
 
 import httpx
 from core.env import Environment
 
-from bria_internal.common.bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
-from bria_internal.common.bria_engine_api.enable_sync_decorator import running_in_async_context
-from bria_internal.common.settings import engine_settings
-from bria_internal.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
-from bria_internal.exceptions.polling_exception import PollingException, PollingFileStatus
-from bria_internal.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
+from bria_engine_api.enable_sync_decorator import running_in_async_context
+from bria_engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
+from bria_engine_api.exceptions.polling_exception import PollingException, PollingFileStatus
+from bria_engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from settings import engine_settings
 
 
 class AsyncHTTPClient(ABC):

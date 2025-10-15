@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import AnyHttpUrl
 
-from bria_internal.schemas.image_editing_apis import APIPayloadModel
+from bria_engine_api.schemas.image_editing_apis import APIPayloadModel
 
 
 class StatusAPIState(str, Enum):
