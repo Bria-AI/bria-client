@@ -1,0 +1,8 @@
+from bria_engine_api.apis.status import StatusAPI
+from bria_engine_api.engine_client import BriaEngineClient
+
+
+class StatusBasedAPI:
+    def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
+        self._engine_client = engine_client
+        self._status_api = status_api

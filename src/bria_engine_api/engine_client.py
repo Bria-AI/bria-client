@@ -6,10 +6,8 @@ from contextvars import ContextVar
 from urllib.parse import urljoin
 
 import httpx
-from core.env import Environment
 
-from bria_engine_api.constants import BRIA_ENGINE_INTEGRATION_URL, BRIA_ENGINE_PRODUCTION_URL
-from bria_engine_api.enable_sync_decorator import running_in_async_context
+from bria_engine_api.decorators.enable_sync_decorator import running_in_async_context
 from bria_engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
 from bria_engine_api.exceptions.polling_exception import PollingException, PollingFileStatus
 from bria_engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
@@ -164,17 +162,7 @@ class BriaEngineClient(AsyncHTTPClient):
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
 
-        super().__init__(base_url=self._get_env_based_url())
-
-    def _get_env_based_url(self) -> str:
-        if engine_settings.URL:
-            return str(engine_settings.URL)
-        if engine_settings.ENVIRONMENT == Environment.PRODUCTION:
-            return BRIA_ENGINE_PRODUCTION_URL
-        elif engine_settings.ENVIRONMENT == Environment.INTEGRATION:
-            return BRIA_ENGINE_INTEGRATION_URL
-        elif engine_settings.ENVIRONMENT == Environment.LOCAL:
-            raise ValueError("URL is not provided for local environment")
+        super().__init__(base_url=str(engine_settings.URL))
 
     @property
     def headers(self) -> dict:

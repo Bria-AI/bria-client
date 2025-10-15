@@ -1,21 +1,22 @@
 from httpx import Response
 
 from bria_engine_api.apis.status import StatusAPI
+from bria_engine_api.apis.status_based_api import StatusBasedAPI
 from bria_engine_api.constants import BriaEngineAPIRoutes
-from bria_engine_api.enable_sync_decorator import enable_run_synchronously
+from bria_engine_api.decorators.enable_sync_decorator import enable_run_synchronously
+from bria_engine_api.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_engine_api.engine_client import BriaEngineClient
 from bria_engine_api.exceptions.engine_api_exception import EngineAPIException
 from bria_engine_api.schemas.image_editing_apis import GetMasksRequestPayload, ObjectEraserRequestPayload, ObjectGenFillRequestPayload
-from bria_engine_api.schemas.status_api import StatusAPIResponse
 
 
-class MasksBasedEditingAPI:
+class MasksBasedEditingAPI(StatusBasedAPI):
     def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
-        self.__engine_client = engine_client
-        self.__status_api = status_api
+        super().__init__(engine_client, status_api)
 
     @enable_run_synchronously
-    async def erase(self, payload: ObjectEraserRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
+    @auto_wait_for_status
+    async def erase(self, payload: ObjectEraserRequestPayload) -> Response:
         """
         Erase an object from an image using a mask
 
@@ -34,18 +35,14 @@ class MasksBasedEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.payload_dump())
-
-            if wait_for_status:
-                response_body = response.json()
-                response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
-
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise BriaEngineClient.get_custom_exception(e, payload)
 
     @enable_run_synchronously
-    async def gen_fill(self, payload: ObjectGenFillRequestPayload, wait_for_status: bool = False) -> Response | StatusAPIResponse:
+    @auto_wait_for_status
+    async def gen_fill(self, payload: ObjectGenFillRequestPayload) -> Response:
         """
         Generate a fill for the provided image using a mask and a prompt to fill the masked area
 
@@ -64,12 +61,7 @@ class MasksBasedEditingAPI:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.payload_dump())
-
-            if wait_for_status:
-                response_body = response.json()
-                response = await self.__status_api.wait_for_status_request(request_id=response_body["request_id"])
-
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise BriaEngineClient.get_custom_exception(e, payload)
@@ -90,8 +82,8 @@ class MasksBasedEditingAPI:
 
             `PollingException` - If the file polling fails
         """
-        response: Response = await self.__engine_client.post(BriaEngineAPIRoutes.V1_IMAGE_EDIT_GET_MASKS, payload.payload_dump())
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V1_IMAGE_EDIT_GET_MASKS, payload.payload_dump())
         if not payload.sync:
-            await self.__engine_client.file_polling(response.json()["objects_masks"])
+            await self._engine_client.file_polling(response.json()["objects_masks"])
 
         return response

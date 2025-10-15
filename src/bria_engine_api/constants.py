@@ -2,8 +2,6 @@ from enum import Enum
 from typing import Final
 
 BRIA_ENGINE_PRODUCTION_URL: Final[str] = "https://engine.prod.bria-api.com/"
-BRIA_ENGINE_INTEGRATION_URL: Final[str] = "https://engine.int.bria-api.com/"
-
 
 class BriaEngineAPIRoutes(str, Enum):
     V1_IMAGE_EDIT_GET_MASKS = "v1/objects/mask_generator"
