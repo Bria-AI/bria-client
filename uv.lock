@@ -38,7 +38,6 @@ dependencies = [
     { name = "httpx" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
-    { name = "python-dotenv" },
 ]
 
 [package.dev-dependencies]
