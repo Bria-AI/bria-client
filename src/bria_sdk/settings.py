@@ -1,7 +1,7 @@
 from pydantic import HttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from bria_engine_api.constants import BRIA_ENGINE_PRODUCTION_URL
+from bria_sdk.engine_api.constants import BRIA_ENGINE_PRODUCTION_URL
 
 
 class BriaEngineSettings(BaseSettings):

@@ -35,7 +35,7 @@ pip install bria-sdk
 
 ```python
 from bria_sdk import BriaSDK
-from bria_engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
 
 # Initialize the SDK
 sdk = BriaSDK()
@@ -71,14 +71,14 @@ BRIA_ENGINE_API_KEY=your-api-key-here
 
 ```python
 # Remove background
-from bria_engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
 
 response = sdk.engine_apis.image_editing.background.remove(
     payload=RemoveBackgroundRequestPayload(image="https://example.com/image.jpg")
 )
 
 # Replace background
-from bria_engine_api.schemas.image_editing_apis.background_editing import ReplaceBackgroundRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import ReplaceBackgroundRequestPayload
 
 response = sdk.engine_apis.image_editing.background.replace(
     payload=ReplaceBackgroundRequestPayload(
@@ -88,7 +88,7 @@ response = sdk.engine_apis.image_editing.background.replace(
 )
 
 # Blur background
-from bria_engine_api.schemas.image_editing_apis.background_editing import BlurBackgroundRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import BlurBackgroundRequestPayload
 
 response = sdk.engine_apis.image_editing.background.blur(
     payload=BlurBackgroundRequestPayload(image="https://example.com/image.jpg")
@@ -99,7 +99,7 @@ response = sdk.engine_apis.image_editing.background.blur(
 
 ```python
 # Replace foreground
-from bria_engine_api.schemas.image_editing_apis.foreground_editing import ReplaceForegroundRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.foreground_editing import ReplaceForegroundRequestPayload
 
 response = sdk.engine_apis.image_editing.foreground.replace(
     payload=ReplaceForegroundRequestPayload(
@@ -109,7 +109,7 @@ response = sdk.engine_apis.image_editing.foreground.replace(
 )
 
 # Crop out foreground
-from bria_engine_api.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload
 
 response = sdk.engine_apis.image_editing.foreground.crop_out(
     payload=CropOutRequestPayload(image="https://example.com/image.jpg")
@@ -120,7 +120,7 @@ response = sdk.engine_apis.image_editing.foreground.crop_out(
 
 ```python
 # Erase objects using masks
-from bria_engine_api.schemas.image_editing_apis.mask_based_editing import ObjectEraserRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.mask_based_editing import ObjectEraserRequestPayload
 
 response = sdk.engine_apis.image_editing.masks.erase(
     payload=ObjectEraserRequestPayload(
@@ -130,7 +130,7 @@ response = sdk.engine_apis.image_editing.masks.erase(
 )
 
 # Generate fills
-from bria_engine_api.schemas.image_editing_apis.mask_based_editing import ObjectGenFillRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.mask_based_editing import ObjectGenFillRequestPayload
 
 response = sdk.engine_apis.image_editing.masks.gen_fill(
     payload=ObjectGenFillRequestPayload(
@@ -141,7 +141,7 @@ response = sdk.engine_apis.image_editing.masks.gen_fill(
 )
 
 # Get masks for an image
-from bria_engine_api.schemas.image_editing_apis.mask_based_editing import GetMasksRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.mask_based_editing import GetMasksRequestPayload
 
 response = sdk.engine_apis.image_editing.masks.get_masks(
     payload=GetMasksRequestPayload(image="https://example.com/image.jpg")
@@ -152,7 +152,7 @@ response = sdk.engine_apis.image_editing.masks.get_masks(
 
 ```python
 # Expand image
-from bria_engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
 
 response = sdk.engine_apis.image_editing.size.expand_image(
     payload=ExpandImageRequestPayload(
@@ -162,14 +162,14 @@ response = sdk.engine_apis.image_editing.size.expand_image(
 )
 
 # Enhance image quality
-from bria_engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload
 
 response = sdk.engine_apis.image_editing.size.enhance_image(
     payload=EnhanceImageRequestPayload(image="https://example.com/image.jpg")
 )
 
 # Increase resolution
-from bria_engine_api.schemas.image_editing_apis.size_editing import IncreaseResolutionRequestPayload
+from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import IncreaseResolutionRequestPayload
 
 response = sdk.engine_apis.image_editing.size.increase_resolution(
     payload=IncreaseResolutionRequestPayload(image="https://example.com/image.jpg")
@@ -203,8 +203,8 @@ sdk = BriaSDK(jwt_token_ctx=jwt_token)
 The SDK provides specific exception types for different error scenarios:
 
 ```python
-from bria_engine_api.exceptions.engine_api_exception import EngineAPIException, ContentModerationException
-from bria_engine_api.exceptions.polling_exception import PollingException
+from bria_sdk.engine_api.exceptions.engine_api_exception import EngineAPIException, ContentModerationException
+from bria_sdk.engine_api.exceptions.polling_exception import PollingException
 
 try:
     response = sdk.engine_apis.image_editing.background.remove(payload)

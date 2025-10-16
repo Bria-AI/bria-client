@@ -7,11 +7,11 @@ from urllib.parse import urljoin
 
 import httpx
 
-from bria_engine_api.decorators.enable_sync_decorator import running_in_async_context
-from bria_engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
-from bria_engine_api.exceptions.polling_exception import PollingException, PollingFileStatus
-from bria_engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
-from settings import engine_settings
+from bria_sdk.engine_api.decorators.enable_sync_decorator import running_in_async_context
+from bria_sdk.engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
+from bria_sdk.engine_api.exceptions.polling_exception import PollingException, PollingFileStatus
+from bria_sdk.engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_sdk.settings import engine_settings
 
 
 class AsyncHTTPClient(ABC):

@@ -1,6 +1,6 @@
 from contextvars import ContextVar
 
-from bria_engine_api.apis import EngineAPIs
+from bria_sdk.engine_api.apis import EngineAPIs
 
 
 class BriaSDK:
