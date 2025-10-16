@@ -22,7 +22,7 @@ class MasksBasedEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ObjectEraserRequestPayload` - The payload for the object eraser request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -48,7 +48,7 @@ class MasksBasedEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ObjectGenFillRequestPayload` - The payload for the object gen fill request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`

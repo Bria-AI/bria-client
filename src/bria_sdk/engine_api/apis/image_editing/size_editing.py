@@ -22,7 +22,7 @@ class SizeEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ExpandImageRequestPayload` - The payload for the expand image request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response` - StatusAPIResponse if `wait_for_status` is True, else `httpx.Response`
@@ -48,7 +48,7 @@ class SizeEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: EnhanceImageRequestPayload` - The payload for the enhance image request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - StatusAPIResponse if wait_for_status is True, else httpx.Response
@@ -74,7 +74,7 @@ class SizeEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: IncreaseResolutionRequestPayload` - The payload for the increase resolution request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`

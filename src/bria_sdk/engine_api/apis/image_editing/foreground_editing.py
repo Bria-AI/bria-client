@@ -22,7 +22,7 @@ class ForegroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ReplaceForegroundRequestPayload` - The payload for the replace foreground request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -48,7 +48,7 @@ class ForegroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: CropOutRequestPayload` - The payload for the crop out request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`

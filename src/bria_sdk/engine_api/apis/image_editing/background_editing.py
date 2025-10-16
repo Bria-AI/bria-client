@@ -26,7 +26,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: RemoveBackgroundRequestPayload` - The payload for the background remove request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -52,7 +52,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ReplaceBackgroundRequestPayload` - The payload for the replace background request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -78,7 +78,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: BlurBackgroundRequestPayload` - The payload for the blur background request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
