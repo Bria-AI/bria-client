@@ -1,9 +1,9 @@
 
 from contextvars import ContextVar
 
-from bria_engine_api.apis.image_editing import ImageEditingAPI
-from bria_engine_api.apis.status import StatusAPI
-from bria_engine_api.engine_client import BriaEngineClient
+from bria_sdk.engine_api.apis.image_editing import ImageEditingAPI
+from bria_sdk.engine_api.apis.status import StatusAPI
+from bria_sdk.engine_api.engine_client import BriaEngineClient
 
 __all__ = [
     "ImageEditingAPI",

@@ -13,9 +13,9 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from bria_engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
-from bria_engine_api.schemas.status_api import StatusAPIResponse
 from bria_sdk import BriaSDK
+from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
+from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
 
 # Initialize the SDK
 sdk = BriaSDK()

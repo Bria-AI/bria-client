@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic_core import Url
 
-from bria_engine_api.schemas.base_models import (
+from bria_sdk.engine_api.schemas.base_models import (
     APIPayloadModel,
     ContentModeratedPayloadModel,
     PromptContentModeratedPayloadModel,

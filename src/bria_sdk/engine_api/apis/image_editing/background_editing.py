@@ -1,13 +1,13 @@
 from httpx import Response
 
-from bria_engine_api.apis.status import StatusAPI
-from bria_engine_api.apis.status_based_api import StatusBasedAPI
-from bria_engine_api.constants import BriaEngineAPIRoutes
-from bria_engine_api.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_engine_api.decorators.wait_for_status_decorator import auto_wait_for_status
-from bria_engine_api.engine_client import BriaEngineClient
-from bria_engine_api.exceptions.engine_api_exception import EngineAPIException
-from bria_engine_api.schemas.image_editing_apis.background_editing import (
+from bria_sdk.engine_api.apis.status import StatusAPI
+from bria_sdk.engine_api.apis.status_based_api import StatusBasedAPI
+from bria_sdk.engine_api.constants import BriaEngineAPIRoutes
+from bria_sdk.engine_api.decorators.enable_sync_decorator import enable_run_synchronously
+from bria_sdk.engine_api.decorators.wait_for_status_decorator import auto_wait_for_status
+from bria_sdk.engine_api.engine_client import BriaEngineClient
+from bria_sdk.engine_api.exceptions.engine_api_exception import EngineAPIException
+from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import (
     BlurBackgroundRequestPayload,
     RemoveBackgroundRequestPayload,
     ReplaceBackgroundRequestPayload,
@@ -26,7 +26,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: RemoveBackgroundRequestPayload` - The payload for the background remove request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -52,7 +52,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: ReplaceBackgroundRequestPayload` - The payload for the replace background request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
@@ -78,7 +78,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Args:
             `payload: BlurBackgroundRequestPayload` - The payload for the blur background request
-            `wait_for_status: bool` - Whether to wait for the status request (locally)
+            `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
             `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`

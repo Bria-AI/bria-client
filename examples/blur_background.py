@@ -10,12 +10,12 @@ import os
 import sys
 from typing import Final
 
-from bria_engine_api.schemas.status_api import StatusAPIResponse
+from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from bria_engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
 from bria_sdk import BriaSDK
+from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
 
 # Initialize the SDK
 sdk = BriaSDK()
