@@ -15,7 +15,6 @@ dependencies = [
     "pydantic==2.11.10",
     "python_dotenv==1.1.1",
     "pydantic-settings==2.11.0",
-    "python_core @ git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
 ]
 
 include = [
@@ -26,7 +25,6 @@ include = [
 
 [project.optional-dependencies]
 all = [
-    "python_core @ git+https://bar-fingerman-dev:fc9f605912b623be07ebf0eaf32cd83671833a82@github.com/Bria-AI/python_core.git@1.4",
     "httpx==0.28.1",
     "pydantic==2.11.10",
     "python_dotenv==1.1.1",
