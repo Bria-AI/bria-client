@@ -3,13 +3,13 @@
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A Python SDK for the Bria Engine API, providing powerful image editing capabilities including background removal, object manipulation, image enhancement, and more.
+A Python SDK for the Bria API, providing powerful image editing capabilities including background removal, object manipulation, image enhancement, and more.
 
 ## Features
 
 - **Async/Sync Support**: Works in both synchronous and asynchronous contexts
 - **Engine API**: Use the API by a simple package
-- **Exceptions**: Predefined types for some of the exceptions that can occur 
+- **Exceptions**: Predefined types for some of the exceptions that can occur
 - **Status Polling**: Automatic status checking with configurable timeouts
 
 ## Installation
@@ -108,11 +108,14 @@ except PollingException as e:
 
 ```bash
 # Clone the repository
-git clone https://github.com/bria-ai/bria-client-sdk.git
-cd bria-client-sdk
+git clone https://github.com/bria-ai/bria-sdk.git
+cd bria-sdk
 
 # Install dependencies
 uv sync
+
+# Install pre-commit
+uv run pre-commit install
 ```
 
 ### Running Examples
@@ -134,7 +137,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For support and questions:
 
 - **Documentation**: [Bria Engine API Documentation](https://docs.bria.ai)
-- **Issues**: [GitHub Issues](https://github.com/bria-ai/bria-client-sdk/issues)
+- **Issues**: [GitHub Issues](https://github.com/bria-ai/bria-sdk/issues)
 
 ## Contributing
 

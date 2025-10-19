@@ -45,6 +45,7 @@ dev = [
     "pytest>=8.4.0",
     "pytest-mock>=3.14.1",
     "ruff>=0.12.0",
+    "pre-commit>=4.3.0",
 ]
 
 [tool.pytest.ini_options]
@@ -56,4 +57,5 @@ dev-dependencies = [
     "pytest>=8.4.0",
     "pytest-mock>=3.14.1", 
     "ruff>=0.12.0",
+    "pre-commit>=4.3.0",
 ]
