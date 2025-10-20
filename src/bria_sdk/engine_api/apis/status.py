@@ -1,6 +1,5 @@
 import asyncio
 import time
-from collections.abc import Awaitable
 
 from httpx import Response
 
@@ -15,7 +14,7 @@ class StatusAPI:
         self.engine_api = engine_requests_client
 
     @enable_run_synchronously
-    async def wait_for_status_request(self, request_id: str, timeout: int = 120, interval: int = 2) -> Awaitable[StatusAPIResponse] | StatusAPIResponse:
+    async def wait_for_status_request(self, request_id: str, timeout: int = 120, interval: int = 2) -> StatusAPIResponse:
         """
         Polling the status from the status API until the request completes or fails
 
@@ -36,7 +35,7 @@ class StatusAPI:
             res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
             data: dict = res.json()
 
-            status_response: StatusAPIResponse = StatusAPIResponse(**data)
+            status_response: StatusAPIResponse = StatusAPIResponse(**data, http_request_status=res.status_code)
             if status_response.status != StatusAPIState.IN_PROGRESS.value:
                 return status_response
 

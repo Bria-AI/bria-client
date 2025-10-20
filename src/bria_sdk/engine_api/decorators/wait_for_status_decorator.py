@@ -10,10 +10,32 @@ from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
 P = ParamSpec("P")
 T = TypeVar("T")
 
+
 def auto_wait_for_status(
-    func: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]]
+    func: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]],
 ) -> Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response | StatusAPIResponse]]:
     # TODO: Find the correct type hinting for showing the `wait_for_status` parameter
+    """
+    Decorator for `StatusBasedAPI` async methods that automatically waits for the
+    backend job to reach a terminal status using the Status API.
+
+    Important: This decorator can be assigned only to functions that return
+    Status API compatible objects.
+
+    Args:
+        func: An async method of a `StatusBasedAPI` subclass that initiates a
+            request and returns an `httpx.Response` containing a `request_id` in
+            its JSON body.
+
+    Returns:
+        `StatusAPIResponse` - When `wait_for_status=True` (default)
+
+        `httpx.Response` - When `wait_for_status=False`
+
+    Raises:
+        `ValueError` - If the decorator is applied to a function that is not a method of a `StatusBasedAPI` instance.
+    """
+
     @wraps(func)
     async def wrapper(
         self,
@@ -30,9 +52,7 @@ def auto_wait_for_status(
         response = await func(self, *args, **kwargs)
         if isinstance(response, httpx.Response):
             res_body: dict = response.json()
-            response = await self._status_api.wait_for_status_request(
-                res_body["request_id"]
-            )
+            response = await self._status_api.wait_for_status_request(res_body["request_id"])
         return response
 
     return wrapper

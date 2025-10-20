@@ -11,7 +11,9 @@ import os
 import sys
 from typing import Final
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+from bria_sdk.engine_api.exceptions.unkown_status import UnknownStatusException
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bria_sdk import BriaSDK
 from bria_sdk.engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
@@ -28,21 +30,22 @@ print("🔧 Demonstrating error handling...")
 print(f"📷 Image URL: {INVALID_IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = sdk.engine_apis.image_editing.background.remove(
-        payload=RemoveBackgroundRequestPayload(
-            image=INVALID_IMAGE_URL
-        )
-    )
-    
+    response: StatusAPIResponse = sdk.engine_apis.image_editing.background.remove(payload=RemoveBackgroundRequestPayload(image=INVALID_IMAGE_URL))
+
     print("✅ Background removal completed!")
-    print(f"🔗 Result URL: {response.result.image_url}")
-    
+    print(f"🔗 Result URL: {response.get_result().image_url}")
+
+
+except UnknownStatusException as e:
+    print(f"🚫 Unknown status error: {e}")
+    print("💡 The status is unknown")
+
 except ContentModerationException as e:
     print(f"🚫 Content moderation error: {e}")
     print("💡 The image content was flagged by moderation filters")
-    
+
 except EngineAPIException as e:
     print(f"🔌 API error: {e}")
-    
+
 except Exception as e:
     print(f"❌ Unexpected error: {e}")

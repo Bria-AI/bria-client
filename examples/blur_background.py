@@ -12,7 +12,7 @@ from typing import Final
 
 from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bria_sdk import BriaSDK
 from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
@@ -27,12 +27,8 @@ print("🦆 Removing background from image...")
 print(f"📷 Image URL: {IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = sdk.engine_apis.image_editing.background.blur(
-        payload=RemoveBackgroundRequestPayload(
-            image=IMAGE_URL
-        )
-    )
-    
+    response: StatusAPIResponse = sdk.engine_apis.image_editing.background.blur(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
+
     print("✅ Background removal completed!")
     print(f"🔗 Result URL: {response.result.image_url}")
 

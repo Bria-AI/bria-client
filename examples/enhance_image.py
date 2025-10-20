@@ -11,7 +11,7 @@ import os
 import sys
 from typing import Final
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bria_sdk import BriaSDK
 from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
@@ -28,14 +28,11 @@ print(f"📷 Image URL: {IMAGE_URL}")
 
 try:
     response: StatusAPIResponse = sdk.engine_apis.image_editing.size.enhance_image(
-        payload=EnhanceImageRequestPayload(
-            image=IMAGE_URL,
-            resolution=Resolution.FOUR_MEGA_PIXEL
-        )
+        payload=EnhanceImageRequestPayload(image=IMAGE_URL, resolution=Resolution.FOUR_MEGA_PIXEL)
     )
-    
+
     print("✅ Image enhancement completed!")
-    print(f"🔗 Result URL: {response.result.image_url}")
-    
+    print(f"🔗 Result URL: {response.get_result().image_url}")
+
 except Exception as e:
     print(f"❌ Error: {e}")
