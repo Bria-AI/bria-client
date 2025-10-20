@@ -13,6 +13,7 @@ __all__ = [
     "SizeEditingAPI",
 ]
 
+
 class ImageEditingAPI(StatusBasedAPI):
     def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
         super().__init__(engine_client, status_api)
@@ -21,4 +22,3 @@ class ImageEditingAPI(StatusBasedAPI):
         self.masks = MasksBasedEditingAPI(self._engine_client, self._status_api)
         self.foreground = ForegroundEditingAPI(self._engine_client, self._status_api)
         self.size = SizeEditingAPI(self._engine_client, self._status_api)
- 

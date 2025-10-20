@@ -1,4 +1,3 @@
-
 from contextvars import ContextVar
 
 from bria_sdk.engine_api.apis.image_editing import ImageEditingAPI
@@ -9,6 +8,7 @@ __all__ = [
     "ImageEditingAPI",
     "StatusAPI",
 ]
+
 
 class EngineAPIs:
     def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None):
