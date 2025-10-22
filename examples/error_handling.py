@@ -11,12 +11,10 @@ import os
 import sys
 from typing import Final
 
-from bria_sdk.engine_api.exceptions.unkown_status import UnknownStatusException
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bria_sdk import BriaSDK
-from bria_sdk.engine_api.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
+from bria_sdk.engine_api.exceptions import ContentModerationException, EngineAPIException, UnknownStatusException
 from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
 from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
 
