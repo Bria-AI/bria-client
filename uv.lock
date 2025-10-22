@@ -50,9 +50,9 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "httpx", specifier = "==0.28.1" },
-    { name = "pydantic", specifier = "==2.11.10" },
-    { name = "pydantic-settings", specifier = "==2.11.0" },
+    { name = "httpx", specifier = "~=0.28" },
+    { name = "pydantic", specifier = "~=2.11" },
+    { name = "pydantic-settings", specifier = "~=2.11" },
 ]
 
 [package.metadata.requires-dev]
