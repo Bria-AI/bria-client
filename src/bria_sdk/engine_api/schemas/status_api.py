@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import AnyHttpUrl
 
-from bria_sdk.engine_api.exceptions.unkown_status import UnknownStatusException
+from bria_sdk.engine_api.exceptions.unkown_status_exception import UnknownStatusException
 from bria_sdk.engine_api.schemas.base_models import APIPayloadModel
 
 
