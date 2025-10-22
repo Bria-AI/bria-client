@@ -44,7 +44,9 @@ class StatusAPIResponse(APIPayloadModel):
             `StatusAPIResultBody` - The object status when ready
 
         Raises:
-            `Exception` - Exception object with the `StatusAPIErrorBody` in it
+            `InProgressException` - When status is not ready yet
+
+            `StatusAPIException` - When status is failed with an error
 
             `UnknownStatusException` - When trying to access before the status is ready, "Status is not ready yet"
         """
