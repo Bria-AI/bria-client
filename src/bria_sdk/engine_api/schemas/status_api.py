@@ -2,6 +2,7 @@ from enum import Enum
 
 from pydantic import AnyHttpUrl
 
+from bria_sdk.engine_api.exceptions.status_exception import InProgressException, StatusAPIException
 from bria_sdk.engine_api.exceptions.unkown_status_exception import UnknownStatusException
 from bria_sdk.engine_api.schemas.base_models import APIPayloadModel
 
@@ -43,17 +44,19 @@ class StatusAPIResponse(APIPayloadModel):
             `StatusAPIResultBody` - The object status when ready
 
         Raises:
-            `Exception` - Exception object with the `StatusAPIErrorBody` in it
+            `InProgressException` - When status is not ready yet
+
+            `StatusAPIException` - When status is failed with an error
 
             `UnknownStatusException` - When trying to access before the status is ready, "Status is not ready yet"
         """
         if self.status == StatusAPIState.IN_PROGRESS:
-            raise Exception("Status is not ready yet")
+            raise InProgressException(**self)
 
         if self.status == StatusAPIState.UNKNOWN:
             raise UnknownStatusException("Status is unknown", self)
 
         if self.error:
-            raise Exception(self.error)
+            raise StatusAPIException(**self.error)
 
         return self.result
