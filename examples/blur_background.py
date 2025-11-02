@@ -27,7 +27,7 @@ print("🦆 Removing background from image...")
 print(f"📷 Image URL: {IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = bria_client.image_editing.blur(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
+    response: StatusAPIResponse = bria_client.image_editing.blur_background(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
 
     print("✅ Background removal completed!")
     print(f"🔗 Result URL: {response.get_result().image_url}")

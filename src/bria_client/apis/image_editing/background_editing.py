@@ -20,7 +20,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def remove(self, payload: RemoveBackgroundRequestPayload) -> Response:
+    async def remove_background(self, payload: RemoveBackgroundRequestPayload) -> Response:
         """
         Remove background from image
 
@@ -46,7 +46,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def replace(self, payload: ReplaceBackgroundRequestPayload) -> Response:
+    async def replace_background(self, payload: ReplaceBackgroundRequestPayload) -> Response:
         """
         Replace the background of the image
 
@@ -72,7 +72,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def blur(self, payload: BlurBackgroundRequestPayload) -> Response:
+    async def blur_background(self, payload: BlurBackgroundRequestPayload) -> Response:
         """
         Blur the background of the image
 
