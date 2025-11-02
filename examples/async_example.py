@@ -14,13 +14,13 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from bria_sdk import BriaSDK
-from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
-from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
+from bria_client import BriaClient
+from bria_client.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
+from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_client.schemas.status_api import StatusAPIResponse
 
 # Initialize the SDK
-sdk = BriaSDK()
+bria_client = BriaClient()
 
 # Example image URL
 IMAGE_URL: Final[str] = "https://images.freeimages.com/variants/yZ8FFPgdnhd33wgxtsjFCbWt/f4a36f6589a0e50e702740b15352bc00e4bfaf6f58bd4db850e167794d05993d"
@@ -33,12 +33,12 @@ async def main():
     try:
         # Remove background
         print("\nRemoving background...")
-        bg_response: StatusAPIResponse = await sdk.engine_apis.image_editing.background.remove(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
+        bg_response: StatusAPIResponse = await bria_client.image_editing.remove(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
         print(f"✅ Background removed! Result: {bg_response.result.image_url}")
 
         # Expand image
         print("\n📐 Expanding image...")
-        expand_response: StatusAPIResponse = await sdk.engine_apis.image_editing.size.expand_image(
+        expand_response: StatusAPIResponse = await bria_client.image_editing.expand_image(
             payload=ExpandImageRequestPayload(image=IMAGE_URL, aspect_ratio="1:1")
         )
         print(f"✅ Image expanded! Result: {expand_response.result.image_url}")

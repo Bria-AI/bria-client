@@ -13,12 +13,12 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from bria_sdk import BriaSDK
-from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
+from bria_client import BriaClient
+from bria_client.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
+from bria_client.schemas.status_api import StatusAPIResponse
 
 # Initialize the SDK
-sdk = BriaSDK()
+bria_client = BriaClient()
 
 # Example image URL
 IMAGE_URL: Final[str] = "https://images.freeimages.com/variants/yZ8FFPgdnhd33wgxtsjFCbWt/f4a36f6589a0e50e702740b15352bc00e4bfaf6f58bd4db850e167794d05993d"
@@ -27,7 +27,7 @@ print("✨ Enhancing image quality...")
 print(f"📷 Image URL: {IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = sdk.engine_apis.image_editing.size.enhance_image(
+    response: StatusAPIResponse = bria_client.image_editing.enhance_image(
         payload=EnhanceImageRequestPayload(image=IMAGE_URL, resolution=Resolution.FOUR_MEGA_PIXEL)
     )
 

@@ -13,13 +13,13 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from bria_sdk import BriaSDK
-from bria_sdk.engine_api.exceptions import ContentModerationException, EngineAPIException, UnknownStatusException
-from bria_sdk.engine_api.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
+from bria_client import BriaClient
+from bria_client.exceptions import ContentModerationException, EngineAPIException, UnknownStatusException
+from bria_client.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
+from bria_client.schemas.status_api import StatusAPIResponse
 
 # Initialize the SDK
-sdk = BriaSDK()
+bria_client = BriaClient()
 
 # Example image URL (using an invalid URL to demonstrate error handling)
 INVALID_IMAGE_URL: Final[str] = ""
@@ -28,7 +28,7 @@ print("🔧 Demonstrating error handling...")
 print(f"📷 Image URL: {INVALID_IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = sdk.engine_apis.image_editing.background.remove(payload=RemoveBackgroundRequestPayload(image=INVALID_IMAGE_URL))
+    response: StatusAPIResponse = bria_client.image_editing.remove(payload=RemoveBackgroundRequestPayload(image=INVALID_IMAGE_URL))
 
     print("✅ Background removal completed!")
     print(f"🔗 Result URL: {response.get_result().image_url}")

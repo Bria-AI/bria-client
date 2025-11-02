@@ -1,13 +1,13 @@
 from httpx import Response
 
-from bria_sdk.engine_api.apis.status import StatusAPI
-from bria_sdk.engine_api.apis.status_based_api import StatusBasedAPI
-from bria_sdk.engine_api.constants import BriaEngineAPIRoutes
-from bria_sdk.engine_api.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_sdk.engine_api.decorators.wait_for_status_decorator import auto_wait_for_status
-from bria_sdk.engine_api.engine_client import BriaEngineClient
-from bria_sdk.engine_api.exceptions.engine_api_exception import EngineAPIException
-from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, ExpandImageRequestPayload, IncreaseResolutionRequestPayload
+from bria_client.apis.status import StatusAPI
+from bria_client.apis.status_based_api import StatusBasedAPI
+from bria_client.constants import BriaEngineAPIRoutes
+from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
+from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
+from bria_client.engine_client import BriaEngineClient
+from bria_client.exceptions.engine_api_exception import EngineAPIException
+from bria_client.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, ExpandImageRequestPayload, IncreaseResolutionRequestPayload
 
 
 class SizeEditingAPI(StatusBasedAPI):

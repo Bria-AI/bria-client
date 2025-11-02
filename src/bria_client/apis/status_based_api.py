@@ -1,5 +1,5 @@
-from bria_sdk.engine_api.apis.status import StatusAPI
-from bria_sdk.engine_api.engine_client import BriaEngineClient
+from bria_client.apis.status import StatusAPI
+from bria_client.engine_client import BriaEngineClient
 
 
 class StatusBasedAPI:

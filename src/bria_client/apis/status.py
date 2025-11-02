@@ -3,10 +3,10 @@ import time
 
 from httpx import Response
 
-from bria_sdk.engine_api.constants import BriaEngineAPIRoutes
-from bria_sdk.engine_api.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_sdk.engine_api.engine_client import BriaEngineClient
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse, StatusAPIState
+from bria_client.constants import BriaEngineAPIRoutes
+from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
+from bria_client.engine_client import BriaEngineClient
+from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIState
 
 
 class StatusAPI:

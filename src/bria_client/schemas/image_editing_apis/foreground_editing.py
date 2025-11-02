@@ -1,4 +1,4 @@
-from bria_sdk.engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel
+from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel
 
 
 class ReplaceForegroundRequestPayload(ContentModeratedPayloadModel):
