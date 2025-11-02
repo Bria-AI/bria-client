@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import Field
 
-from bria_sdk.engine_api.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
 class RemoveBackgroundRequestPayload(ContentModeratedPayloadModel):
@@ -20,7 +20,7 @@ class ReplaceBackgroundMode(str, Enum):
 class ReplaceBackgroundRequestPayload(PromptContentModeratedPayloadModel):
     image: str
     mode: ReplaceBackgroundMode | None = None
-    ref_images: str | list[str] | None = None
+    ref_images: list[str] | None = None
     enhance_ref_images: bool | None = None
     prompt: str | None = None
     refine_prompt: bool | None = None

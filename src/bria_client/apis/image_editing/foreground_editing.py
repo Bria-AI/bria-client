@@ -1,13 +1,13 @@
 from httpx import Response
 
-from bria_sdk.engine_api.apis.status import StatusAPI
-from bria_sdk.engine_api.apis.status_based_api import StatusBasedAPI
-from bria_sdk.engine_api.constants import BriaEngineAPIRoutes
-from bria_sdk.engine_api.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_sdk.engine_api.decorators.wait_for_status_decorator import auto_wait_for_status
-from bria_sdk.engine_api.engine_client import BriaEngineClient
-from bria_sdk.engine_api.exceptions.engine_api_exception import EngineAPIException
-from bria_sdk.engine_api.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
+from bria_client.apis.status import StatusAPI
+from bria_client.apis.status_based_api import StatusBasedAPI
+from bria_client.constants import BriaEngineAPIRoutes
+from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
+from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
+from bria_client.engine_client import BriaEngineClient
+from bria_client.exceptions.engine_api_exception import EngineAPIException
+from bria_client.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
 
 
 class ForegroundEditingAPI(StatusBasedAPI):
@@ -43,6 +43,7 @@ class ForegroundEditingAPI(StatusBasedAPI):
     @enable_run_synchronously
     @auto_wait_for_status
     async def crop_out(self, payload: CropOutRequestPayload) -> Response:
+        # TODO: Change naming from crop_out to crop_foreground
         """
         Crop out the foreground of an image
 

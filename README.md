@@ -31,14 +31,14 @@ pip install bria-sdk
 ### Basic Usage
 
 ```python
-from bria_sdk import BriaSDK
-from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_client import BriaClient
+from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
 
-# Initialize the SDK
-sdk = BriaSDK()
+# Initialize the Client
+bria = BriaClient()
 
 # Expand an image
-response = sdk.engine_apis.image_editing.size.expand_image(
+response = bria.image_editing.expand_image(
     payload=ExpandImageRequestPayload(
         image="https://example.com/image.jpg",
         aspect_ratio="1:1"
@@ -73,15 +73,15 @@ BRIA_ENGINE_API_KEY=your-api-key-here
 
 ```python
 from contextvars import ContextVar
-from bria_sdk import BriaSDK
+from bria_client import BriaClient
 
 # Using API token
 api_token: ContextVar[str] = ContextVar("bria_engine_api_token", default="your-api-key")
-sdk = BriaSDK(api_token_ctx=api_token)
+bria = Bria(api_token_ctx=api_token)
 
 # Using JWT token
 jwt_token: ContextVar[str] = ContextVar("bria_engine_jwt_token", default="your-jwt-token")
-sdk = BriaSDK(jwt_token_ctx=jwt_token)
+bria = Bria(jwt_token_ctx=jwt_token)
 ```
 
 ## Error Handling
@@ -89,11 +89,11 @@ sdk = BriaSDK(jwt_token_ctx=jwt_token)
 The SDK provides specific exception types for different error scenarios:
 
 ```python
-from bria_sdk.engine_api.exceptions.engine_api_exception import EngineAPIException, ContentModerationException
-from bria_sdk.engine_api.exceptions.polling_exception import PollingException
+from bria_client.exceptions.engine_api_exception import EngineAPIException, ContentModerationException
+from bria_client.exceptions.polling_exception import PollingException
 
 try:
-    response = sdk.engine_apis.image_editing.background.remove(payload)
+    response = bria.image_editing.remove(payload)
 except ContentModerationException as e:
     print(f"Content moderation failed: {e}")
 except EngineAPIException as e:

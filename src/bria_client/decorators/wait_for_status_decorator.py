@@ -4,8 +4,8 @@ from typing import Concatenate, ParamSpec, TypeVar
 
 import httpx
 
-from bria_sdk.engine_api.apis.status_based_api import StatusBasedAPI
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
+from bria_client.apis.status_based_api import StatusBasedAPI
+from bria_client.schemas.status_api import StatusAPIResponse
 
 P = ParamSpec("P")
 T = TypeVar("T")

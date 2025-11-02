@@ -31,7 +31,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bria-sdk"
+name = "bria-client"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [

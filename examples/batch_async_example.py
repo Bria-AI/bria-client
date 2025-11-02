@@ -15,12 +15,12 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from bria_sdk import BriaSDK
-from bria_sdk.engine_api.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
-from bria_sdk.engine_api.schemas.status_api import StatusAPIResponse
+from bria_client import BriaClient
+from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIResultBody
 
 # Initialize the SDK
-sdk = BriaSDK()
+bria_client = BriaClient()
 
 # Example image URLs - replace with your actual image URLs
 IMAGE_URLS: Final[list[str]] = [
@@ -36,16 +36,14 @@ async def process_single_image(image_url: str, index: int) -> dict:
         print(f"🔄 Processing image {index + 1}: {image_url}")
 
         # Expand image with wait_for_status=False to get immediate response with `request_id` and handle the status API checking manually
-        response: StatusAPIResponse = await sdk.engine_apis.image_editing.size.expand_image(
-            payload=ExpandImageRequestPayload(image=image_url, aspect_ratio="1:1")
-        )
+        response: StatusAPIResponse = await bria_client.image_editing.expand_image(payload=ExpandImageRequestPayload(image=image_url, aspect_ratio="1:1"))
 
         # Get the task ID from the response
         print(f"📋 Task {index + 1} created")
         return {
             "index": index,
             "original_url": image_url,
-            "result": response.result or response.error,
+            "result": response.get_result(),
         }
 
     except Exception as e:
@@ -73,7 +71,7 @@ async def main():
     task_results = await asyncio.gather(*task_creation_tasks, return_exceptions=True)
 
     # Filter out failed tasks and get successful ones
-    successful_tasks = [result for result in task_results if isinstance(result, dict) and "task_id" in result]
+    successful_tasks = [result for result in task_results if isinstance(result, dict) and "result" in result]
     failed_tasks = [result for result in task_results if isinstance(result, dict) and "error" in result]
 
     print(f"✅ Resolved {len(successful_tasks)} tasks successfully")
@@ -85,7 +83,8 @@ async def main():
         return
     else:
         for successful_task in successful_tasks:
-            print(f"🔗 Result URL: {successful_task}")
+            result: StatusAPIResultBody = successful_task["result"]
+            print(f"🔗 Result {successful_task['index']} URL: {result.image_url}")
 
 
 if __name__ == "__main__":
