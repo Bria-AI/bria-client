@@ -12,6 +12,7 @@ maintainers = [
 requires-python = ">=3.10"
 dependencies = [
     "httpx~=0.28",
+    "httpx-retries~=0.4.5",
     "pydantic~=2.11",
     "pydantic-settings~=2.11",
 ]

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["httpx==0.28.1", "pydantic==2.11.10", "pydantic-settings==2.11.0"]
+# dependencies = ["httpx==0.28.1", "httpx-retries==0.4.5", "pydantic==2.11.10", "pydantic-settings==2.11.0"]
 # ///
 
 """
@@ -19,7 +19,6 @@ from bria_client import BriaClient
 from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
 from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIResultBody
 
-# Initialize the SDK
 bria_client = BriaClient()
 
 # Example image URLs - replace with your actual image URLs

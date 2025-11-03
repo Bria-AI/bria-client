@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["httpx==0.28.1", "pydantic==2.11.10", "pydantic-settings==2.11.0"]
+# dependencies = ["httpx==0.28.1", "httpx-retries==0.4.5", "pydantic==2.11.10", "pydantic-settings==2.11.0"]
 # ///
 
 """
@@ -11,6 +11,8 @@ import os
 import sys
 from typing import Final
 
+from httpx_retries import Retry
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bria_client import BriaClient
@@ -18,8 +20,9 @@ from bria_client.exceptions import ContentModerationException, EngineAPIExceptio
 from bria_client.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
 from bria_client.schemas.status_api import StatusAPIResponse
 
-# Initialize the SDK
-bria_client = BriaClient()
+# Initialize the SDK with retry configuration for handling transient errors
+retry = Retry(total=3, backoff_factor=1.0, status_forcelist=[500, 502, 503, 504])
+bria_client = BriaClient(retry=retry)
 
 # Example image URL (using an invalid URL to demonstrate error handling)
 INVALID_IMAGE_URL: Final[str] = ""
