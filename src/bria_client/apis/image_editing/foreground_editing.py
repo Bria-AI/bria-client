@@ -7,7 +7,7 @@ from bria_client.decorators.enable_sync_decorator import enable_run_synchronousl
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_client.engine_client import BriaEngineClient
 from bria_client.exceptions.engine_api_exception import EngineAPIException
-from bria_client.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
+from bria_client.schemas.image_editing_apis.foreground_editing import CropForegroundRequestPayload, EraseForegroundRequestPayload
 
 
 class ForegroundEditingAPI(StatusBasedAPI):
@@ -16,12 +16,12 @@ class ForegroundEditingAPI(StatusBasedAPI):
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def replace(self, payload: ReplaceForegroundRequestPayload) -> Response:
+    async def erase_foreground(self, payload: EraseForegroundRequestPayload) -> Response:
         """
-        Replace the foreground of an image
+        Erase the foreground of an image
 
         Args:
-            `payload: ReplaceForegroundRequestPayload` - The payload for the replace foreground request
+            `payload: EraseForegroundRequestPayload` - The payload for the erase foreground request
             `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
@@ -35,20 +35,19 @@ class ForegroundEditingAPI(StatusBasedAPI):
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_REPLACE_FOREGROUND, payload.payload_dump())
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASE_FOREGROUND, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise BriaEngineClient.get_custom_exception(e, payload)
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def crop_out(self, payload: CropOutRequestPayload) -> Response:
-        # TODO: Change naming from crop_out to crop_foreground
+    async def crop_foreground(self, payload: CropForegroundRequestPayload) -> Response:
         """
-        Crop out the foreground of an image
+        Crop the foreground of an image
 
         Args:
-            `payload: CropOutRequestPayload` - The payload for the crop out request
+            `payload: CropForegroundRequestPayload` - The payload for the crop foreground request
             `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
@@ -62,7 +61,7 @@ class ForegroundEditingAPI(StatusBasedAPI):
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_OUT, payload.payload_dump())
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_FOREGROUND, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise BriaEngineClient.get_custom_exception(e, payload)

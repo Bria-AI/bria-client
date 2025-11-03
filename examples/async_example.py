@@ -33,7 +33,7 @@ async def main():
     try:
         # Remove background
         print("\nRemoving background...")
-        bg_response: StatusAPIResponse = await bria_client.image_editing.remove(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
+        bg_response: StatusAPIResponse = await bria_client.image_editing.remove_background(payload=RemoveBackgroundRequestPayload(image=IMAGE_URL))
         print(f"✅ Background removed! Result: {bg_response.result.image_url}")
 
         # Expand image

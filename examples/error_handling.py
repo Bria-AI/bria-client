@@ -28,7 +28,7 @@ print("🔧 Demonstrating error handling...")
 print(f"📷 Image URL: {INVALID_IMAGE_URL}")
 
 try:
-    response: StatusAPIResponse = bria_client.image_editing.remove(payload=RemoveBackgroundRequestPayload(image=INVALID_IMAGE_URL))
+    response: StatusAPIResponse = bria_client.image_editing.remove_background(payload=RemoveBackgroundRequestPayload(image=INVALID_IMAGE_URL))
 
     print("✅ Background removal completed!")
     print(f"🔗 Result URL: {response.get_result().image_url}")

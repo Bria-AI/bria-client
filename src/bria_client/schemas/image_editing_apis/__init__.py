@@ -5,7 +5,7 @@ from bria_client.schemas.image_editing_apis.background_editing import (
     ReplaceBackgroundMode,
     ReplaceBackgroundRequestPayload,
 )
-from bria_client.schemas.image_editing_apis.foreground_editing import CropOutRequestPayload, ReplaceForegroundRequestPayload
+from bria_client.schemas.image_editing_apis.foreground_editing import CropForegroundRequestPayload, EraseForegroundRequestPayload
 from bria_client.schemas.image_editing_apis.mask_based_editing import (
     GetMasksRequestPayload,
     MaskType,
@@ -31,8 +31,8 @@ __all__ = [
     "ObjectEraserRequestPayload",
     "ObjectGenFillRequestPayload",
     "GetMasksRequestPayload",
-    "ReplaceForegroundRequestPayload",
-    "CropOutRequestPayload",
+    "EraseForegroundRequestPayload",
+    "CropForegroundRequestPayload",
     "ExpandImageRequestPayload",
     "Resolution",
     "EnhanceImageRequestPayload",
