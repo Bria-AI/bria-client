@@ -29,6 +29,7 @@ A Python SDK for the Bria Engine API, designed to make integrating powerful imag
 - **Status Polling**: Automatic status checking with configurable timeouts and intervals
 - **Exception Handling**: Predefined exception types for different error scenarios
 - **ContextVar Support**: Flexible authentication using Python's `ContextVar` for multi-threaded/async environments
+- **Retry Support**: Configurable automatic retry logic for handling transient HTTP errors
 
 ## Installation
 
@@ -126,6 +127,54 @@ from bria_client import BriaClient
 bria = BriaClient(api_token_ctx="your-api-key")
 ```
 
+### Retry Configuration
+
+The SDK supports automatic retry logic for handling transient HTTP errors using `httpx-retries`. You can configure custom retry strategies when initializing the client:
+
+#### Default (No Retries)
+
+```python
+from bria_client import BriaClient
+
+# No retry logic (default behavior)
+client = BriaClient()
+```
+
+#### Custom Retry Strategy
+
+```python
+from bria_client import BriaClient
+from httpx_retries import Retry
+
+# Configure retry with custom settings
+retry = Retry(
+    total=5,              # Maximum number of retry attempts
+    backoff_factor=0.5,  # Backoff factor for exponential backoff
+    status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry on
+)
+bria = BriaClient(retry=retry)
+```
+
+#### Retry with Authentication
+
+```python
+from bria_client import BriaClient
+from httpx_retries import Retry
+
+# Combine retry with authentication
+retry = Retry(total=3, backoff_factor=1.0)
+bria = BriaClient(api_token_ctx="your-api-key", retry=retry)
+```
+
+**Retry Configuration Options:**
+
+- `total`: Maximum number of retry attempts (default: varies by `httpx-retries`)
+- `backoff_factor`: Multiplier for exponential backoff between retries
+- `status_forcelist`: List of HTTP status codes that should trigger a retry
+- Other options available in the `httpx-retries` library
+
+For more information on retry configuration, see the [httpx-retries documentation](https://github.com/valohai/httpx-retries).
+
 ## API Reference
 
 ### Client Initialization
@@ -138,6 +187,11 @@ client = BriaClient()
 
 # With custom authentication
 client = BriaClient(api_token_ctx="your-token")
+
+# With retry configuration
+from httpx_retries import Retry
+retry = Retry(total=5, backoff_factor=0.5)
+client = BriaClient(retry=retry)
 ```
 
 ### Image Editing API
