@@ -6,6 +6,7 @@ from contextvars import ContextVar
 from urllib.parse import urljoin
 
 import httpx
+from httpx_retries import Retry, RetryTransport
 
 from bria_client.decorators.enable_sync_decorator import running_in_async_context
 from bria_client.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
@@ -15,7 +16,7 @@ from bria_client.settings import engine_settings
 
 
 class AsyncHTTPClient(ABC):
-    def __init__(self, base_url: str, default_request_timeout: int = 30) -> None:
+    def __init__(self, base_url: str, default_request_timeout: int = 30, retry: Retry | None = None) -> None:
         """
         Initialize the AsyncHTTPClient
 
@@ -25,6 +26,7 @@ class AsyncHTTPClient(ABC):
         """
         self.base_url = base_url
         self.default_request_timeout = default_request_timeout
+        self.transport = RetryTransport(retry=retry)
 
     @property
     @abstractmethod
@@ -66,7 +68,7 @@ class AsyncHTTPClient(ABC):
         return headers
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(transport=self.transport) as client:
             try:
                 response = await client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
                 response.raise_for_status()
@@ -75,7 +77,7 @@ class AsyncHTTPClient(ABC):
                 raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        with httpx.Client() as client:
+        with httpx.Client(transport=self.transport) as client:
             try:
                 response = client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
                 response.raise_for_status()
@@ -153,7 +155,7 @@ class AsyncHTTPClient(ABC):
 
 
 class BriaEngineClient(AsyncHTTPClient):
-    def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None) -> None:
+    def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None, retry: Retry | None = None) -> None:
         if api_token_ctx is None and engine_settings.API_KEY:
             api_token_ctx = ContextVar("bria_engine_api_token", default=engine_settings.API_KEY)
         elif api_token_ctx is None and jwt_token_ctx is None:
@@ -161,8 +163,9 @@ class BriaEngineClient(AsyncHTTPClient):
 
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
+        self.retry = retry
 
-        super().__init__(base_url=str(engine_settings.URL))
+        super().__init__(base_url=str(engine_settings.URL), retry=retry)
 
     @property
     def headers(self) -> dict:
