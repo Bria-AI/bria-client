@@ -3,7 +3,6 @@ import time
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable
 from contextvars import ContextVar
-from enum import Enum
 from urllib.parse import urljoin
 
 import httpx
@@ -35,7 +34,7 @@ class AsyncHTTPClient(ABC):
         pass
 
     def request(
-        self, route: str | Enum, method: str, payload: dict | None = None, custom_headers: dict | None = None, **kwargs
+        self, route: str, method: str, payload: dict | None = None, custom_headers: dict | None = None, **kwargs
     ) -> Awaitable[httpx.Response] | httpx.Response:
         """
         Make an http request using Bria Engine Client
@@ -54,9 +53,7 @@ class AsyncHTTPClient(ABC):
         Raises:
             `EngineAPIException` - When the request fails
         """
-        # Convert enum to its value for Python 3.10+ compatibility to support usage of the BriaEngineAPIRoutes enum
-        route_str: str = route.value if isinstance(route, Enum) else str(route)
-        route = urljoin(self.base_url, route_str)
+        route = urljoin(self.base_url, route)
         headers: dict = self._merge_headers(custom_headers)
 
         if running_in_async_context():
