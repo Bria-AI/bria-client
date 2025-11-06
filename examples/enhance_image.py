@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["httpx==0.28.1", "pydantic==2.11.10", "pydantic-settings==2.11.0"]
+# dependencies = ["httpx==0.28.1", "httpx-retries==0.4.5", "pydantic==2.11.10", "pydantic-settings==2.11.0", "strenum==0.4.15"]
 # ///
 
 """

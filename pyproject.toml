@@ -1,6 +1,6 @@
 [project]
 name = "bria_client"
-version = "0.0.1"
+version = "0.0.2"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -15,6 +15,7 @@ dependencies = [
     "httpx-retries~=0.4.5",
     "pydantic~=2.11",
     "pydantic-settings~=2.11",
+    "strenum~=0.4.15; python_version < '3.11'",
 ]
 
 include = [

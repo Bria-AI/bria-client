@@ -32,8 +32,7 @@ class StatusAPI:
         """
         start_time = time.time()
         while time.time() - start_time < timeout:
-            # Using value to support newer versions of Python than 3.10
-            res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS.value}/{request_id}")
+            res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
             data: dict = res.json()
 
             status_response: StatusAPIResponse = StatusAPIResponse(**data, http_request_status=res.status_code)

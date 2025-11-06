@@ -1,10 +1,15 @@
-from enum import Enum
+import sys
 from typing import Final
+
+if sys.version_info < (3, 11):
+    from strenum import StrEnum
+else:
+    from enum import StrEnum
 
 BRIA_ENGINE_PRODUCTION_URL: Final[str] = "https://engine.prod.bria-api.com/"
 
 
-class BriaEngineAPIRoutes(str, Enum):
+class BriaEngineAPIRoutes(StrEnum):
     V1_IMAGE_EDIT_GET_MASKS = "v1/objects/mask_generator"
     V2_STATUS = "v2/status"
     V2_IMAGE_EDIT_REMOVE_BACKGROUND = "v2/image/edit/remove_background"
