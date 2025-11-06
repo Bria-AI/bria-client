@@ -1,9 +1,9 @@
-# Bria SDK
+# Bria Client
 
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A Python SDK for the Bria Engine API, designed to make integrating powerful image editing capabilities into your applications seamless and straightforward.
+A Python package for the Bria Engine API, designed to make integrating powerful image editing capabilities into your applications seamless and straightforward.
 
 ## Table of Contents
 
@@ -33,17 +33,36 @@ A Python SDK for the Bria Engine API, designed to make integrating powerful imag
 
 ## Installation
 
+Currently the only available option to install the package is from the git repository.
+
 ### Using uv (Recommended)
 
 ```bash
-uv add bria-sdk
+uv add git+https://<username>:<password>@github.com/Bria-AI/bria-client
 ```
 
 ### Using pip
 
 ```bash
-pip install bria-sdk
+pip install git+https://<username>:<password>@github.com/Bria-AI/bria-client
 ```
+
+<details>
+    <summary>When published to pypi</summary>
+    
+### Using uv (Recommended)
+
+```bash
+uv add bria-client
+```
+
+### Using pip
+
+```bash
+pip install bria-client
+```
+
+</details>
 
 ## Quick Start
 
@@ -173,7 +192,7 @@ bria = BriaClient(api_token_ctx="your-api-key", retry=retry)
 - `status_forcelist`: List of HTTP status codes that should trigger a retry
 - Other options available in the `httpx-retries` library
 
-For more information on retry configuration, see the [httpx-retries documentation](https://github.com/valohai/httpx-retries).
+For more information on retry configuration, see the [httpx-retries documentation](https://will-ockmore.github.io/httpx-retries/).
 
 ## API Reference
 
@@ -198,25 +217,13 @@ client = BriaClient(retry=retry)
 
 All image editing methods are available through the `image_editing` property:
 
+For example:
+
 ```python
 bria = BriaClient()
 
-# Background editing
 bria.image_editing.remove_background(payload)
 bria.image_editing.replace_background(payload)
-bria.image_editing.blur_background(payload)
-
-# Foreground editing
-bria.image_editing.erase_foreground(payload)
-bria.image_editing.crop_foreground(payload)
-
-# Mask-based editing
-bria.image_editing.erase(payload)
-
-# Size and quality editing
-bria.image_editing.expand_image(payload)
-bria.image_editing.enhance_image(payload)
-bria.image_editing.increase_resolution(payload)
 ```
 
 ### Status API
