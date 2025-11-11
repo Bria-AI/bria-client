@@ -20,7 +20,8 @@ dependencies = [
 
 include = [
     "**/*",
-    "!src/**/*_tests.py"
+    "!src/**/*_tests.py",
+    "!src/bria_client/internal/**/*"
 ]
 
 [tool.hatch.metadata]
