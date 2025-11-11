@@ -3,9 +3,9 @@ from contextvars import ContextVar
 
 from httpx_retries import Retry
 
-from bria_client.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
 from bria_client.clients.http_client import AsyncHTTPClient
-from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_client.exceptions.engine_api_exception import EngineAPIException
+from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel
 from bria_client.settings import engine_settings
 
 
@@ -29,6 +29,7 @@ class EngineClient(AsyncHTTPClient):
             raise ValueError("Authentication token is not set")
 
         headers: dict = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
+        headers.update(self._headers)
         return headers
 
     @property

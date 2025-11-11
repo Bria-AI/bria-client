@@ -1,12 +1,6 @@
-from contextvars import ContextVar
-
-from httpx_retries import Retry
-
 from bria_client.clients.engine_client import EngineClient
 from bria_client.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
-from bria_client.clients.http_client import AsyncHTTPClient
 from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
-from bria_client.settings import engine_settings
 
 
 class BriaEngineClient(EngineClient):
