@@ -9,6 +9,3 @@ class BriaEngineSettings(BaseSettings):
 
     URL: HttpUrl = BRIA_ENGINE_PRODUCTION_URL
     API_KEY: str | None = None
-
-
-engine_settings = BriaEngineSettings()

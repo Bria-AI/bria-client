@@ -5,13 +5,13 @@ from bria_client.apis.status_based_api import StatusBasedAPI
 from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
-from bria_client.engine_client import BriaEngineClient
+from bria_client.engines.base.api_engine import ApiEngine
 from bria_client.exceptions.engine_api_exception import EngineAPIException
 from bria_client.schemas.image_editing_apis import GetMasksRequestPayload, ObjectEraserRequestPayload, ObjectGenFillRequestPayload
 
 
 class MasksBasedEditingAPI(StatusBasedAPI):
-    def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
+    def __init__(self, engine_client: ApiEngine, status_api: StatusAPI):
         super().__init__(engine_client, status_api)
 
     @enable_run_synchronously
@@ -38,7 +38,7 @@ class MasksBasedEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASER, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise BriaEngineClient.get_custom_exception(e, payload)
+            raise self._engine_client.get_custom_exception(e, payload)
 
     @enable_run_synchronously
     @auto_wait_for_status
@@ -64,7 +64,7 @@ class MasksBasedEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GEN_FILL, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise BriaEngineClient.get_custom_exception(e, payload)
+            raise self._engine_client.get_custom_exception(e, payload)
 
     @enable_run_synchronously
     async def get_masks(self, payload: GetMasksRequestPayload) -> Response:
