@@ -5,12 +5,12 @@ from httpx import Response
 
 from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_client.engine_client import BriaEngineClient
+from bria_client.clients.engine_client import EngineClient
 from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIState
 
 
 class StatusAPI:
-    def __init__(self, engine_requests_client: BriaEngineClient):
+    def __init__(self, engine_requests_client: EngineClient):
         self.engine_api = engine_requests_client
 
     @enable_run_synchronously

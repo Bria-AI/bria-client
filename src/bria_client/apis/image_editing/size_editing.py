@@ -5,13 +5,13 @@ from bria_client.apis.status_based_api import StatusBasedAPI
 from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
-from bria_client.engine_client import BriaEngineClient
+from bria_client.clients.engine_client import EngineClient
 from bria_client.exceptions.engine_api_exception import EngineAPIException
 from bria_client.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, ExpandImageRequestPayload, IncreaseResolutionRequestPayload
 
 
 class SizeEditingAPI(StatusBasedAPI):
-    def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
+    def __init__(self, engine_client: EngineClient, status_api: StatusAPI):
         super().__init__(engine_client, status_api)
 
     @enable_run_synchronously
@@ -38,7 +38,7 @@ class SizeEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_EXPAND_IMAGE, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise BriaEngineClient.get_custom_exception(e, payload)
+            raise self._engine_client.get_custom_exception(e, payload)
 
     @enable_run_synchronously
     @auto_wait_for_status
@@ -64,7 +64,7 @@ class SizeEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ENHANCE_IMAGE, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise BriaEngineClient.get_custom_exception(e, payload)
+            raise self._engine_client.get_custom_exception(e, payload)
 
     @enable_run_synchronously
     @auto_wait_for_status
@@ -88,4 +88,4 @@ class SizeEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_INCREASE_RESOLUTION, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise BriaEngineClient.get_custom_exception(e, payload)
+            raise self._engine_client.get_custom_exception(e, payload)

@@ -1,18 +1,14 @@
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from collections.abc import Awaitable
-from contextvars import ContextVar
+from typing import Awaitable
 from urllib.parse import urljoin
 
 import httpx
 from httpx_retries import Retry, RetryTransport
 
 from bria_client.decorators.enable_sync_decorator import running_in_async_context
-from bria_client.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
-from bria_client.exceptions.polling_exception import PollingException, PollingFileStatus
-from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
-from bria_client.settings import engine_settings
+from bria_client.exceptions import EngineAPIException, PollingException, PollingFileStatus
 
 
 class AsyncHTTPClient(ABC):
@@ -152,67 +148,3 @@ class AsyncHTTPClient(ABC):
             return self._async_file_polling(file_url, headers, timeout, interval)
         else:
             return self._sync_file_polling(file_url, headers, timeout, interval)
-
-
-class BriaEngineClient(AsyncHTTPClient):
-    def __init__(self, api_token_ctx: ContextVar[str] | None = None, jwt_token_ctx: ContextVar[str] | None = None, retry: Retry | None = None) -> None:
-        if api_token_ctx is None and engine_settings.API_KEY:
-            api_token_ctx = ContextVar("bria_engine_api_token", default=engine_settings.API_KEY)
-        elif api_token_ctx is None and jwt_token_ctx is None:
-            raise ValueError("Bria Engine API key in not provided and JWT token is not provided")
-
-        self.api_token_ctx = api_token_ctx
-        self.jwt_token_ctx = jwt_token_ctx
-        self.retry = retry
-
-        super().__init__(base_url=str(engine_settings.URL), retry=retry)
-
-    @property
-    def headers(self) -> dict:
-        if self.api_token is None and self.jwt_token is None:
-            raise ValueError("Authentication token is not set")
-
-        headers: dict = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
-        return headers
-
-    @property
-    def api_token(self) -> str:
-        try:
-            if self.api_token_ctx is None:
-                return None
-
-            return self.api_token_ctx.get()
-        except LookupError:
-            return None
-
-    @property
-    def jwt_token(self) -> str | None:
-        try:
-            if self.jwt_token_ctx is None:
-                return None
-
-            return self.jwt_token_ctx.get()
-        except LookupError:
-            # ContextVar exists but not initialized yet
-            return None
-
-    @staticmethod
-    def get_custom_exception(e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
-        """
-        Converting the Broader EngineAPIException to the more specific custom exceptions models.
-
-        Args:
-            `e: EngineAPIException` - The exception to convert
-            `payload: ContentModeratedPayloadModel` - The payload that was used to make the request
-
-        Returns:
-            `ContentModerationException` - If the request is not suitable for content moderation
-
-            `EngineAPIException` - If the request is not suitable for content moderation
-        """
-        if e.response.status_code == 422:
-            if isinstance(payload, ContentModeratedPayloadModel) and payload.is_moderated:
-                return ContentModerationException.from_engine_api_exception(e)
-            if isinstance(payload, PromptContentModeratedPayloadModel) and payload.is_moderated:
-                return ContentModerationException.from_engine_api_exception(e)
-        return e
