@@ -28,6 +28,7 @@ class StatusAPI:
 
         Raises:
             `EngineAPIException` - When the status request fails
+
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         start_time = time.time()

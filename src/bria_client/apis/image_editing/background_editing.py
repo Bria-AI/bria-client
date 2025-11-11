@@ -34,8 +34,6 @@ class BackgroundEditingAPI(StatusBasedAPI):
         Raises:
             `EngineAPIException` - In cases error is returned from the API
 
-            `ContentModerationException` - In cases content moderation is enabled and the image is not suitable
-
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
@@ -60,8 +58,6 @@ class BackgroundEditingAPI(StatusBasedAPI):
         Raises:
             `EngineAPIException` - In cases error is returned from the API
 
-            `ContentModerationException` - In cases content moderation is enabled and the image is not suitable
-
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
@@ -85,8 +81,6 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
         Raises:
             `EngineAPIException` - In cases error is returned from the API
-
-            `ContentModerationException` - In cases content moderation is enabled and the image is not suitable
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
