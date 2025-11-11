@@ -1,7 +1,7 @@
 [project]
 name = "bria_client"
 version = "0.0.2"
-description = "Add your description here"
+description = "Bria.ai Python SDK"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
 maintainers = [
@@ -18,21 +18,26 @@ dependencies = [
     "strenum~=0.4.15; python_version < '3.11'",
 ]
 
-include = [
-    "**/*",
-    "!src/**/*_tests.py",
-    "!src/bria_client/internal/**/*"
-]
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/bria_client"]
+
+[tool.hatch.build]
+include = [
+    "src/**/*"
+]
+exclude = [
+    "src/**/*_tests.py",
+    "src/bria_client/internal/**/*"
+]
 
 
 [tool.ruff.lint]
@@ -54,11 +59,3 @@ dev = [
 [tool.pytest.ini_options]
 log_cli = true
 python_files = "**/*_tests.py"
-
-[tool.uv]
-dev-dependencies = [
-    "pytest>=8.4.0",
-    "pytest-mock>=3.14.1", 
-    "ruff>=0.12.0",
-    "pre-commit>=4.3.0",
-]
