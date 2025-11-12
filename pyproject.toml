@@ -31,9 +31,7 @@ allow-direct-references = true
 packages = ["src/bria_client"]
 
 [tool.hatch.build]
-include = [
-    "src/**/*"
-]
+include = ["src/**/*"]
 exclude = [
     "src/**/*_tests.py",
     "src/bria_client/internal/**/*"
