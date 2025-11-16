@@ -4,7 +4,7 @@ from httpx_retries import Retry
 
 from bria_client.apis.image_editing import ImageEditingAPI
 from bria_client.apis.status import StatusAPI
-from bria_client.clients.bria_client import BriaEngineClient
+from bria_client.clients import BriaEngineClient
 
 
 class BriaClient:
