@@ -1,7 +1,7 @@
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from typing import Awaitable
+from collections.abc import Awaitable
 from urllib.parse import urljoin
 
 import httpx
