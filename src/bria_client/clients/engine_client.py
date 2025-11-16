@@ -28,8 +28,7 @@ class EngineClient(AsyncHTTPClient):
         if self.api_token is None and self.jwt_token is None:
             raise ValueError("Authentication token is not set")
 
-        headers: dict = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
-        headers.update(self._headers)
+        headers = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
         return headers
 
     @property
@@ -55,9 +54,4 @@ class EngineClient(AsyncHTTPClient):
 
     @abstractmethod
     def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> EngineAPIException:
-        pass
-
-    @property
-    @abstractmethod
-    def _headers(self) -> dict:
         pass

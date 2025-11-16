@@ -5,10 +5,6 @@ from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel,
 
 class BriaEngineClient(EngineClient):
 
-    @property
-    def _headers(self):
-        return {}
-
     def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         """
         Converting the Broader EngineAPIException to the more specific custom exceptions models.

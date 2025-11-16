@@ -6,8 +6,10 @@ from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel,
 class InternalEngineClient(EngineClient):
 
     @property
-    def _headers(self):
-        return {"X-Internal-Request": True}
+    def headers(self):
+        headers = super().headers.copy()
+        headers.update({"X-Internal-Request": True})
+        return headers
 
     def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         """
