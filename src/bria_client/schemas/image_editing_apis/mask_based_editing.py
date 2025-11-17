@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Literal
 
 from pydantic_core import Url
 
@@ -25,12 +26,15 @@ class ObjectEraserRequestPayload(ContentModeratedPayloadModel):
 class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
     image: str
     mask: str
-    mask_type: MaskType
     prompt: str
+    version: Literal[1, 2] | None = None
+    refine_prompt: bool = True
+    tailored_model_id: str | None = None
     negative_prompt: str | None = None
     preserve_alpha: bool | None = None
     sync: bool | None = None
     seed: int | None = None
+    mask_type: MaskType | None = None
 
 
 class GetMasksRequestPayload(APIPayloadModel):
