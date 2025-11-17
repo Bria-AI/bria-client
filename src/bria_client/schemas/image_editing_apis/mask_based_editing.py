@@ -27,7 +27,7 @@ class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
     image: str
     mask: str
     prompt: str
-    version: Literal[1, 2] | None = None
+    version: Literal[1, 2] = 2
     refine_prompt: bool = True
     tailored_model_id: str | None = None
     negative_prompt: str | None = None
