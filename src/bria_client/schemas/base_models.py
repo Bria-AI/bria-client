@@ -6,10 +6,10 @@ class APIPayloadModel(BaseModel):
         return self.model_dump(mode="json", exclude_defaults=True)
 
     def __repr__(self) -> str:
-        return self.model_dump(mode="json", exclude_defaults=True)
+        return str(self.model_dump(mode="json", exclude_defaults=True))
 
     def __str__(self) -> str:
-        return self.model_dump(mode="json", exclude_defaults=True)
+        return str(self.model_dump(mode="json", exclude_defaults=True))
 
 
 class ContentModeratedPayloadModel(APIPayloadModel):
