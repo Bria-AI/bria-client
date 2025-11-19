@@ -5,6 +5,12 @@ class APIPayloadModel(BaseModel):
     def payload_dump(self) -> dict:
         return self.model_dump(mode="json", exclude_defaults=True)
 
+    def __repr__(self) -> str:
+        return self.model_dump(mode="json", exclude_defaults=True)
+
+    def __str__(self) -> str:
+        return self.model_dump(mode="json", exclude_defaults=True)
+
 
 class ContentModeratedPayloadModel(APIPayloadModel):
     visual_input_content_moderation: bool | None = None

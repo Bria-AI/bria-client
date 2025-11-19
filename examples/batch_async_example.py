@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.10"
 # dependencies = [
-# "bria_client@git+https://github.com/Bria-AI/bria-client.git",
+# "bria_client@git+https://github.com/Bria-AI/bria-client.git@fix-examples",
 # ]
 # ///
 
@@ -13,8 +13,6 @@ This example shows how to process multiple images concurrently for better perfor
 import asyncio
 from bria_client import BriaClient
 from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
-from bria_client.schemas.status_api import StatusAPIResultBody
-
 
 
 async def process_single_image(client: BriaClient, image_url: str, index: int) -> dict:
@@ -40,8 +38,8 @@ async def main():
     task_creation_tasks = [process_single_image(client=bria_client,image_url=url, index=i) for i, url in enumerate(IMAGE_URLS)]
     task_results = await asyncio.gather(*task_creation_tasks, return_exceptions=True)
 
-    for result in task_results:
-        print(result)
+    for i, result in enumerate(task_results):
+        print(f"Response {i} returned: {result}\n")
 
 
 if __name__ == "__main__":
