@@ -15,7 +15,6 @@ class VideoGenerationAPI(StatusBasedAPI):
     def __init__(self, engine_client: BriaEngineClient, status_api: StatusAPI):
         super().__init__(engine_client, status_api)
 
-    @auto_wait_for_status
     async def generate_by_tailored_image(
         self, payload: VideoGenerationByTailoredImageRequestPayload
     ) -> Response:
