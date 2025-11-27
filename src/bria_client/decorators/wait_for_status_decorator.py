@@ -41,6 +41,9 @@ def auto_wait_for_status(
         self,
         *args: P.args,
         wait_for_status: bool = True,
+        timeout: int | None = None,
+        interval: int | None = None,
+        delay: int | None = None,
         **kwargs: P.kwargs,
     ) -> httpx.Response | StatusAPIResponse:
         if not isinstance(self, StatusBasedAPI):
@@ -52,7 +55,7 @@ def auto_wait_for_status(
         response = await func(self, *args, **kwargs)
         if isinstance(response, httpx.Response):
             res_body: dict = response.json()
-            response = await self._status_api.wait_for_status_request(res_body["request_id"])
+            response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout, interval, delay)
         return response
 
     return wrapper
