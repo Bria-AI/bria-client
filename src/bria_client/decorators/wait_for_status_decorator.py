@@ -12,7 +12,8 @@ T = TypeVar("T")
 
 
 def auto_wait_for_status(
-    func: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]],
+    func: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]] | None = None,
+    *,
     timeout: int | None = None,
     interval: int | None = None,
     delay: int | None = None,
@@ -43,18 +44,26 @@ def auto_wait_for_status(
         `ValueError` - If the decorator is applied to a function that is not a method of a `StatusBasedAPI` instance.
     """
 
-    @wraps(func)
-    async def wrapper(self, *args: P.args, wait_for_status: bool = True, **kwargs: P.kwargs) -> httpx.Response | StatusAPIResponse:
-        if not isinstance(self, StatusBasedAPI):
-            raise ValueError("This method is not available for this API")
+    def decorator(
+        f: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]],
+    ) -> Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response | StatusAPIResponse]]:
+        @wraps(f)
+        async def wrapper(self, *args: P.args, wait_for_status: bool = True, **kwargs: P.kwargs) -> httpx.Response | StatusAPIResponse:
+            if not isinstance(self, StatusBasedAPI):
+                raise ValueError("This method is not available for this API")
 
-        if not wait_for_status:
-            return await func(self, *args, **kwargs)
+            if not wait_for_status:
+                return await f(self, *args, **kwargs)
 
-        response = await func(self, *args, **kwargs)
-        if isinstance(response, httpx.Response):
-            res_body: dict = response.json()
-            response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval, delay=delay)
-        return response
+            response = await f(self, *args, **kwargs)
+            if isinstance(response, httpx.Response):
+                res_body: dict = response.json()
+                response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval, delay=delay)
+            return response
 
-    return wrapper
+        return wrapper
+
+    if func is not None:
+        return decorator(func)
+
+    return decorator
