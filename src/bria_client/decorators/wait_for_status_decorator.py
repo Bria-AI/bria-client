@@ -13,6 +13,9 @@ T = TypeVar("T")
 
 def auto_wait_for_status(
     func: Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response]],
+    timeout: int | None = None,
+    interval: int | None = None,
+    delay: int | None = None,
 ) -> Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response | StatusAPIResponse]]:
     # TODO: Find the correct type hinting for showing the `wait_for_status` parameter
     """
@@ -27,6 +30,10 @@ def auto_wait_for_status(
             request and returns an `httpx.Response` containing a `request_id` in
             its JSON body.
 
+        timeout: The timeout in seconds to wait for the status request (default: 120)
+        interval: The interval in seconds to wait between status requests (default: 2)
+        delay: The delay in seconds before the first status request (default: 0)
+
     Returns:
         `StatusAPIResponse` - When `wait_for_status=True` (default)
 
@@ -37,15 +44,7 @@ def auto_wait_for_status(
     """
 
     @wraps(func)
-    async def wrapper(
-        self,
-        *args: P.args,
-        wait_for_status: bool = True,
-        timeout: int | None = None,
-        interval: int | None = None,
-        delay: int | None = None,
-        **kwargs: P.kwargs,
-    ) -> httpx.Response | StatusAPIResponse:
+    async def wrapper(self, *args: P.args, wait_for_status: bool = True, **kwargs: P.kwargs) -> httpx.Response | StatusAPIResponse:
         if not isinstance(self, StatusBasedAPI):
             raise ValueError("This method is not available for this API")
 
@@ -55,7 +54,7 @@ def auto_wait_for_status(
         response = await func(self, *args, **kwargs)
         if isinstance(response, httpx.Response):
             res_body: dict = response.json()
-            response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout, interval, delay)
+            response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval, delay=delay)
         return response
 
     return wrapper
