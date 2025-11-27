@@ -16,7 +16,6 @@ def auto_wait_for_status(
     *,
     timeout: int | None = None,
     interval: int | None = None,
-    delay: int | None = None,
 ) -> Callable[Concatenate[StatusBasedAPI, P], Awaitable[httpx.Response | StatusAPIResponse]]:
     # TODO: Find the correct type hinting for showing the `wait_for_status` parameter
     """
@@ -33,7 +32,6 @@ def auto_wait_for_status(
 
         timeout: The timeout in seconds to wait for the status request (default: 120)
         interval: The interval in seconds to wait between status requests (default: 2)
-        delay: The delay in seconds before the first status request (default: 0)
 
     Returns:
         `StatusAPIResponse` - When `wait_for_status=True` (default)
@@ -58,7 +56,7 @@ def auto_wait_for_status(
             response = await f(self, *args, **kwargs)
             if isinstance(response, httpx.Response):
                 res_body: dict = response.json()
-                response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval, delay=delay)
+                response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval)
             return response
 
         return wrapper

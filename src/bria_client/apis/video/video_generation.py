@@ -16,7 +16,7 @@ class VideoGenerationAPI(StatusBasedAPI):
         super().__init__(engine_client, status_api)
 
     @enable_run_synchronously
-    @auto_wait_for_status(timeout=360, interval=2, delay=210)
+    @auto_wait_for_status(timeout=360, interval=2)
     async def generate_by_tailored_image(self, payload: VideoGenerationByTailoredImageRequestPayload) -> Response:
         """
         Generate a video by a tailored image
