@@ -22,3 +22,4 @@ class BriaEngineAPIRoutes(StrEnum):
     V2_IMAGE_EDIT_ENHANCE_IMAGE = "v2/image/edit/enhance"
     V2_IMAGE_EDIT_INCREASE_RESOLUTION = "v2/image/edit/increase_resolution"
     V2_IMAGE_EDIT_CROP_FOREGROUND = "v2/image/edit/crop_foreground"
+    V2_VIDEO_GENERATE_BY_TAILOR_IMAGE = "v2/video/generate/tailored/image-to-video"
