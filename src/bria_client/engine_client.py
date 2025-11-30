@@ -1,5 +1,6 @@
 import asyncio
 import time
+import weakref
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable
 from contextvars import ContextVar
@@ -16,7 +17,14 @@ from bria_client.settings import engine_settings
 
 
 class AsyncHTTPClient(ABC):
-    def __init__(self, base_url: str, default_request_timeout: int = 30, retry: Retry | None = None) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        default_request_timeout: int = 30,
+        retry: Retry | None = None,
+        timeouts: httpx.Timeout | None = None,
+        limits: httpx.Limits | None = None,
+    ) -> None:
         """
         Initialize the AsyncHTTPClient
 
@@ -26,7 +34,51 @@ class AsyncHTTPClient(ABC):
         """
         self.base_url = base_url
         self.default_request_timeout = default_request_timeout
-        self.transport = RetryTransport(retry=retry)
+
+        self._timeout = timeouts or httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0)
+        self._limits = limits or httpx.Limits(max_keepalive_connections=20, max_connections=100, keepalive_expiry=30.0)
+        self._retry = retry
+
+        # One sync client for this process:
+        self._client = httpx.Client(
+            transport=RetryTransport(retry=self._retry) if self._retry is not None else None,
+            timeout=self._timeout,
+            limits=self._limits,
+        )
+
+        # Saves httpx.AsyncClient instances for each event loop, Using wearkrefDictionary to avoid memory leaks when event loops are garbage collected.
+        self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
+        self._async_clients_lock = asyncio.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
+
+    def _get_async_client(self) -> httpx.AsyncClient:
+        """
+        Get an async client for the current event loop, create one only if needed.
+
+        Returns:
+            `httpx.AsyncClient` - The async client for the current event loop
+        """
+        loop = asyncio.get_running_loop()
+
+        # Loop key exists → return existing client
+        client = self._async_clients.get(loop)
+        if client is not None:
+            return client
+
+        with self._async_clients_lock:
+            client = self._async_clients.get(loop)
+
+            # Dual-check to prevent race conditions, client might have been created by another thread.
+            if client is not None:
+                return client
+
+            # Otherwise create a new AsyncClient bound to this loop
+            client = httpx.AsyncClient(
+                timeout=self._timeout,
+                limits=self._limits,
+            )
+            self._async_clients[loop] = client
+
+        return client
 
     @property
     @abstractmethod
@@ -68,22 +120,22 @@ class AsyncHTTPClient(ABC):
         return headers
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        async with httpx.AsyncClient(transport=self.transport) as client:
-            try:
-                response = await client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
-                response.raise_for_status()
-                return response
-            except httpx.HTTPStatusError as e:
-                raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
+        try:
+            client: httpx.AsyncClient = self._get_async_client()
+            response = await client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
+            response.raise_for_status()
+            return response
+
+        except httpx.HTTPStatusError as e:
+            raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        with httpx.Client(transport=self.transport) as client:
-            try:
-                response = client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
-                response.raise_for_status()
-                return response
-            except httpx.HTTPStatusError as e:
-                raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
+        try:
+            response = self._client.request(method, url, headers=headers, json=payload, timeout=self.default_request_timeout, **kwargs)
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as e:
+            raise EngineAPIException(url=url, base_url=self.base_url, http_status_error=e)
 
     def get(self, route: str, custom_headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self.request(route, "GET", custom_headers=custom_headers, **kwargs)
@@ -112,10 +164,10 @@ class AsyncHTTPClient(ABC):
     async def _async_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> Awaitable[None]:
         start_time: float = time.time()
         while time.time() - start_time < timeout:
-            async with httpx.AsyncClient() as client:
-                async with client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers) as response:
-                    if self._check_polling_status(response):
-                        return
+            client = self._get_async_client()
+            async with client.stream("GET", file_url, headers=headers) as response:
+                if self._check_polling_status(response):
+                    return
 
             await asyncio.sleep(interval)
 
@@ -124,10 +176,9 @@ class AsyncHTTPClient(ABC):
     def _sync_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> None:
         start_time: float = time.time()
         while time.time() - start_time < timeout:
-            with httpx.Client() as client:
-                with client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers) as response:
-                    if self._check_polling_status(response):
-                        return
+            with self._client.stream("GET", file_url, timeout=self.default_request_timeout, headers=headers) as response:
+                if self._check_polling_status(response):
+                    return
 
             time.sleep(interval)
 
