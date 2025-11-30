@@ -54,7 +54,7 @@ dev = [
 requires-dist = [
     { name = "httpx", specifier = "~=0.28" },
     { name = "httpx-retries", specifier = "~=0.4.5" },
-    { name = "pydantic", specifier = "~=2.11" },
+    { name = "pydantic", specifier = "~=2.10" },
     { name = "pydantic-settings", specifier = "~=2.11" },
     { name = "strenum", marker = "python_full_version < '3.11'", specifier = "~=0.4.15" },
 ]

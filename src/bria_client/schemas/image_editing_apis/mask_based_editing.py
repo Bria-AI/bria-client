@@ -31,6 +31,7 @@ class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
     preserve_alpha: bool | None = None
     sync: bool | None = None
     seed: int | None = None
+    version: int | None = None
 
 
 class GetMasksRequestPayload(APIPayloadModel):
