@@ -1,4 +1,5 @@
 import asyncio
+import threading
 import time
 import weakref
 from abc import ABC, abstractmethod
@@ -48,7 +49,7 @@ class AsyncHTTPClient(ABC):
 
         # Saves httpx.AsyncClient instances for each event loop, Using wearkrefDictionary to avoid memory leaks when event loops are garbage collected.
         self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
-        self._async_clients_lock = asyncio.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
+        self._async_clients_lock = threading.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
 
     def _get_async_client(self) -> httpx.AsyncClient:
         """
