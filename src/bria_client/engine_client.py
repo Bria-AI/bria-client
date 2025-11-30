@@ -3,7 +3,6 @@ import time
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable
 from contextvars import ContextVar
-from typing import Optional
 from urllib.parse import urljoin
 
 import httpx
@@ -156,11 +155,13 @@ class AsyncHTTPClient(ABC):
 
 
 class BriaEngineClient(AsyncHTTPClient):
-    def __init__(self,
-                 base_url: Optional[str] = None,
-                 api_token_ctx: ContextVar[str] | None = None,
-                 jwt_token_ctx: ContextVar[str] | None = None,
-                 retry: Retry | None = None) -> None:
+    def __init__(
+        self,
+        base_url: str | None = None,
+        api_token_ctx: ContextVar[str] | None = None,
+        jwt_token_ctx: ContextVar[str] | None = None,
+        retry: Retry | None = None,
+    ) -> None:
         if api_token_ctx is None and engine_settings.API_KEY:
             api_token_ctx = ContextVar("bria_engine_api_token", default=engine_settings.API_KEY)
         elif api_token_ctx is None and jwt_token_ctx is None:
