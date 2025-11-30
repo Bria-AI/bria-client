@@ -14,7 +14,7 @@ class StatusAPI:
         self.engine_api = engine_requests_client
 
     @enable_run_synchronously
-    async def wait_for_status_request(self, request_id: str, timeout: int = 120, interval: int = 2) -> StatusAPIResponse:
+    async def wait_for_status_request(self, request_id: str, timeout: int | None = 120, interval: int | None = 2) -> StatusAPIResponse:
         """
         Polling the status from the status API until the request completes or fails
 
@@ -30,6 +30,9 @@ class StatusAPI:
             `EngineAPIException` - When the status request fails
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
+        # Handle None values explicitly passed from decorator (which overrides defaults)
+        timeout = timeout if timeout is not None else 120
+        interval = interval if interval is not None else 2
         start_time = time.time()
         while time.time() - start_time < timeout:
             res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
