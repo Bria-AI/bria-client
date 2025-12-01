@@ -10,10 +10,13 @@ BRIA_ENGINE_PRODUCTION_URL: Final[str] = "https://engine.prod.bria-api.com/"
 
 
 class BriaEngineAPIRoutes(StrEnum):
+    # V1 Routes
     V1_IMAGE_EDIT_GET_MASKS = "v1/objects/mask_generator"
 
+    # V2 Status
     V2_STATUS = "v2/status"
 
+    # V2 Image Edit Routes
     V2_IMAGE_EDIT_REMOVE_BACKGROUND = "v2/image/edit/remove_background"
     V2_IMAGE_EDIT_ERASER = "v2/image/edit/erase"
     V2_IMAGE_EDIT_GEN_FILL = "v2/image/edit/gen_fill"
@@ -25,8 +28,10 @@ class BriaEngineAPIRoutes(StrEnum):
     V2_IMAGE_EDIT_INCREASE_RESOLUTION = "v2/image/edit/increase_resolution"
     V2_IMAGE_EDIT_CROP_FOREGROUND = "v2/image/edit/crop_foreground"
 
+    # V2 Video Generation Routes
     V2_VIDEO_GENERATE_BY_TAILOR_IMAGE = "v2/video/generate/tailored/image-to-video"
     V2_VIDEO_GENERATE_FOREGROUND_MASK = "v2/video/generate/foreground_mask"
 
+    # V2 Video Edit Routes
     V2_VIDEO_EDIT_INCREASE_RESOLUTION = "v2/video/edit/increase_resolution"
     V2_VIDEO_EDIT_REMOVE_BACKGROUND = "v2/video/edit/remove_background"
