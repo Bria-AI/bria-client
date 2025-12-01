@@ -1,5 +1,6 @@
 from bria_client.apis.video.video_generation import VideoGenerationAPI
 from bria_client.apis.video.video_editing import VideoEditingAPI
+from bria_client.engine_client import BriaEngineClient
 
 __all__ = [
     "VideoGenerationAPI",
