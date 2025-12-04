@@ -1,14 +1,5 @@
-from pydantic import BaseModel
-
 from bria_client.schemas.base_models import APIPayloadModel
-from bria_client.schemas.video_apis.video_editing import VideoOutputPreset
-
-
-class KeyPoint(BaseModel):
-    x: int
-    y: int
-    width: int
-    height: int
+from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
 
 
 class MaskByPromptRequestPayload(APIPayloadModel):

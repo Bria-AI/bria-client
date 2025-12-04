@@ -3,24 +3,12 @@ from enum import Enum, IntEnum
 from pydantic import BaseModel, model_validator
 
 from bria_client.schemas.base_models import APIPayloadModel
-from bria_client.schemas.video_apis.video_segmentation import KeyPoint
+from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
 
 
 class ResolutionIncrease(IntEnum):
     TWO = 2
     FOUR = 4
-
-
-class VideoOutputPreset(str, Enum):
-    MP4_H264 = "mp4_h264"
-    MP4_H265 = "mp4_h265"
-    WEBM_VP9 = "webm_vp9"
-    MOV_H265 = "mov_h265"
-    MOV_PRORESKS = "mov_proresks"
-    MKV_H264 = "mkv_h264"
-    MKV_H265 = "mkv_h265"
-    MKV_VP9 = "mkv_vp9"
-    GIF = "gif"
 
 
 class BackgroundColor(str, Enum):

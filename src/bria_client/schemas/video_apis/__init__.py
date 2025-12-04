@@ -1,3 +1,4 @@
+from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
 from bria_client.schemas.video_apis.video_editing import (
     BackgroundColor,
     EraseMask,
@@ -8,13 +9,11 @@ from bria_client.schemas.video_apis.video_editing import (
     MaskByPrompt,
     RemoveBackgroundRequestPayload,
     ResolutionIncrease,
-    VideoOutputPreset,
 )
 from bria_client.schemas.video_apis.video_generation import (
     GenerateByTailoredImageRequestPayload,
 )
 from bria_client.schemas.video_apis.video_segmentation import (
-    KeyPoint,
     MaskByKeypointsRequestPayload,
     MaskByPromptRequestPayload,
 )
