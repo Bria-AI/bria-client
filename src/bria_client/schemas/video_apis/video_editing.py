@@ -1,17 +1,22 @@
-from enum import Enum, IntEnum
+import sys
 
 from pydantic import BaseModel, model_validator
 
 from bria_client.schemas.base_models import APIPayloadModel
 from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
 
+if sys.version_info < (3, 11):
+    from strenum import StrEnum
+else:
+    from enum import StrEnum
 
-class ResolutionIncrease(IntEnum):
-    TWO = 2
-    FOUR = 4
+
+class ResolutionIncrease(StrEnum):
+    TWO = "2"
+    FOUR = "4"
 
 
-class BackgroundColor(str, Enum):
+class BackgroundColor(StrEnum):
     TRANSPARENT = "Transparent"
     BLACK = "Black"
     WHITE = "White"
