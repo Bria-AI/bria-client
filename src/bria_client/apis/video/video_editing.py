@@ -37,9 +37,7 @@ class VideoEditingAPI(StatusBasedAPI):
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_EDIT_INCREASE_RESOLUTION, payload.payload_dump()
-            )
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_EDIT_INCREASE_RESOLUTION, payload.payload_dump())
             return response
         except EngineAPIException as e:
             # No content-moderation mapping for video payloads; pass-through original exception
@@ -64,9 +62,7 @@ class VideoEditingAPI(StatusBasedAPI):
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_EDIT_REMOVE_BACKGROUND, payload.payload_dump()
-            )
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_EDIT_REMOVE_BACKGROUND, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise e
@@ -90,9 +86,7 @@ class VideoEditingAPI(StatusBasedAPI):
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
         try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_GENERATE_FOREGROUND_MASK, payload.payload_dump()
-            )
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_GENERATE_FOREGROUND_MASK, payload.payload_dump())
             return response
         except EngineAPIException as e:
             raise e

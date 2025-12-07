@@ -1,13 +1,13 @@
-from bria_client.schemas.video_apis.video_generation import (
-    VideoGenerationByTailoredImageRequestPayload,
-)
 from bria_client.schemas.video_apis.video_editing import (
-    VideoOutputPreset,
     BackgroundColor,
-    ResolutionIncrease,
     ForegroundMaskRequestPayload,
     IncreaseResolutionRequestPayload,
     RemoveBackgroundRequestPayload,
+    ResolutionIncrease,
+    VideoOutputPreset,
+)
+from bria_client.schemas.video_apis.video_generation import (
+    VideoGenerationByTailoredImageRequestPayload,
 )
 
 __all__ = [
