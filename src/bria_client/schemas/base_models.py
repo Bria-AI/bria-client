@@ -1,9 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class APIPayloadModel(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
     def payload_dump(self) -> dict:
         return self.model_dump(mode="json", exclude_defaults=True)
 

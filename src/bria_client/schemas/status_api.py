@@ -14,9 +14,11 @@ class StatusAPIState(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
+# TODO: Distribute the result body to the appropriate schemas for each API response
 class StatusAPIResultBody(APIPayloadModel):
     image_url: AnyHttpUrl | None = None
     video_url: AnyHttpUrl | None = None
+    mask_url: AnyHttpUrl | None = None
     seed: int | None = None
     prompt: str | None = None
     refined_prompt: str | None = None
