@@ -36,6 +36,7 @@ class BriaEngineAPIRoutes(StrEnum):
     # V2 Video Edit Routes
     V2_VIDEO_EDIT_INCREASE_RESOLUTION = "v2/video/edit/increase_resolution"
     V2_VIDEO_EDIT_REMOVE_BACKGROUND = "v2/video/edit/remove_background"
+    V2_VIDEO_EDIT_ERASE = "v2/video/edit/erase"
 
     # V2 Video Segmentation Routes
     V2_VIDEO_SEGMENT_MASK_BY_PROMPT = "v2/video/segment/mask_by_prompt"
