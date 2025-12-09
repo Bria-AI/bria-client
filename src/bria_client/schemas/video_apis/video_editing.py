@@ -1,6 +1,6 @@
 import sys
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 
 from bria_client.schemas.base_models import APIPayloadModel
 from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
@@ -42,11 +42,6 @@ class RemoveBackgroundRequestPayload(APIPayloadModel):
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
 
 
-class ForegroundMaskRequestPayload(APIPayloadModel):
-    video: str
-    output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
-
-
 class MaskByPrompt(BaseModel):
     prompt: str
 
@@ -59,17 +54,6 @@ class EraseMask(BaseModel):
     mask_url: str | None = None
     mask_by_prompt: MaskByPrompt | None = None
     mask_by_key_points: MaskByKeyPoints | None = None
-
-    @model_validator(mode="after")
-    def validate_exactly_one_mask_type(self):
-        mask_types = [
-            self.mask_url is not None,
-            self.mask_by_prompt is not None,
-            self.mask_by_key_points is not None,
-        ]
-        if sum(mask_types) != 1:
-            raise ValueError("Exactly one of mask_url, mask_by_prompt, or mask_by_key_points must be provided")
-        return self
 
 
 class EraseRequestPayload(APIPayloadModel):
