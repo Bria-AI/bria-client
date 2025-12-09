@@ -1,4 +1,5 @@
 from bria_client.apis.image_editing.background_editing import BackgroundEditingAPI
+from bria_client.apis.image_editing.edit import EditAPI
 from bria_client.apis.image_editing.foreground_editing import ForegroundEditingAPI
 from bria_client.apis.image_editing.mask_based_editing import MasksBasedEditingAPI
 from bria_client.apis.image_editing.size_editing import SizeEditingAPI
@@ -11,5 +12,5 @@ __all__ = [
 ]
 
 
-class ImageEditingAPI(BackgroundEditingAPI, MasksBasedEditingAPI, ForegroundEditingAPI, SizeEditingAPI):
+class ImageEditingAPI(BackgroundEditingAPI, MasksBasedEditingAPI, ForegroundEditingAPI, SizeEditingAPI, EditAPI):
     pass
