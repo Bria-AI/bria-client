@@ -1,7 +1,5 @@
 from enum import Enum
 
-from pydantic import AnyHttpUrl
-
 from bria_client.exceptions.status_exception import InProgressException, StatusAPIException
 from bria_client.exceptions.unkown_status_exception import UnknownStatusException
 from bria_client.schemas.base_models import APIPayloadModel
@@ -16,9 +14,9 @@ class StatusAPIState(str, Enum):
 
 # TODO: Distribute the result body to the appropriate schemas for each API response
 class StatusAPIResultBody(APIPayloadModel):
-    image_url: AnyHttpUrl | None = None
-    video_url: AnyHttpUrl | None = None
-    mask_url: AnyHttpUrl | None = None
+    image_url: str | None = None
+    video_url: str | None = None
+    mask_url: str | None = None
     seed: int | None = None
     prompt: str | None = None
     refined_prompt: str | None = None

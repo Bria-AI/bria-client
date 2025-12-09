@@ -42,11 +42,6 @@ class RemoveBackgroundRequestPayload(APIPayloadModel):
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
 
 
-class ForegroundMaskRequestPayload(APIPayloadModel):
-    video: str
-    output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
-
-
 class MaskByPrompt(BaseModel):
     prompt: str
 
