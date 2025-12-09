@@ -1,26 +1,22 @@
-from enum import Enum, IntEnum
+import sys
+
+from pydantic import BaseModel
 
 from bria_client.schemas.base_models import APIPayloadModel
+from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
+
+if sys.version_info < (3, 11):
+    from strenum import StrEnum
+else:
+    from enum import StrEnum
 
 
-class ResolutionIncrease(IntEnum):
-    TWO = 2
-    FOUR = 4
+class ResolutionIncrease(StrEnum):
+    TWO = "2"
+    FOUR = "4"
 
 
-class VideoOutputPreset(str, Enum):
-    MP4_H264 = "mp4_h264"
-    MP4_H265 = "mp4_h265"
-    WEBM_VP9 = "webm_vp9"
-    MOV_H265 = "mov_h265"
-    MOV_PRORESKS = "mov_proresks"
-    MKV_H264 = "mkv_h264"
-    MKV_H265 = "mkv_h265"
-    MKV_VP9 = "mkv_vp9"
-    GIF = "gif"
-
-
-class BackgroundColor(str, Enum):
+class BackgroundColor(StrEnum):
     TRANSPARENT = "Transparent"
     BLACK = "Black"
     WHITE = "White"
@@ -46,6 +42,23 @@ class RemoveBackgroundRequestPayload(APIPayloadModel):
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
 
 
-class ForegroundMaskRequestPayload(APIPayloadModel):
+class MaskByPrompt(BaseModel):
+    prompt: str
+
+
+class MaskByKeyPoints(BaseModel):
+    keypoints: list[KeyPoint]
+
+
+class EraseMask(BaseModel):
+    mask_url: str | None = None
+    mask_by_prompt: MaskByPrompt | None = None
+    mask_by_key_points: MaskByKeyPoints | None = None
+
+
+class EraseRequestPayload(APIPayloadModel):
     video: str
+    mask: EraseMask
+    preserve_audio: bool | None = True
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
+    auto_trim: bool | None = False

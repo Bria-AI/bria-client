@@ -1,23 +1,16 @@
-from pydantic import BaseModel
-
 from bria_client.schemas.base_models import APIPayloadModel
-from bria_client.schemas.video_apis.video_editing import VideoOutputPreset
-
-
-class KeyPoint(BaseModel):
-    x: int
-    y: int
-    width: int
-    height: int
+from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
 
 
 class MaskByPromptRequestPayload(APIPayloadModel):
     video: str
     prompt: str
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
+    auto_trim: bool | None = False
 
 
 class MaskByKeypointsRequestPayload(APIPayloadModel):
     video: str
     keypoints: list[KeyPoint]
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
+    auto_trim: bool | None = False

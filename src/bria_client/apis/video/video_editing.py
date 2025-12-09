@@ -6,9 +6,8 @@ from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_client.engine_client import BriaEngineClient
-from bria_client.exceptions.engine_api_exception import EngineAPIException
 from bria_client.schemas.video_apis.video_editing import (
-    ForegroundMaskRequestPayload,
+    EraseRequestPayload,
     IncreaseResolutionRequestPayload,
     RemoveBackgroundRequestPayload,
 )
@@ -36,14 +35,8 @@ class VideoEditingAPI(StatusBasedAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_EDIT_INCREASE_RESOLUTION, payload.payload_dump()
-            )
-            return response
-        except EngineAPIException as e:
-            # No content-moderation mapping for video payloads; pass-through original exception
-            raise e
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_EDIT_INCREASE_RESOLUTION, payload.payload_dump())
+        return response
 
     @enable_run_synchronously
     @auto_wait_for_status
@@ -63,22 +56,17 @@ class VideoEditingAPI(StatusBasedAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_EDIT_REMOVE_BACKGROUND, payload.payload_dump()
-            )
-            return response
-        except EngineAPIException as e:
-            raise e
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_EDIT_REMOVE_BACKGROUND, payload.payload_dump())
+        return response
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def foreground_mask(self, payload: ForegroundMaskRequestPayload) -> Response:
+    async def erase(self, payload: EraseRequestPayload) -> Response:
         """
-        Generate a foreground mask for a video
+        Erase designated objects or regions from a video
 
         Args:
-            `payload: ForegroundMaskRequestPayload` - The payload for the foreground mask request
+            `payload: EraseRequestPayload` - The payload for the erase request
             `wait_for_status: bool = True` - Whether to wait for the status request (locally)
 
         Returns:
@@ -89,10 +77,5 @@ class VideoEditingAPI(StatusBasedAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        try:
-            response: Response = await self._engine_client.post(
-                BriaEngineAPIRoutes.V2_VIDEO_GENERATE_FOREGROUND_MASK, payload.payload_dump()
-            )
-            return response
-        except EngineAPIException as e:
-            raise e
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_EDIT_ERASE, payload.payload_dump())
+        return response
