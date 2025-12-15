@@ -32,14 +32,14 @@ class IncreaseResolutionRequestPayload(APIPayloadModel):
     video: str
     desired_increase: ResolutionIncrease | None = ResolutionIncrease.TWO
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
-    _auto_trim: bool | None = False
+    auto_trim: bool | None = False
 
 
 class RemoveBackgroundRequestPayload(APIPayloadModel):
     video: str
     background_color: BackgroundColor | None = BackgroundColor.TRANSPARENT
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
-    _auto_trim: bool | None = False
+    auto_trim: bool | None = False
 
 
 class EraseRequestPayload(APIPayloadModel):
