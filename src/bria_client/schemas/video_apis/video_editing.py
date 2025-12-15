@@ -1,5 +1,7 @@
 import sys
 
+from pydantic import Field
+
 from bria_client.schemas.base_models import APIPayloadModel
 from bria_client.schemas.video_apis.video import VideoOutputPreset
 
@@ -32,14 +34,14 @@ class IncreaseResolutionRequestPayload(APIPayloadModel):
     video: str
     desired_increase: ResolutionIncrease | None = ResolutionIncrease.TWO
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
-    _auto_trim: bool | None = False
+    auto_trim: bool = Field(default=False, alias="_auto_trim")
 
 
 class RemoveBackgroundRequestPayload(APIPayloadModel):
     video: str
     background_color: BackgroundColor | None = BackgroundColor.TRANSPARENT
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
-    _auto_trim: bool | None = False
+    auto_trim: bool = Field(default=False, alias="_auto_trim")
 
 
 class EraseRequestPayload(APIPayloadModel):
