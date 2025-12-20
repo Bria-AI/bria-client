@@ -31,7 +31,7 @@ class ReplaceBackgroundRequestPayload(PromptContentModeratedPayloadModel):
     seed: int | None = None
 
 
-class BlurBackgroundRequestPayload(ContentModeratedPayloadModel):
+class BlurBackgroundInput(ContentModeratedPayloadModel):
     image: str
     scale: int | None = Field(ge=1, le=5, default=None)
     preserve_alpha: bool | None = None

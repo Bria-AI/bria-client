@@ -1,6 +1,11 @@
-from bria_client.responses import BriaResponse
+from pydantic import ConfigDict
+
+from bria_client.responses import BriaResponse, BriaResult
 
 
-class StatusResponse(BriaResponse):
-    # rename for type aware
+class StatusResult(BriaResult):
+    model_config = ConfigDict(extra="allow")
+
+
+class StatusResponse(BriaResponse[StatusResult]):
     pass

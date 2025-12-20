@@ -6,8 +6,8 @@ from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel,
 
 
 class BriaEngine(ApiEngine):
-    def __init__(self, base_url: str, retry: Retry | None = None):
-        super().__init__(base_url=base_url, retry=retry)
+    def __init__(self, base_url: str, api_token: str, retry: Retry | None = None):
+        super().__init__(base_url=base_url, auth_header={"api_token": api_token}, retry=retry)
 
     def custom_exception_handle(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         """

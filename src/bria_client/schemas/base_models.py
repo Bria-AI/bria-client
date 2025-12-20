@@ -1,12 +1,11 @@
 from pydantic import BaseModel
 
 
-class APIPayloadModel(BaseModel):
-    def payload_dump(self) -> dict:
-        return self.model_dump(mode="json", exclude_defaults=True)
+class BriaPayload(BaseModel):
+    pass
 
 
-class ContentModeratedPayloadModel(APIPayloadModel):
+class ContentModeratedPayloadModel(BriaPayload):
     visual_input_content_moderation: bool | None = None
     visual_output_content_moderation: bool | None = None
 

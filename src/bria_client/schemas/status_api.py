@@ -4,7 +4,7 @@ from pydantic import AnyHttpUrl
 
 from bria_client.exceptions.old.status_exception import InProgressException, StatusAPIException
 from bria_client.exceptions.old.unkown_status_exception import UnknownStatusException
-from bria_client.schemas.base_models import APIPayloadModel
+from bria_client.schemas.base_models import BriaPayload
 
 
 class StatusAPIState(str, Enum):
@@ -14,7 +14,7 @@ class StatusAPIState(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-class StatusAPIResultBody(APIPayloadModel):
+class StatusAPIResultBody(BriaPayload):
     image_url: AnyHttpUrl | None = None
     video_url: AnyHttpUrl | None = None
     seed: int | None = None
@@ -22,13 +22,13 @@ class StatusAPIResultBody(APIPayloadModel):
     refined_prompt: str | None = None
 
 
-class StatusAPIErrorBody(APIPayloadModel):
+class StatusAPIErrorBody(BriaPayload):
     code: int
     message: str
     details: str
 
 
-class StatusAPIResponse(APIPayloadModel):
+class StatusAPIResponse(BriaPayload):
     request_id: str
     status: StatusAPIState
     result: StatusAPIResultBody | None = None

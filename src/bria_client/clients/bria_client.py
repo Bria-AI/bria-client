@@ -16,5 +16,5 @@ class BriaClient(BriaBackend):
         self.api_token = os.environ.get("BRIA_API_TOKEN", api_token)
         base_url = os.environ.get("BRIA_API_URL", base_url)
 
-        engine = BriaEngine(base_url=base_url, retry=retry)
+        engine = BriaEngine(base_url=base_url, api_token=api_token, retry=retry)
         super().__init__(engine=engine)

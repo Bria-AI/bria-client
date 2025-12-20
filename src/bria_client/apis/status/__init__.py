@@ -1,4 +1,4 @@
-from bria_client.apis.status.status import StatusAPI
+from bria_client.apis.v2.status_api import StatusAPI
 
 __all__ = [
     "StatusAPI",

@@ -11,7 +11,7 @@ from bria_client.decorators.enable_sync_decorator import enable_run_synchronousl
 from bria_client.engines.base.async_http_request import AsyncHTTPRequest
 from bria_client.exceptions.old.engine_api_exception import EngineAPIException
 from bria_client.responses import BriaResponse
-from bria_client.schemas.base_models import APIPayloadModel
+from bria_client.schemas.base_models import BriaPayload
 
 T = TypeVar("T", bound=BriaResponse)
 
@@ -19,22 +19,26 @@ T = TypeVar("T", bound=BriaResponse)
 class ApiEngine(AsyncHTTPRequest):
     """this should be the abstract base class for all engines"""
 
-    def __init__(self, base_url: str | None = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
+    def __init__(self, auth_header: dict, base_url: str | None = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
         if base_url is None:
             base_url = os.environ.get("BRIA_ENGINE_BASE_URL", BRIA_ENGINE_PRODUCTION_URL)
         self.base_url = base_url
         self.retry = retry
+        self.auth_header = auth_header
         super().__init__(retry=retry)
 
-    def post(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
-        url = self.base_url + route
-        response = self.post(url, payload=payload, headers=headers, **kwargs)
-        return response
+    @enable_run_synchronously
+    async def post(self, url: str, payload: BriaPayload, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
+        if headers is None:
+            headers = {}
+        response = await super().post(url, payload=payload.model_dump(exclude_none=True), headers={**headers, **self.auth_header}, **kwargs)
+        return response_obj.from_http_response(response)
 
     @enable_run_synchronously
-    async def get(self, route: str, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
-        url = self.base_url + route
-        response = await super().get(url, headers=headers, **kwargs)
+    async def get(self, url: str, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
+        if headers is None:
+            headers = {}
+        response = await super().get(url, headers={**headers, **self.auth_header}, **kwargs)
         return response_obj.from_http_response(response)
 
     def put(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
@@ -56,5 +60,5 @@ class ApiEngine(AsyncHTTPRequest):
             return self.custom_exception_handle(e)
 
     @abstractmethod
-    def custom_exception_handle(self, e: EngineAPIException, payload: APIPayloadModel | None = None) -> Any | NoReturn:
+    def custom_exception_handle(self, e: EngineAPIException, payload: BriaPayload | None = None) -> Any | NoReturn:
         raise e

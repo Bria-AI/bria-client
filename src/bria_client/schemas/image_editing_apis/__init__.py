@@ -1,6 +1,6 @@
-from bria_client.schemas.base_models import APIPayloadModel, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
+from bria_client.schemas.base_models import BriaPayload, ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 from bria_client.schemas.image_editing_apis.background_editing import (
-    BlurBackgroundRequestPayload,
+    BlurBackgroundInput,
     RemoveBackgroundRequestPayload,
     ReplaceBackgroundMode,
     ReplaceBackgroundRequestPayload,
@@ -20,13 +20,13 @@ from bria_client.schemas.image_editing_apis.size_editing import (
 )
 
 __all__ = [
-    "APIPayloadModel",
+    "BriaPayload",
     "ContentModeratedPayloadModel",
     "PromptContentModeratedPayloadModel",
     "RemoveBackgroundRequestPayload",
     "ReplaceBackgroundMode",
     "ReplaceBackgroundRequestPayload",
-    "BlurBackgroundRequestPayload",
+    "BlurBackgroundInput",
     "MaskType",
     "ObjectEraserRequestPayload",
     "ObjectGenFillRequestPayload",

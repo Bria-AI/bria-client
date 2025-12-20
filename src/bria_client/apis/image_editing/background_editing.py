@@ -8,7 +8,7 @@ from bria_client.decorators.wait_for_status_decorator import auto_wait_for_statu
 from bria_client.engines.base import ApiEngine
 from bria_client.exceptions.old.engine_api_exception import EngineAPIException
 from bria_client.schemas.image_editing_apis.background_editing import (
-    BlurBackgroundRequestPayload,
+    BlurBackgroundInput,
     RemoveBackgroundRequestPayload,
     ReplaceBackgroundRequestPayload,
 )
@@ -72,7 +72,7 @@ class BackgroundEditingAPI(StatusBasedAPI):
 
     @enable_run_synchronously
     @auto_wait_for_status
-    async def blur_background(self, payload: BlurBackgroundRequestPayload) -> Response:
+    async def blur_background(self, payload: BlurBackgroundInput) -> Response:
         """
         Blur the background of the image
 

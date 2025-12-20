@@ -3,7 +3,7 @@ from enum import Enum
 from pydantic_core import Url
 
 from bria_client.schemas.base_models import (
-    APIPayloadModel,
+    BriaPayload,
     ContentModeratedPayloadModel,
     PromptContentModeratedPayloadModel,
 )
@@ -33,6 +33,6 @@ class ObjectGenFillRequestPayload(PromptContentModeratedPayloadModel):
     seed: int | None = None
 
 
-class GetMasksRequestPayload(APIPayloadModel):
+class GetMasksRequestPayload(BriaPayload):
     image_url: Url
     sync: bool = True
