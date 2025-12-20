@@ -1,5 +1,5 @@
 from bria_client.engines.base.api_engine import ApiEngine
-from bria_client.exceptions.engine_api_exception import ContentModerationException, EngineAPIException
+from bria_client.exceptions.old.engine_api_exception import ContentModerationException, EngineAPIException
 from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
@@ -10,7 +10,7 @@ class InternalRequestEngine(ApiEngine):
         headers.update({"X-Internal-Request": "true"})
         return headers
 
-    def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
+    def custom_exception_handle(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         """
         Converting the Broader EngineAPIException to the more specific custom exceptions models.
 

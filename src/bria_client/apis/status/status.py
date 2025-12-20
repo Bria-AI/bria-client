@@ -6,12 +6,17 @@ from httpx import Response
 from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.engines.base import ApiEngine
+from bria_client.responses.status_response import StatusResponse
 from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIState
 
 
 class StatusAPI:
-    def __init__(self, engine_requests_client: ApiEngine):
-        self.engine_api = engine_requests_client
+    def __init__(self, api_engine: ApiEngine):
+        self.api_engine = api_engine
+
+    def get_status(self, request_id: str):
+        response = self.api_engine.get(f"/{BriaEngineAPIRoutes.V2_STATUS}/{request_id}", response_obj=StatusResponse)
+        return response
 
     @enable_run_synchronously
     async def wait_for_status_request(self, request_id: str, timeout: int = 120, interval: int = 2) -> StatusAPIResponse:
@@ -32,7 +37,7 @@ class StatusAPI:
         """
         start_time = time.time()
         while time.time() - start_time < timeout:
-            res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
+            res: Response = await self.api_engine.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
             data: dict = res.json()
 
             status_response: StatusAPIResponse = StatusAPIResponse(**data, http_request_status=res.status_code)

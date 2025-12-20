@@ -1,4 +1,4 @@
-from contextvars import ContextVar
+import os
 
 from httpx_retries import Retry
 
@@ -10,14 +10,11 @@ class BriaClient(BriaBackend):
     def __init__(
         self,
         base_url: str | None = None,
-        api_token_ctx: ContextVar[str] | str | None = None,
-        jwt_token_ctx: ContextVar[str] | str | None = None,
-        retry: Retry | None = None,
+        api_token: str | None = None,
+        retry: Retry | None = Retry(total=3, backoff_factor=2),
     ):
-        if isinstance(api_token_ctx, str):
-            api_token_ctx = ContextVar("bria_engine_api_token", default=api_token_ctx)
-        if isinstance(jwt_token_ctx, str):
-            jwt_token_ctx = ContextVar("bria_engine_jwt_token", default=jwt_token_ctx)
+        self.api_token = os.environ.get("BRIA_API_TOKEN", api_token)
+        base_url = os.environ.get("BRIA_API_URL", base_url)
 
-        engine = BriaEngine(base_url=base_url, api_token_ctx=api_token_ctx, jwt_token_ctx=jwt_token_ctx, retry=retry)
+        engine = BriaEngine(base_url=base_url, retry=retry)
         super().__init__(engine=engine)

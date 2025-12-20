@@ -2,8 +2,8 @@ from enum import Enum
 
 from pydantic import AnyHttpUrl
 
-from bria_client.exceptions.status_exception import InProgressException, StatusAPIException
-from bria_client.exceptions.unkown_status_exception import UnknownStatusException
+from bria_client.exceptions.old.status_exception import InProgressException, StatusAPIException
+from bria_client.exceptions.old.unkown_status_exception import UnknownStatusException
 from bria_client.schemas.base_models import APIPayloadModel
 
 

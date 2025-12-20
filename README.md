@@ -296,12 +296,12 @@ For more examples, check the [`examples/`](examples/) directory in the repositor
 The SDK provides specific exception types for different error scenarios:
 
 ```python
-from bria_client.exceptions.engine_api_exception import (
+from bria_client.exceptions.old.engine_api_exception import (
     EngineAPIException,
     ContentModerationException
 )
-from bria_client.exceptions.polling_exception import PollingException
-from bria_client.exceptions.status_exception import StatusException
+from bria_client.exceptions.old.polling_exception import PollingException
+from bria_client.exceptions.old.status_exception import StatusException
 
 try:
     response = bria.image_editing.remove_background(payload)

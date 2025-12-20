@@ -1,67 +1,60 @@
+import os
 from abc import abstractmethod
-from contextvars import ContextVar
+from collections.abc import Awaitable
+from typing import Any, NoReturn, TypeVar
 
+import httpx
 from httpx_retries import Retry
 
+from bria_client.constants import BRIA_ENGINE_PRODUCTION_URL
+from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.engines.base.async_http_request import AsyncHTTPRequest
-from bria_client.exceptions.engine_api_exception import EngineAPIException
-from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel
-from bria_client.settings import BriaEngineSettings
+from bria_client.exceptions.old.engine_api_exception import EngineAPIException
+from bria_client.responses import BriaResponse
+from bria_client.schemas.base_models import APIPayloadModel
+
+T = TypeVar("T", bound=BriaResponse)
 
 
 class ApiEngine(AsyncHTTPRequest):
-    def __init__(
-        self,
-        base_url: str | None = None,
-        api_token_ctx: ContextVar[str] | None = None,
-        jwt_token_ctx: ContextVar[str] | None = None,
-        retry: Retry | None = None,
-    ) -> None:
-        self.settings = BriaEngineSettings()
+    """this should be the abstract base class for all engines"""
 
-        if api_token_ctx is None and self.settings.API_KEY:
-            api_token_ctx = ContextVar("bria_engine_api_token", default=self.settings.API_KEY)
-        elif api_token_ctx is None and jwt_token_ctx is None:
-            raise ValueError("Bria Engine API key in not provided and JWT token is not provided")
-
+    def __init__(self, base_url: str | None = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
         if base_url is None:
-            base_url = str(self.settings.URL)
-
-        self.api_token_ctx = api_token_ctx
-        self.jwt_token_ctx = jwt_token_ctx
+            base_url = os.environ.get("BRIA_ENGINE_BASE_URL", BRIA_ENGINE_PRODUCTION_URL)
+        self.base_url = base_url
         self.retry = retry
+        super().__init__(retry=retry)
 
-        super().__init__(base_url=base_url, retry=retry)
+    def post(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
+        url = self.base_url + route
+        response = self.post(url, payload=payload, headers=headers, **kwargs)
+        return response
 
-    @property
-    def headers(self) -> dict:
-        if self.api_token is None and self.jwt_token is None:
-            raise ValueError("Authentication token is not set")
+    @enable_run_synchronously
+    async def get(self, route: str, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
+        url = self.base_url + route
+        response = await super().get(url, headers=headers, **kwargs)
+        return response_obj.from_http_response(response)
 
-        headers = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
-        return headers
-
-    @property
-    def api_token(self) -> str:
+    def put(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
+        url = self.base_url + route
         try:
-            if self.api_token_ctx is None:
-                return None
+            response = self.put(url, payload=payload, headers=headers, **kwargs)
+            response.raise_for_status()
+            return response
+        except EngineAPIException as e:
+            return self.custom_exception_handle(e)
 
-            return self.api_token_ctx.get()
-        except LookupError:
-            return None
-
-    @property
-    def jwt_token(self) -> str | None:
+    def delete(self, route: str, params: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
+        url = self.base_url + route
         try:
-            if self.jwt_token_ctx is None:
-                return None
-
-            return self.jwt_token_ctx.get()
-        except LookupError:
-            # ContextVar exists but not initialized yet
-            return None
+            response = self.delete(url, params=params, headers=headers, **kwargs)
+            response.raise_for_status()
+            return response
+        except EngineAPIException as e:
+            return self.custom_exception_handle(e)
 
     @abstractmethod
-    def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> EngineAPIException:
-        pass
+    def custom_exception_handle(self, e: EngineAPIException, payload: APIPayloadModel | None = None) -> Any | NoReturn:
+        raise e

@@ -1,12 +1,12 @@
 from httpx import Response
 
 from bria_client.apis.status import StatusAPI
-from bria_client.apis.status_based_api import StatusBasedAPI
+from bria_client.apis.status.status_based_api import StatusBasedAPI
 from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_client.engines.base.api_engine import ApiEngine
-from bria_client.exceptions.engine_api_exception import EngineAPIException
+from bria_client.exceptions.old.engine_api_exception import EngineAPIException
 from bria_client.schemas.image_editing_apis.foreground_editing import CropForegroundRequestPayload, EraseForegroundRequestPayload
 
 
@@ -38,7 +38,7 @@ class ForegroundEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_ERASE_FOREGROUND, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise self._engine_client.get_custom_exception(e, payload)
+            raise self._engine_client.custom_exception_handle(e, payload)
 
     @enable_run_synchronously
     @auto_wait_for_status
@@ -64,4 +64,4 @@ class ForegroundEditingAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_CROP_FOREGROUND, payload.payload_dump())
             return response
         except EngineAPIException as e:
-            raise self._engine_client.get_custom_exception(e, payload)
+            raise self._engine_client.custom_exception_handle(e, payload)

@@ -18,7 +18,7 @@ load_dotenv()
 
 
 class MyCustomEngine(ApiEngine):
-    def get_custom_exception(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
+    def custom_exception_handle(self, e: EngineAPIException, payload: ContentModeratedPayloadModel) -> ContentModerationException | EngineAPIException:
         print(f"Encountered exception: {str(e.__class__.__name__)}, raising my custom exception instead")
         raise Exception("This is my custom exception")
 
