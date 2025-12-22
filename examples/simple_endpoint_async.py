@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from bria_client.payloads.image_editing import ReplaceBackgroundRequestPayload
+
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis import ReplaceBackgroundRequestPayload
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("bria_client").setLevel(logging.DEBUG)

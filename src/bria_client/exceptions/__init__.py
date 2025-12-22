@@ -1,14 +1,4 @@
-from bria_client.exceptions.old.engine_api_exception import ContentModerationException, EngineAPIException
-from bria_client.exceptions.old.polling_exception import PollingException, PollingFileStatus
-from bria_client.exceptions.old.status_exception import InProgressException, StatusAPIException
-from bria_client.exceptions.old.unkown_status_exception import UnknownStatusException
+from bria_client.exceptions.bria_exception import BriaException
+from bria_client.exceptions.unauthorized_exceptions import MissingAuthenticationException
 
-__all__ = [
-    "EngineAPIException",
-    "ContentModerationException",
-    "PollingException",
-    "PollingFileStatus",
-    "InProgressException",
-    "StatusAPIException",
-    "UnknownStatusException",
-]
+__all__ = ["MissingAuthenticationException", "BriaException"]

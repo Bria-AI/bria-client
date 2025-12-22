@@ -9,8 +9,8 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.generics import GenericModel
 
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_client.exceptions.bria_exception import BriaException
-from bria_client.schemas import StatusAPIState
+from bria_client.exceptions import BriaException
+from bria_client.toolkit.status import Status
 
 T = TypeVar("T", bound="BriaResponse")
 R = TypeVar("R", bound="BriaResult")
@@ -31,7 +31,7 @@ class BriaError(BaseModel):
 
 
 class BriaResponse(GenericModel, Generic[R]):
-    status: StatusAPIState = Field(default=StatusAPIState.IN_PROGRESS)
+    status: Status = Field(default=Status.RUNNING)
     result: R | None = None
     error: BriaError | None = None
     request_id: str
@@ -55,7 +55,7 @@ class BriaResponse(GenericModel, Generic[R]):
         if "error" in response.json():
 
             class BriaErrorResponse(BriaResponse):
-                status: StatusAPIState = Field(default=StatusAPIState.ERROR)
+                status: Status = Field(default=Status.FAILED)
                 pass
 
             return BriaErrorResponse(**response.json())
@@ -66,7 +66,7 @@ class BriaResponse(GenericModel, Generic[R]):
             raise self.error.raise_as_error()
 
     def in_progress(self) -> bool:
-        return self.status is StatusAPIState.IN_PROGRESS
+        return self.status is Status.RUNNING
 
     @enable_run_synchronously
     async def wait_for_status(self, client: BriaClient, raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60) -> BriaResponse:

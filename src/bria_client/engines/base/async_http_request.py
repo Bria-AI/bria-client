@@ -1,5 +1,3 @@
-import asyncio
-import time
 from abc import ABC
 from collections.abc import Awaitable
 
@@ -7,7 +5,6 @@ import httpx
 from httpx_retries import Retry, RetryTransport
 
 from bria_client.decorators.enable_sync_decorator import running_in_async_context
-from bria_client.exceptions import PollingException, PollingFileStatus
 
 
 class AsyncHTTPRequest(ABC):
@@ -66,59 +63,3 @@ class AsyncHTTPRequest(ABC):
         with httpx.Client(transport=self.transport) as client:
             response = client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
             return response
-
-    def _check_polling_status(self, response: httpx.Response) -> bool:
-        if response.status_code in (200, 206):
-            content_length = int(response.headers.get("Content-Length", 0))
-            if content_length > 0:
-                return True
-            else:
-                raise PollingException(PollingFileStatus.ZERO_BYTE_IMAGE_ERROR)
-        elif response.status_code == 416:
-            raise PollingException(PollingFileStatus.ZERO_BYTE_IMAGE_ERROR)
-        else:
-            return False
-
-    async def _async_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> None:
-        start_time: float = time.time()
-        while time.time() - start_time < timeout:
-            async with httpx.AsyncClient() as client:
-                async with client.stream("GET", file_url, timeout=self.request_timeout, headers=headers) as response:
-                    if self._check_polling_status(response):
-                        return
-
-            await asyncio.sleep(interval)
-
-        raise PollingException(PollingFileStatus.TIMEOUT_ERROR)
-
-    def _sync_file_polling(self, file_url: str, headers: dict, timeout: int = 120, interval: int = 2) -> None:
-        start_time: float = time.time()
-        while time.time() - start_time < timeout:
-            with httpx.Client() as client:
-                with client.stream("GET", file_url, timeout=self.request_timeout, headers=headers) as response:
-                    if self._check_polling_status(response):
-                        return
-
-            time.sleep(interval)
-
-        raise PollingException(PollingFileStatus.TIMEOUT_ERROR)
-
-    # TODO: remove this method from here as it is not related to this client
-    def file_polling(self, file_url: str, timeout: int = 120, interval: int = 2) -> Awaitable[None] | None:
-        """
-        Polling the file from the file URL until the file is ready
-
-        Args:
-            `file_url: str` - The URL of the file to poll
-            `timeout: int` - The timeout in seconds
-            `interval: int` - The interval in seconds
-
-        Raises:
-            `PollingException[Timeout]` - If the file is not accessible after the timeout
-
-            `PollingException[ZeroByteImage]` - If the file is a zero byte image
-        """
-        headers: dict = {"Range": "bytes=0-0"}
-        if running_in_async_context():
-            return self._async_file_polling(file_url, headers, timeout, interval)
-        return self._sync_file_polling(file_url, headers, timeout, interval)

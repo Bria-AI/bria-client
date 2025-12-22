@@ -5,9 +5,9 @@ import httpx
 import pytest
 
 from bria_client import BriaClient
-from bria_client.exceptions.bria_exception import BriaException
-from bria_client.responses.status_response import StatusResponse
-from bria_client.schemas import StatusAPIState
+from bria_client.exceptions import BriaException
+from bria_client.responses.status import StatusResponse
+from bria_client.toolkit.status import Status
 
 
 class TestStatusApi:
@@ -61,14 +61,14 @@ class TestStatusApi:
             if request_id == "1":
                 return httpx.Response(
                     200,
-                    json={"result": {"correct": "good"}, "status": StatusAPIState.COMPLETED, "request_id": request_id},
+                    json={"result": {"correct": "good"}, "status": Status.COMPLETED, "request_id": request_id},
                     request=request,
                 )
             return httpx.Response(
                 200,
                 json={
                     "error": {"code": 400, "message": "Error message here", "details": "Error details here"},
-                    "status": StatusAPIState.ERROR,
+                    "status": Status.ERROR,
                     "request_id": request_id,
                 },
                 request=request,

@@ -70,7 +70,7 @@ pip install bria-client
 
 ```python
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
+from bria_client.payloads.image_editing.size_editing import ExpandImageRequestPayload
 
 # Initialize the client
 bria = BriaClient()
@@ -240,7 +240,7 @@ status_response = bria.status.get_status(job_id="your-job-id")
 
 ```python
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
+from bria_client.payloads.image_editing.background_editing import RemoveBackgroundRequestPayload
 
 bria = BriaClient()
 
@@ -257,7 +257,7 @@ print(f"Result: {response.get_result().image_url}")
 
 ```python
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis.size_editing import EnhanceImageRequestPayload, Resolution
+from bria_client.payloads.image_editing.size_editing import EnhanceImageRequestPayload, Resolution
 
 bria = BriaClient()
 
@@ -275,7 +275,7 @@ print(f"Enhanced image: {response.get_result().image_url}")
 
 ```python
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis.background_editing import ReplaceBackgroundRequestPayload
+from bria_client.payloads.image_editing.background_editing import ReplaceBackgroundRequestPayload
 
 bria = BriaClient()
 

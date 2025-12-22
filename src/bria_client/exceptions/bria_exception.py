@@ -11,16 +11,19 @@ class BriaException(HTTPException):
 
         self.details = details
         self.message = message
-        if message is not None:
-            self.description = self.details
+
+        # werkzeug stuff
+        self.description = self.details
         super().__init__()
 
     @property
     def name(self) -> str:
+        # do this to override the string in the werkzeug exception
         return self.message
 
     @classmethod
     def from_error(cls, code: int, message: str, details: str):
+        # POSSIBLE TODO: here do error manipulation (convert it to UnprocessableEntity
         return cls(
             status_code=code,
             message=message,

@@ -15,10 +15,11 @@ from httpx_retries import Retry
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from bria_client.payloads.image_editing.background_editing import RemoveBackgroundRequestPayload
+from bria_client.payloads.status_api import StatusAPIResponse
+
 from bria_client import BriaClient
 from bria_client.exceptions import ContentModerationException, EngineAPIException, UnknownStatusException
-from bria_client.schemas.image_editing_apis.background_editing import RemoveBackgroundRequestPayload
-from bria_client.schemas.status_api import StatusAPIResponse
 
 # Initialize the SDK with retry configuration for handling transient errors
 retry = Retry(total=3, backoff_factor=1.0, status_forcelist=[500, 502, 503, 504])

@@ -15,9 +15,10 @@ from typing import Final
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+from bria_client.payloads.image_editing.size_editing import ExpandImageRequestPayload
+from bria_client.payloads.status_api import StatusAPIResponse, StatusAPIResultBody
+
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis.size_editing import ExpandImageRequestPayload
-from bria_client.schemas.status_api import StatusAPIResponse, StatusAPIResultBody
 
 bria_client = BriaClient()
 

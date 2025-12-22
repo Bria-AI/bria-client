@@ -2,7 +2,19 @@ import logging
 
 from bria_client.apis.api import api_endpoint
 from bria_client.apis.v2.image.image_api import ImageAPI
-from bria_client.responses.image_editing_responses import (
+from bria_client.payloads.image_editing_payload import (
+    BlurBackgroundPayload,
+    CropForegroundPayload,
+    EnhanceImagePayload,
+    EraseForegroundPayload,
+    EraserPayload,
+    ExpandImagePayload,
+    GenFillPayload,
+    IncreaseResPayload,
+    RemoveBgPayload,
+    ReplaceBgPayload,
+)
+from bria_client.responses.image_editing import (
     BlurBackgroundResponse,
     CropForegroundResponse,
     EnhanceImageResponse,
@@ -13,25 +25,13 @@ from bria_client.responses.image_editing_responses import (
     IncreaseResResponse,
     RemoveBackgroundResponse,
 )
-from bria_client.schemas.image_editing_apis import (
-    BlurBackgroundInput,
-    CropForegroundRequestPayload,
-    EnhanceImageRequestPayload,
-    EraseForegroundRequestPayload,
-    ExpandImageRequestPayload,
-    IncreaseResolutionRequestPayload,
-    ObjectEraserRequestPayload,
-    ObjectGenFillRequestPayload,
-    RemoveBackgroundRequestPayload,
-    ReplaceBackgroundRequestPayload,
-)
 
 
 class ImageEditingAPI(ImageAPI):
     path = "edit"
 
     @api_endpoint("blur_background")
-    def blur_background(self, payload: BlurBackgroundInput):
+    def blur_background(self, payload: BlurBackgroundPayload):
         """
         Blur the background of the image
 
@@ -53,7 +53,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("remove_background")
-    def remove_background(self, payload: RemoveBackgroundRequestPayload):
+    def remove_background(self, payload: RemoveBgPayload):
         """
         Remove background from image
 
@@ -75,7 +75,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("replace_background")
-    def replace_background(self, payload: ReplaceBackgroundRequestPayload):
+    def replace_background(self, payload: ReplaceBgPayload):
         """
         Replace the background of the image
 
@@ -97,7 +97,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("crop_foreground")
-    def crop_foreground(self, payload: CropForegroundRequestPayload):
+    def crop_foreground(self, payload: CropForegroundPayload):
         """
         Crop the foreground of an image
 
@@ -119,7 +119,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("erase_foreground")
-    def erase_foreground(self, payload: EraseForegroundRequestPayload):
+    def erase_foreground(self, payload: EraseForegroundPayload):
         """
         Erase the foreground of an image
 
@@ -141,7 +141,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("expand")
-    def expand_image(self, payload: ExpandImageRequestPayload):
+    def expand_image(self, payload: ExpandImagePayload):
         """
         Expand the provided image to a new size by aspect ratio or by pixel sizes
 
@@ -163,7 +163,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("enhance")
-    def enhance_image(self, payload: EnhanceImageRequestPayload):
+    def enhance_image(self, payload: EnhanceImagePayload):
         """
         Enhance the provided image by improving the quality and resolution
 
@@ -185,7 +185,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("increase_resolution")
-    def increase_resolution(self, payload: IncreaseResolutionRequestPayload):
+    def increase_resolution(self, payload: IncreaseResPayload):
         """
         Increase the resolution of the provided image
 
@@ -205,7 +205,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("erase")
-    def erase(self, payload: ObjectEraserRequestPayload):
+    def erase(self, payload: EraserPayload):
         """
         Erase an object from an image using a mask
 
@@ -227,7 +227,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("gen_fill")
-    def gen_fill(self, payload: ObjectGenFillRequestPayload):
+    def gen_fill(self, payload: GenFillPayload):
         """
         Generate a fill for the provided image using a mask and a prompt to fill the masked area
 
@@ -254,11 +254,10 @@ if __name__ == "__main__":
     logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
     from bria_client import BriaClient
-    from bria_client.schemas.image_editing_apis import BlurBackgroundInput
 
     client = BriaClient(base_url="https://engine.prod.bria-api.com", api_token="a10d6386dd6a11ebba800242ac130004")
     response = client.image_editing.replace_background(
-        payload=ReplaceBackgroundRequestPayload(sync=True, image="https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png")
+        payload=ReplaceBgPayload(sync=True, image="https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png")
     )
-    actual = response.wait_for_status(client)
+    response.raise_for_status()
     x = 1

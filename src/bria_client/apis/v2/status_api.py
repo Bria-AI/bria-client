@@ -1,6 +1,6 @@
 from bria_client.apis.api import api_endpoint
 from bria_client.apis.v2.v2_api import V2API
-from bria_client.responses.status_response import StatusResponse
+from bria_client.responses.status import StatusResponse
 
 
 class StatusAPI(V2API):

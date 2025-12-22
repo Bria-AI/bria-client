@@ -6,13 +6,13 @@
 # ///
 import os
 
+from bria_client.payloads.image_editing import RemoveBackgroundRequestPayload
 from dotenv import load_dotenv
 
 from bria_client import BriaBackend
 from bria_client.engines import ApiEngine
 from bria_client.exceptions import ContentModerationException, EngineAPIException
-from bria_client.schemas.base_models import ContentModeratedPayloadModel
-from bria_client.schemas.image_editing_apis import RemoveBackgroundRequestPayload
+from bria_client.payloads.bria_payload import ContentModeratedPayloadModel
 
 load_dotenv()
 

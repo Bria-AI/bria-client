@@ -1,6 +1,6 @@
 from bria_client.apis.api import api_endpoint
 from bria_client.apis.v1.v1_api import V1API
-from bria_client.schemas.image_editing_apis import GetMasksRequestPayload
+from bria_client.payloads.image_editing import GetMasksRequestPayload
 
 
 class ObjectsAPI(V1API):

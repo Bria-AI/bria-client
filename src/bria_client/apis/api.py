@@ -1,13 +1,11 @@
 from functools import wraps
 from urllib.parse import urljoin
 
-from bria_client.engines import ApiEngine
-
 
 class APIBase:
     path: str = ""
 
-    def __init__(self, api_engine: ApiEngine):
+    def __init__(self, api_engine: "ApiEngine"):
         parts = []
         for i, cls in enumerate(reversed(self.__class__.mro())):
             segment = getattr(cls, "path", None)

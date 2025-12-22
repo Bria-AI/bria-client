@@ -3,12 +3,12 @@ import os
 
 from dotenv import load_dotenv
 
-from bria_client.exceptions.bria_exception import BriaException
+from bria_client.exceptions import BriaException
+from bria_client.payloads.image_editing_payload import RemoveBgPayload
 
 load_dotenv()
 
 from bria_client import BriaClient
-from bria_client.schemas.image_editing_apis import RemoveBackgroundRequestPayload
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("bria_client").setLevel(logging.DEBUG)
@@ -16,7 +16,7 @@ logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
 client = BriaClient(base_url="https://engine.prod.bria-api.com", api_token=os.environ.get("BRIA_API_TOKEN"))
 
-replace_bg_input = RemoveBackgroundRequestPayload(sync=True, image="https://invalid_url")
+replace_bg_input = RemoveBgPayload(sync=True, image="https://invalid_url")
 try:
     response = client.image_editing.remove_background(payload=replace_bg_input)
     response.raise_for_status()
