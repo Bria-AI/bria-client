@@ -7,7 +7,7 @@ import httpx
 from httpx_retries import Retry, RetryTransport
 
 from bria_client.decorators.enable_sync_decorator import running_in_async_context
-from bria_client.exceptions import EngineAPIException, PollingException, PollingFileStatus
+from bria_client.exceptions import PollingException, PollingFileStatus
 
 
 class AsyncHTTPRequest(ABC):
@@ -59,21 +59,13 @@ class AsyncHTTPRequest(ABC):
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         async with httpx.AsyncClient(transport=self.transport) as client:
-            try:
-                response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
-                response.raise_for_status()
-                return response
-            except httpx.HTTPStatusError as e:
-                raise EngineAPIException(url=url, http_status_error=e)
+            response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
+            return response
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
         with httpx.Client(transport=self.transport) as client:
-            try:
-                response = client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
-                response.raise_for_status()
-                return response
-            except httpx.HTTPStatusError as e:
-                raise EngineAPIException(url=url, http_status_error=e)
+            response = client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
+            return response
 
     def _check_polling_status(self, response: httpx.Response) -> bool:
         if response.status_code in (200, 206):

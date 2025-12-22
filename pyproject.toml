@@ -42,7 +42,7 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["C4", "E", "F", "I", "PERF", "UP"]
-ignore = ["PERF203", "E402"]
+ignore = ["PERF203", "E402", "F821"]
 
 [tool.ruff]
 line-length = 160

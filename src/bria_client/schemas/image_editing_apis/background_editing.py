@@ -5,12 +5,6 @@ from pydantic import Field
 from bria_client.schemas.image_editing_apis import ContentModeratedPayloadModel, PromptContentModeratedPayloadModel
 
 
-class RemoveBackgroundRequestPayload(ContentModeratedPayloadModel):
-    image: str
-    preserve_alpha: bool | None = None
-    sync: bool | None = None
-
-
 class ReplaceBackgroundMode(str, Enum):
     BASE = "base"
     HIGH_CONTROL = "high_control"
@@ -34,5 +28,11 @@ class ReplaceBackgroundRequestPayload(PromptContentModeratedPayloadModel):
 class BlurBackgroundInput(ContentModeratedPayloadModel):
     image: str
     scale: int | None = Field(ge=1, le=5, default=None)
+    preserve_alpha: bool | None = None
+    sync: bool | None = None
+
+
+class RemoveBackgroundRequestPayload(ContentModeratedPayloadModel):
+    image: str
     preserve_alpha: bool | None = None
     sync: bool | None = None

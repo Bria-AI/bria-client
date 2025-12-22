@@ -1,0 +1,1 @@
+* implement again auto_wait_for_status (implement it on the api_endpoint decorator)

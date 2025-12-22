@@ -6,15 +6,15 @@ from bria_client.engines import ApiEngine
 
 class APIBase:
     path: str = ""
-    _parts = []
 
     def __init__(self, api_engine: ApiEngine):
-        for cls in reversed(self.__class__.mro()):
+        parts = []
+        for i, cls in enumerate(reversed(self.__class__.mro())):
             segment = getattr(cls, "path", None)
             if segment:
-                self._parts.append(segment.strip("/"))
+                parts.append(segment.strip("/"))
         self.api_engine = api_engine
-        self.url = self.api_engine.base_url.rstrip("/") + "/" + "/".join(self._parts) + "/"
+        self.url = self.api_engine.base_url.rstrip("/") + "/" + "/".join(parts) + "/"
 
 
 def api_endpoint(endpoint: str):

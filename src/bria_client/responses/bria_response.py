@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 from typing import Generic, NoReturn, TypeVar
 
@@ -7,13 +8,13 @@ from httpx import Response
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.generics import GenericModel
 
-from bria_client import BriaClient
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.exceptions.bria_exception import BriaException
 from bria_client.schemas import StatusAPIState
 
 T = TypeVar("T", bound="BriaResponse")
 R = TypeVar("R", bound="BriaResult")
+logger = logging.getLogger(__name__)
 
 
 class BriaResult(BaseModel):
@@ -36,8 +37,28 @@ class BriaResponse(GenericModel, Generic[R]):
     request_id: str
     status_url: str | None = Field(default=None, exclude=True)
 
+    def __str__(self) -> str:
+        return f"<{self.__class__.__name__} {self.model_dump(exclude_none=True)}>"
+
+    def __repr__(self) -> str:
+        data = {
+            "status": self.status,
+            "result": self.result,
+            "error": self.error,
+            "request_id": self.request_id,
+        }
+        data = {k: v for k, v in data.items() if v is not None}
+        return f"<{self.__class__.__name__} {data}>"
+
     @classmethod
     def from_http_response(cls, response: Response):
+        if "error" in response.json():
+
+            class BriaErrorResponse(BriaResponse):
+                status: StatusAPIState = Field(default=StatusAPIState.ERROR)
+                pass
+
+            return BriaErrorResponse(**response.json())
         return cls(**response.json())
 
     def raise_for_status(self) -> NoReturn | None:
@@ -49,10 +70,16 @@ class BriaResponse(GenericModel, Generic[R]):
 
     @enable_run_synchronously
     async def wait_for_status(self, client: BriaClient, raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60) -> BriaResponse:
+        if self.error is not None:
+            if raise_on_error:
+                self.raise_for_status()
+            raise NotImplementedError("Cannot wait for status when error occurred")
+
         start_time = time.time()
         response = None
         while time.time() - start_time <= timeout:
             time.sleep(interval)
+            logger.debug(f"Polling request status... [{self.request_id}]")
             response = await client.status.get_status(request_id=self.request_id)
             if raise_on_error:
                 response.raise_for_status()
