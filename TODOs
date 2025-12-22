@@ -1,5 +1,4 @@
 * implement again auto_wait_for_status (implement it on the api_endpoint decorator)
 * implement client somehow with jwt
 * implement client with custom header of internal request True
-* implement image editing inputs structure
 * maybe do error conversion for api, to return object named exceptions -> maybe we cant because the api returns different things

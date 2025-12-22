@@ -1,5 +1,5 @@
 from bria_client.apis.v2 import ImageEditingAPI, StatusAPI
-from bria_client.engines.base import ApiEngine
+from bria_client.engines import ApiEngine
 
 
 class BriaBackend:
