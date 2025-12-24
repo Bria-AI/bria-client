@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class APIPayloadModel(BaseModel):
     def payload_dump(self) -> dict:
-        return self.model_dump(mode="json", exclude_defaults=True)
+        return self.model_dump(mode="json", exclude_none=True, by_alias=True)
 
 
 class ContentModeratedPayloadModel(APIPayloadModel):

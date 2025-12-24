@@ -1,9 +1,9 @@
 import sys
 
-from pydantic import BaseModel
+from pydantic import Field
 
 from bria_client.schemas.base_models import APIPayloadModel
-from bria_client.schemas.video_apis.video import KeyPoint, VideoOutputPreset
+from bria_client.schemas.video_apis.video import VideoOutputPreset
 
 if sys.version_info < (3, 11):
     from strenum import StrEnum
@@ -34,31 +34,19 @@ class IncreaseResolutionRequestPayload(APIPayloadModel):
     video: str
     desired_increase: ResolutionIncrease | None = ResolutionIncrease.TWO
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
+    auto_trim: bool = Field(default=False, alias="_auto_trim")
 
 
 class RemoveBackgroundRequestPayload(APIPayloadModel):
     video: str
     background_color: BackgroundColor | None = BackgroundColor.TRANSPARENT
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.WEBM_VP9
-
-
-class MaskByPrompt(BaseModel):
-    prompt: str
-
-
-class MaskByKeyPoints(BaseModel):
-    keypoints: list[KeyPoint]
-
-
-class EraseMask(BaseModel):
-    mask_url: str | None = None
-    mask_by_prompt: MaskByPrompt | None = None
-    mask_by_key_points: MaskByKeyPoints | None = None
+    auto_trim: bool = Field(default=False, alias="_auto_trim")
 
 
 class EraseRequestPayload(APIPayloadModel):
     video: str
-    mask: EraseMask
+    mask: str
     preserve_audio: bool | None = True
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
     auto_trim: bool | None = False
