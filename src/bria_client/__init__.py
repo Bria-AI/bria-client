@@ -1,4 +1,3 @@
-from bria_client.apis.bria_backend import BriaBackend
 from bria_client.clients.bria_client import BriaClient
 
-__all__ = ["BriaClient", "BriaBackend"]
+__all__ = ["BriaClient"]

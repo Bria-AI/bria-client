@@ -64,3 +64,13 @@ class ImageDrivenPayload(BaseModel):
     ref_images: list[ImageSource] | None = None
     enhance_ref_images: bool | None = None
     ref_image_influence: float | None = None
+
+
+class VideoBasePayload(BriaV2BasePayload):
+    output_container_and_codec: (
+        Literal["mp4_h265", "mp4_h264", "webm_vp9", "mov_h265", "mov_proresks", "mkv_h265", "mkv_h264", "mkv_vp9", "gif", "avi_h264"] | None
+    ) = None
+
+
+class VideoInputPayload(BriaV2BasePayload):
+    video: str | None = None
