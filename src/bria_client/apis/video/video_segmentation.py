@@ -49,5 +49,5 @@ class VideoSegmentationAPI(StatusBasedAPI):
         Raises:
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_SEGMENT_MASK_BY_KEYPOINTS, payload.payload_dump())
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_VIDEO_SEGMENT_MASK_BY_KEY_POINTS, payload.payload_dump())
         return response
