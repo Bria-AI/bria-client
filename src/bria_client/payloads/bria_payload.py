@@ -1,12 +1,12 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
 
 from bria_client.toolkit.image import ImageMaskKind, ImageOutputType, ImageSource
+from bria_client.toolkit.models import ExcludeNoneBaseModel
 from bria_client.toolkit.video import VideoOutputContainerAndCodec
 
 
-class BriaPayload(BaseModel):
+class BriaPayload(ExcludeNoneBaseModel):
     model_config = ConfigDict(use_enum_values=True, arbitrary_types_allowed=True)
-    pass
 
 
 class BriaV2BasePayload(BriaPayload):

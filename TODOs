@@ -1,7 +1,4 @@
-* implement again auto_wait_for_status (implement it on the api_endpoint decorator)
 * maybe do error conversion for api, to return object named exceptions -> maybe we cant because the api returns different things
 
-* change reposnse sot bria response
-* override model_dump to briaPayload
-* change StatusResult to BriaResult
 
+* fix type hints

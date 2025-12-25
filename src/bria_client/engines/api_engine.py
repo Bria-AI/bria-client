@@ -36,8 +36,7 @@ class ApiEngine(AsyncHTTPRequest):
             headers = {}
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
-
-        response = await super().post(url, payload=payload.model_dump(mode="json", exclude_none=True), headers={**headers, **self.default_headers}, **kwargs)
+        response = await super().post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
         return BriaResponse[result_obj].from_http_response(response)
 
     @enable_run_synchronously

@@ -5,11 +5,11 @@ import time
 from typing import Generic, NoReturn, TypeVar
 
 from httpx import Response
-from pydantic import BaseModel, ConfigDict, Field
-from pydantic.generics import GenericModel
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.exceptions import BriaException
+from bria_client.toolkit.models import ExcludeNoneBaseModel
 from bria_client.toolkit.status import Status
 
 T = TypeVar("T", bound="BriaResponse")
@@ -30,25 +30,20 @@ class BriaError(BaseModel):
         raise BriaException.from_error(code=self.code, message=self.message, details=self.details)
 
 
-class BriaResponse(GenericModel, Generic[R]):
+class BriaResponse(ExcludeNoneBaseModel, Generic[R]):
     status: Status = Field(default=Status.RUNNING)
     result: R | None = None
     error: BriaError | None = None
     request_id: str
-    status_url: str | None = Field(default=None, exclude=True)
+    status_url: str | None = Field(default=None)
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__} {self.model_dump(exclude_none=True)}>"
+        # reason for is to exclude none from str
+        return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     def __repr__(self) -> str:
-        data = {
-            "status": self.status,
-            "result": self.result,
-            "error": self.error,
-            "request_id": self.request_id,
-        }
-        data = {k: v for k, v in data.items() if v is not None}
-        return f"<{self.__class__.__name__} {data}>"
+        # reason for is to exclude none from repr
+        return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     @classmethod
     def from_http_response(cls, response: Response):
@@ -61,6 +56,14 @@ class BriaResponse(GenericModel, Generic[R]):
 
             response_obj = BriaErrorResponse
         return response_obj(**response.json())
+
+    @model_validator(mode="after")
+    def ensure_status(self):
+        if self.error is not None:
+            self.status = Status.FAILED
+        if self.result is not None:
+            self.status = Status.COMPLETED
+        return self
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:
