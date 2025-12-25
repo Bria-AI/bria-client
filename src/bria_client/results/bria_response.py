@@ -84,7 +84,8 @@ class BriaResponse(ExcludeNoneBaseModel, Generic[R]):
         while time.time() - start_time <= timeout:
             time.sleep(interval)
             logger.debug(f"Polling request status... [{self.request_id}]")
-            response = await client.status.get_status(request_id=self.request_id)
+            result_class_R = self.__class__.__pydantic_generic_metadata__["args"][0]
+            response = await client.status.get_status(request_id=self.request_id, result_obj=result_class_R)
             if raise_on_error:
                 response.raise_for_status()
             if not response.in_progress():

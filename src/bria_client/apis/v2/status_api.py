@@ -7,10 +7,12 @@ class StatusAPI(V2API):
     path = "status"
 
     @api_endpoint(":request_id")
-    def get_status(self, request_id: str):
+    def get_status(self, request_id: str, result_obj: BriaResult | None = None) -> BriaResult:
         """
         Args:
             request_id: is used inside the api_endpoint decorator
         """
-        response = self.api_engine.get(self.url, result_obj=BriaResult)
+        if result_obj is None:
+            result_obj = BriaResult
+        response = self.api_engine.get(self.url, result_obj=result_obj)
         return response

@@ -28,7 +28,7 @@ def api_endpoint(endpoint: str):
             if endpoint.startswith(":"):
                 actual_endpoint = kwargs.get(endpoint[1:])
                 if (actual_endpoint is None) and len(args) > 0:
-                    actual_endpoint = args[0]
+                    actual_endpoint = args[0] if args[0] is not None else endpoint
             original_url = self.url
             self.url = urljoin(self.url + "/", actual_endpoint)
             try:
