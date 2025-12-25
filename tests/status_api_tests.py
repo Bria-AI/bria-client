@@ -7,7 +7,7 @@ import pytest
 
 from bria_client import BriaClient
 from bria_client.exceptions import BriaException
-from bria_client.responses.status import StatusResponse
+from bria_client.results import BriaResponse
 from bria_client.toolkit.status import Status
 
 logging.basicConfig(level=logging.DEBUG)
@@ -37,7 +37,7 @@ class TestStatusApi:
         # Act
         response = client.status.get_status(request_id="fake")
         # Assert
-        assert isinstance(response, StatusResponse)
+        assert isinstance(response, BriaResponse)
 
     def test_status_api_get_status_on_raise_for_status_should_raise_BriaException(self, fake_client):
         # Arrange

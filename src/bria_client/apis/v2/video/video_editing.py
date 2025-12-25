@@ -1,7 +1,7 @@
 from bria_client.apis.api import api_endpoint
 from bria_client.apis.v2.video.video_api import VideoAPI
 from bria_client.payloads.video_editing_payload import VideoEraserPayload, VideoIncreaseResolutionPayload, VideoRemoveBackgroundPayload
-from bria_client.responses.video_editing import VideoEraserResponse, VideoIncreaseResolutionResponse, VideoRemoveBackgroundResponse
+from bria_client.results.video_editing import VideoEraserResult, VideoIncreaseResolutionResult, VideoRemoveBackgroundResult
 
 
 class VideoEditingAPI(VideoAPI):
@@ -12,7 +12,7 @@ class VideoEditingAPI(VideoAPI):
         """
         Remove the background of the video
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=VideoRemoveBackgroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=VideoRemoveBackgroundResult)
         return response
 
     @api_endpoint("increase_resolution")
@@ -20,7 +20,7 @@ class VideoEditingAPI(VideoAPI):
         """
         Increase the resolution of the video
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=VideoIncreaseResolutionResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=VideoIncreaseResolutionResult)
         return response
 
     @api_endpoint("erase")
@@ -28,5 +28,5 @@ class VideoEditingAPI(VideoAPI):
         """
         Erase the object from the video using mask video
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=VideoEraserResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=VideoEraserResult)
         return response

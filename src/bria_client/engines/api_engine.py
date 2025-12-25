@@ -8,9 +8,9 @@ from bria_client.decorators.enable_sync_decorator import enable_run_synchronousl
 from bria_client.engines.async_http_request import AsyncHTTPRequest
 from bria_client.exceptions import MissingAuthenticationException
 from bria_client.payloads.bria_payload import BriaPayload
-from bria_client.responses import BriaResponse
+from bria_client.results import BriaResponse, BriaResult
 
-T = TypeVar("T", bound=BriaResponse)
+T = TypeVar("T", bound=BriaResult)
 
 
 class ApiEngine(AsyncHTTPRequest):
@@ -29,26 +29,28 @@ class ApiEngine(AsyncHTTPRequest):
         return self._default_headers
 
     @enable_run_synchronously
-    async def post(self, url: str, payload: BriaPayload, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
+    async def post(
+        self, url: str, payload: BriaPayload, result_obj: type[T], headers: dict | None = None, **kwargs
+    ) -> Awaitable[BriaResponse[T]] | BriaResponse[T]:
         if headers is None:
             headers = {}
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
         response = await super().post(url, payload=payload.model_dump(mode="json", exclude_none=True), headers={**headers, **self.default_headers}, **kwargs)
-        return response_obj.from_http_response(response)
+        return BriaResponse[result_obj].from_http_response(response)
 
     @enable_run_synchronously
-    async def get(self, url: str, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
+    async def get(self, url: str, result_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[BriaResponse[T]] | BriaResponse[T]:
         if headers is None:
             headers = {}
 
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
-        s = super()
-        response = await s.get(url, headers={**headers, **self.default_headers}, **kwargs)
-        return response_obj.from_http_response(response)
+        response = await super().get(url, headers={**headers, **self.default_headers}, **kwargs)
+
+        return BriaResponse[result_obj].from_http_response(response)
 
     def put(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         url = self.base_url + route

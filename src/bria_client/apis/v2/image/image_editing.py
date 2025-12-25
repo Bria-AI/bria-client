@@ -14,16 +14,17 @@ from bria_client.payloads.image_editing_payload import (
     RemoveBgPayload,
     ReplaceBgPayload,
 )
-from bria_client.responses.image_editing import (
-    BlurBackgroundResponse,
-    CropForegroundResponse,
-    EnhanceImageResponse,
-    EraseForegroundResponse,
-    EraserResponse,
-    ExpandImageResponse,
-    GenFillResponse,
-    IncreaseResResponse,
-    RemoveBackgroundResponse,
+from bria_client.results.image_editing import (
+    BlurBackgroundResult,
+    CropForegroundResult,
+    EnhanceImageResult,
+    EraseForegroundResult,
+    EraserResult,
+    ExpandImageResult,
+    GenFillResult,
+    IncreaseResResult,
+    RemoveBackgroundResult,
+    ReplaceBackgroundResult,
 )
 
 
@@ -49,7 +50,7 @@ class ImageEditingAPI(ImageAPI):
 
            `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=BlurBackgroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=BlurBackgroundResult)
         return response
 
     @api_endpoint("remove_background")
@@ -71,7 +72,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=RemoveBackgroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=RemoveBackgroundResult)
         return response
 
     @api_endpoint("replace_background")
@@ -93,7 +94,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=RemoveBackgroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=ReplaceBackgroundResult)
         return response
 
     @api_endpoint("crop_foreground")
@@ -115,7 +116,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=CropForegroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=CropForegroundResult)
         return response
 
     @api_endpoint("erase_foreground")
@@ -137,7 +138,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=EraseForegroundResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=EraseForegroundResult)
         return response
 
     @api_endpoint("expand")
@@ -159,7 +160,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=ExpandImageResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=ExpandImageResult)
         return response
 
     @api_endpoint("enhance")
@@ -181,7 +182,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=EnhanceImageResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=EnhanceImageResult)
         return response
 
     @api_endpoint("increase_resolution")
@@ -201,7 +202,7 @@ class ImageEditingAPI(ImageAPI):
             `ContentModerationException` - In cases content moderation is enabled and the image is not suitable
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=IncreaseResResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=IncreaseResResult)
         return response
 
     @api_endpoint("erase")
@@ -223,7 +224,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=EraserResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=EraserResult)
         return response
 
     @api_endpoint("gen_fill")
@@ -245,7 +246,7 @@ class ImageEditingAPI(ImageAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj=GenFillResponse)
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj=GenFillResult)
         return response
 
 

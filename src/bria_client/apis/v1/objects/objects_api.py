@@ -23,5 +23,5 @@ class ObjectsAPI(V1API):
             `PollingException` - If the file polling fails
         """
         raise NotImplementedError("idk not implemented yet")
-        response = self.api_engine.post(url=self.url, payload=payload, response_obj={})
+        response = self.api_engine.post(url=self.url, payload=payload, result_obj={})
         return response
