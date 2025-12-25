@@ -5,11 +5,11 @@ from bria_client.toolkit.video import VideoOutputContainerAndCodec
 
 
 class BriaPayload(BaseModel):
+    model_config = ConfigDict(use_enum_values=True, arbitrary_types_allowed=True)
     pass
 
 
 class BriaV2BasePayload(BriaPayload):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
     sync: bool | None = None
 
 
@@ -31,19 +31,19 @@ class MaskInputPayload(BriaV2BasePayload):
     mask_type: ImageMaskKind | None = None
 
 
-class PreserveInputImageAlphaParam(BaseModel):
+class PreserveInputImageAlphaParam(BriaPayload):
     preserve_alpha: bool | None = None
 
 
-class RemoveBackgroundDetectionParam(BaseModel):
+class RemoveBackgroundDetectionParam(BriaPayload):
     force_background_detection: bool | None = None
 
 
-class SeedInputParam(BaseModel):
+class SeedInputParam(BriaPayload):
     seed: int | None = None
 
 
-class PositivePromptInputPayload(BaseModel):
+class PositivePromptInputPayload(BriaPayload):
     prompt: str | None = None
     prompt_content_moderation: bool | None = None
 
@@ -57,7 +57,7 @@ class IpSignalInputPayload(PromptInputPayload):
     ip_signal: bool | None = None
 
 
-class ImageDrivenPayload(BaseModel):
+class ImageDrivenPayload(BriaPayload):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ref_images: list[ImageSource] | None = None
