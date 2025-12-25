@@ -6,6 +6,5 @@
 * change reposnse sot bria response
 * use str enums for payloads
 * override model_dump to briaPayload
-* bring back BriaSettings
 * change StatusResult to BriaResult
 
