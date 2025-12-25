@@ -13,7 +13,7 @@ class BriaBackend(ABC):
         self.video_editing = VideoEditingAPI(api_engine=self._engine)
         self.video_segmenting = VideoSegmentingAPI(api_engine=self._engine)
 
-    @abstractmethod
     @property
+    @abstractmethod
     def _engine(self) -> ApiEngine:
         pass

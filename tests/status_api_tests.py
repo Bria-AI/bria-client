@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import uuid
 
 import httpx
@@ -8,6 +9,8 @@ from bria_client import BriaClient
 from bria_client.exceptions import BriaException
 from bria_client.responses.status import StatusResponse
 from bria_client.toolkit.status import Status
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class TestStatusApi:

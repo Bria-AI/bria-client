@@ -52,14 +52,15 @@ class BriaResponse(GenericModel, Generic[R]):
 
     @classmethod
     def from_http_response(cls, response: Response):
+        response_obj = cls
         if "error" in response.json():
 
             class BriaErrorResponse(BriaResponse):
                 status: Status = Field(default=Status.FAILED)
                 pass
 
-            return BriaErrorResponse(**response.json())
-        return cls(**response.json())
+            response_obj = BriaErrorResponse
+        return response_obj(**response.json())
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:

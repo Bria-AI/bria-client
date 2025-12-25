@@ -13,6 +13,7 @@ class BriaClient(BriaBackend):
         api_token: str | None = None,
         retry: Retry | None = Retry(total=3, backoff_factor=2),
     ):
+        # self.settings = BriaSettings()
         self.api_token = os.environ.get("BRIA_API_TOKEN", api_token)
         self.base_url = os.environ.get("BRIA_API_URL", base_url)
         self.retry = retry

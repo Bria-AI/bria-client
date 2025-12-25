@@ -16,26 +16,26 @@ T = TypeVar("T", bound=BriaResponse)
 class ApiEngine(AsyncHTTPRequest):
     """this should be the abstract base class for all engines"""
 
-    def __init__(self, auth_header: dict | Callable[[], dict], base_url: str = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
+    def __init__(self, default_headers: dict | Callable[[], dict], base_url: str = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
         self.base_url = base_url
         self.retry = retry
-        self._auth_header = auth_header
+        self._default_headers = default_headers
         super().__init__(retry=retry)
 
     @property
-    def auth_header(self) -> dict:
-        if isinstance(self._auth_header, Callable):
-            return self._auth_header()
-        return self._auth_header
+    def default_headers(self) -> dict:
+        if isinstance(self._default_headers, Callable):
+            return self._default_headers()
+        return self._default_headers
 
     @enable_run_synchronously
     async def post(self, url: str, payload: BriaPayload, response_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[T] | T:
         if headers is None:
             headers = {}
-        if list(self.auth_header.values())[0] is None:
+        if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
-        response = await super().post(url, payload=payload.model_dump(exclude_none=True), headers={**headers, **self.auth_header}, **kwargs)
+        response = await super().post(url, payload=payload.model_dump(mode="json", exclude_none=True), headers={**headers, **self.default_headers}, **kwargs)
         return response_obj.from_http_response(response)
 
     @enable_run_synchronously
@@ -43,10 +43,11 @@ class ApiEngine(AsyncHTTPRequest):
         if headers is None:
             headers = {}
 
-        if list(self.auth_header.values())[0] is None:
+        if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
-        response = await super().get(url, headers={**headers, **self.auth_header}, **kwargs)
+        s = super()
+        response = await s.get(url, headers={**headers, **self.default_headers}, **kwargs)
         return response_obj.from_http_response(response)
 
     def put(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:

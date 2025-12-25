@@ -14,7 +14,7 @@ load_dotenv()
 
 class MyCustomEngine(ApiEngine):
     def __init__(self, base_url: str, custom_auth_callable: Callable[[], dict], retry: Retry | None = None):
-        super().__init__(base_url=base_url, auth_header=custom_auth_callable, retry=retry)
+        super().__init__(base_url=base_url, default_headers=custom_auth_callable, retry=retry)
 
 
 class MyCustomClient(BriaBackend):

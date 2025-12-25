@@ -1,4 +1,7 @@
-from typing import Literal, TypedDict
+from typing import Literal
+
+from pydantic import ConfigDict
+from typing_extensions import TypedDict
 
 from bria_client.payloads.bria_payload import PositivePromptInputPayload, VideoBasePayload, VideoInputPayload
 
@@ -26,6 +29,8 @@ class KeyPoint(TypedDict):
 
 
 class VideoMaskByKeypointsPayload(VideoEraserBasePayload):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     key_points: list[KeyPoint]
 
 

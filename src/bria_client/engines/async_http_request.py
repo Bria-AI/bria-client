@@ -17,10 +17,11 @@ class AsyncHTTPRequest(ABC):
             `request_timeout: int` - The default request timeout for reading response from the server (client side rejection)
         """
         self.request_timeout = request_timeout
-        self.transport = RetryTransport(retry=retry)
+        self.retry = retry
 
     def get(self, url: str, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
-        return self._request(url, "GET", headers=headers, **kwargs)
+        response = self._request(url, "GET", headers=headers, **kwargs)
+        return response
 
     def post(self, url: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         return self._request(url, "POST", payload=payload, headers=headers, **kwargs)
@@ -55,11 +56,11 @@ class AsyncHTTPRequest(ABC):
         return self._sync_request(method, url, payload, headers=headers, **kwargs)
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        async with httpx.AsyncClient(transport=self.transport) as client:
+        async with httpx.AsyncClient(transport=RetryTransport(retry=self.retry)) as client:
             response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
             return response
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        with httpx.Client(transport=self.transport) as client:
+        with httpx.Client(transport=RetryTransport(retry=self.retry)) as client:
             response = client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
             return response
