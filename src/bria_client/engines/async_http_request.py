@@ -1,3 +1,6 @@
+import asyncio
+import threading
+import weakref
 from abc import ABC
 from collections.abc import Awaitable
 
@@ -17,7 +20,20 @@ class AsyncHTTPRequest(ABC):
             `request_timeout: int` - The default request timeout for reading response from the server (client side rejection)
         """
         self.request_timeout = request_timeout
-        self.retry = retry
+        self._retry = retry
+        self._timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0)
+        self._limits = httpx.Limits(max_keepalive_connections=20, max_connections=100, keepalive_expiry=30.0)
+
+        # Saves httpx.AsyncClient instances for each event loop, Using wearkrefDictionary to avoid memory leaks when event loops are garbage collected.
+        self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
+        self._async_clients_lock = threading.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
+
+        # One sync client for this process:
+        self._client = httpx.Client(
+            transport=RetryTransport(retry=self._retry) if self._retry is not None else None,
+            timeout=self._timeout,
+            limits=self._limits,
+        )
 
     def get(self, url: str, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
         response = self._request(url, "GET", headers=headers, **kwargs)
@@ -56,11 +72,40 @@ class AsyncHTTPRequest(ABC):
         return self._sync_request(method, url, payload, headers=headers, **kwargs)
 
     async def _async_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        async with httpx.AsyncClient(transport=RetryTransport(retry=self.retry)) as client:
-            response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
-            return response
+        client: httpx.AsyncClient = self._get_async_client()
+        response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
+        return response
 
     def _sync_request(self, method: str, url: str, payload: dict | None, headers: dict | None = None, **kwargs) -> httpx.Response:
-        with httpx.Client(transport=RetryTransport(retry=self.retry)) as client:
-            response = client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
-            return response
+        response = self._client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
+        return response
+
+    def _get_async_client(self) -> httpx.AsyncClient:
+        """
+        Get an async client for the current event loop, create one only if needed.
+
+        Returns:
+            `httpx.AsyncClient` - The async client for the current event loop
+        """
+        loop = asyncio.get_running_loop()
+
+        # Loop key exists → return existing client
+        client = self._async_clients.get(loop)
+        if client is not None:
+            return client
+
+        with self._async_clients_lock:
+            client = self._async_clients.get(loop)
+
+            # Dual-check to prevent race conditions, client might have been created by another thread.
+            if client is not None:
+                return client
+
+            # Otherwise create a new AsyncClient bound to this loop
+            client = httpx.AsyncClient(
+                timeout=self._timeout,
+                limits=self._limits,
+            )
+            self._async_clients[loop] = client
+
+        return client

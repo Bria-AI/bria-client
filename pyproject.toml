@@ -17,6 +17,7 @@ dependencies = [
     "pillow",
     "pydantic",
     "pydantic-settings",
+    "strenum~=0.4.15; python_version < '3.11'",
     "werkzeug>=3",
 ]
 
