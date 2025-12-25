@@ -40,7 +40,7 @@ class BriaEngineAPIRoutes(StrEnum):
 
     # V2 Video Segmentation Routes
     V2_VIDEO_SEGMENT_MASK_BY_PROMPT = "v2/video/segment/mask_by_prompt"
-    V2_VIDEO_SEGMENT_MASK_BY_KEYPOINTS = "v2/video/segment/mask_by_keypoints"
+    V2_VIDEO_SEGMENT_MASK_BY_KEY_POINTS = "v2/video/segment/mask_by_key_points"
 
     # V2 Structured Prompts Routes
     V2_IMAGE_EDIT_GENERATE_STRUCTURED_INSTRUCTION = "v2/structured_instruction/generate"

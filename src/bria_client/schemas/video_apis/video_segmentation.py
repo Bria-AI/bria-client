@@ -11,6 +11,6 @@ class MaskByPromptRequestPayload(APIPayloadModel):
 
 class MaskByKeypointsRequestPayload(APIPayloadModel):
     video: str
-    keypoints: list[KeyPoint]
+    key_points: list[KeyPoint]
     output_container_and_codec: VideoOutputPreset | None = VideoOutputPreset.MP4_H264
     auto_trim: bool | None = False
