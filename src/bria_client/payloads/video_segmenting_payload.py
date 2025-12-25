@@ -1,21 +1,14 @@
-from typing import Literal, TypedDict
-
 from bria_client.payloads.bria_payload import PositivePromptInputPayload, VideoBasePayload, VideoInputPayload
 from bria_client.payloads.video_editing_payload import VideoRemoveBackgroundPayload
+from bria_client.toolkit.video import KeyPoint
 
 
 class MaskVideoRemoveBackgroundPayload(VideoRemoveBackgroundPayload):
-    background_color: Literal["mask"] | None = None
+    pass
 
 
 class VideoEraserBasePayload(VideoInputPayload, VideoBasePayload):
     auto_trim: bool | None = None
-
-
-class KeyPoint(TypedDict):
-    x: int
-    y: int
-    type: Literal["positive", "negative"]
 
 
 class VideoMaskByKeypointsPayload(VideoEraserBasePayload):

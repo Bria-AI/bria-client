@@ -1,5 +1,3 @@
-from typing import Literal
-
 from pydantic import BaseModel
 
 from bria_client.payloads.bria_payload import (
@@ -12,6 +10,7 @@ from bria_client.payloads.bria_payload import (
     RemoveBackgroundDetectionParam,
     SeedInputParam,
 )
+from bria_client.toolkit.specifics import GenFillVersion, IncreaseResDesiredIncrease, ReplaceBackgroundMode
 
 
 class BlurBackgroundPayload(ImageBasePayload, ImageInputPayload, PreserveInputImageAlphaParam):
@@ -25,7 +24,7 @@ class RemoveBgPayload(ImageBasePayload, ImageInputPayload, PreserveInputImageAlp
 class ReplaceBgPayload(ImageInputPayload, PromptInputPayload, ImageBasePayload, ImageDrivenPayload, RemoveBackgroundDetectionParam):
     fast: bool | None = None
     refine_prompt: bool | None = None
-    mode: Literal["base", "fast", "high_control"] | None = None
+    mode: ReplaceBackgroundMode | None = None
 
 
 class ExpandImagePayload(ImageInputPayload, ImageBasePayload, PreserveInputImageAlphaParam, PromptInputPayload):
@@ -38,7 +37,7 @@ class ExpandImagePayload(ImageInputPayload, ImageBasePayload, PreserveInputImage
 
 
 class IncreaseResPayload(ImageInputPayload, ImageBasePayload, PreserveInputImageAlphaParam):
-    desired_increase: Literal[2, 4] | None = None
+    desired_increase: IncreaseResDesiredIncrease | None = None
 
 
 class EnhanceImagePayload(ImageInputPayload, ImageBasePayload, PreserveInputImageAlphaParam, SeedInputParam):
@@ -50,7 +49,7 @@ class EraserPayload(ImageInputPayload, ImageBasePayload, MaskInputPayload, Prese
 
 
 class GenFillPayload(ImageBasePayload, ImageInputPayload, PromptInputPayload, MaskInputPayload, PreserveInputImageAlphaParam):
-    version: Literal[1, 2] | None = None
+    version: GenFillVersion | None = None
     tailored_model_id: str | None = None
     tailored_model_influence: float | None = None
     refine_prompt: bool | None = None

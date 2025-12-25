@@ -4,7 +4,6 @@
 * maybe do error conversion for api, to return object named exceptions -> maybe we cant because the api returns different things
 
 * change reposnse sot bria response
-* use str enums for payloads
 * override model_dump to briaPayload
 * change StatusResult to BriaResult
 

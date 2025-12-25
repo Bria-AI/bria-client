@@ -1,8 +1,7 @@
-from typing import Literal
-
 from pydantic import BaseModel, ConfigDict
 
-from bria_client.toolkit.image_source import ImageSource
+from bria_client.toolkit.image import ImageMaskKind, ImageOutputType, ImageSource
+from bria_client.toolkit.video import VideoOutputContainerAndCodec
 
 
 class BriaPayload(BaseModel):
@@ -15,7 +14,7 @@ class BriaV2BasePayload(BriaPayload):
 
 
 class ImageBasePayload(BriaV2BasePayload):
-    output_type: Literal["png", "jpeg"] | None = None
+    output_type: ImageOutputType | None = None
     visual_output_content_moderation: bool | None = None
     visual_output_content_moderation_threshold: float | None = None
 
@@ -29,7 +28,7 @@ class ImageInputPayload(BriaV2BasePayload):
 
 class MaskInputPayload(BriaV2BasePayload):
     mask: ImageSource | None = None
-    mask_type: Literal["manual", "automatic", "automatic_full"] | None = None
+    mask_type: ImageMaskKind | None = None
 
 
 class PreserveInputImageAlphaParam(BaseModel):
@@ -67,9 +66,7 @@ class ImageDrivenPayload(BaseModel):
 
 
 class VideoBasePayload(BriaV2BasePayload):
-    output_container_and_codec: (
-        Literal["mp4_h265", "mp4_h264", "webm_vp9", "mov_h265", "mov_proresks", "mkv_h265", "mkv_h264", "mkv_vp9", "gif", "avi_h264"] | None
-    ) = None
+    output_container_and_codec: VideoOutputContainerAndCodec | None = None
 
 
 class VideoInputPayload(BriaV2BasePayload):
