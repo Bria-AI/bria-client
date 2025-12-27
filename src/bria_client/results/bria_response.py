@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import logging
-import time
 from typing import Generic, NoReturn, TypeVar
 
 from httpx import Response
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.exceptions import BriaException
 from bria_client.toolkit.models import ExcludeNoneBaseModel
 from bria_client.toolkit.status import Status
@@ -71,26 +69,3 @@ class BriaResponse(ExcludeNoneBaseModel, Generic[R]):
 
     def in_progress(self) -> bool:
         return self.status is Status.RUNNING
-
-    @enable_run_synchronously
-    async def wait_for_status(self, client: BriaClient, raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60) -> BriaResponse:
-        if self.error is not None:
-            if raise_on_error:
-                self.raise_for_status()
-            raise NotImplementedError("Cannot wait for status when error occurred")
-
-        start_time = time.time()
-        response = None
-        while time.time() - start_time <= timeout:
-            time.sleep(interval)
-            logger.debug(f"Polling request status... [{self.request_id}]")
-            result_class_R = self.__class__.__pydantic_generic_metadata__["args"][0]
-            response = await client.status.get_status(request_id=self.request_id, result_obj=result_class_R)
-            if raise_on_error:
-                response.raise_for_status()
-            if not response.in_progress():
-                break
-
-        if response is None:
-            raise TimeoutError("Timeout reached while waiting for status request")
-        return response

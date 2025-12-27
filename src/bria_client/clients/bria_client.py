@@ -1,8 +1,12 @@
+import logging
+
 from httpx_retries import Retry
 
 from bria_client.apis.bria_backend import BriaBackend
 from bria_client.clients.settings import BriaSettings
 from bria_client.engines import ApiEngine, BriaEngine
+
+logger = logging.getLogger(__name__)
 
 
 class BriaClient(BriaBackend):

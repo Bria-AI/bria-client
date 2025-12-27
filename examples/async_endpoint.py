@@ -17,6 +17,6 @@ client = BriaClient(base_url="https://engine.prod.bria-api.com", api_token=os.en
 replace_bg_input = ReplaceBgPayload(sync=False, image="https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png", prompt="starry night")
 
 response = client.image_editing.replace_background(payload=replace_bg_input)
-actual_response = response.wait_for_status(client=client)
+actual_response = client.wait_for_status(response=response)
 
 print(actual_response.result.image_url)

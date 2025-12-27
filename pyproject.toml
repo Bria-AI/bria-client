@@ -1,6 +1,6 @@
 [project]
 name = "bria_client"
-version = "0.0.2"
+dynamic = ["version"]
 description = "Bria.ai Python SDK"
 readme = "README.md"
 authors = [{ name = "Bria.ai" }]
@@ -14,23 +14,22 @@ dependencies = [
     "httpx~=0.28",
     "httpx-retries~=0.4.5",
     "numpy>=2.2.6",
-    "pillow",
-    "pydantic",
-    "pydantic-settings",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.12.0",
     "strenum~=0.4.15; python_version < '3.11'",
     "werkzeug>=3",
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest-asyncio>=1.3.0",
-]
+[tool.uv-dynamic-versioning]
+pattern = "default-unprefixed"
+fallback-version = "0.0.0"
 
+[tool.uv]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "uv-dynamic-versioning"]
 build-backend = "hatchling.build"
-
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -40,26 +39,29 @@ packages = ["src/bria_client"]
 
 [tool.hatch.build]
 include = ["src/**/*"]
-exclude = [
-    "src/**/*_tests.py",
-    "src/bria_client/internal/**/*"
-]
 
-
-[tool.ruff.lint]
-select = ["C4", "E", "F", "I", "PERF", "UP"]
-ignore = ["PERF203", "E402", "F821"]
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
 
 [tool.ruff]
 line-length = 160
 target-version = "py310"
 
+[tool.ruff.lint]
+select = ["C4", "E", "F", "I", "PERF", "UP"]
+ignore = ["PERF203", "E402", "F821"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
 [dependency-groups]
 dev = [
-    "pytest>=8.4.0",
-    "pytest-mock>=3.14.1",
-    "ruff>=0.12.0",
     "pre-commit>=4.3.0",
+    "ruff>=0.14.0",
+]
+test = [
+    "pytest>=8.4.2",
+    "pytest-mock>=3.15.1",
 ]
 
 [tool.pytest.ini_options]

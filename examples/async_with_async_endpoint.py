@@ -22,7 +22,7 @@ async def request_and_poll():
 
     async def request_with_polling():
         response = await client.image_editing.replace_background(payload=replace_bg_input)
-        actual_response = await response.wait_for_status(client=client)
+        actual_response = await client.wait_for_status(response=response)
         return actual_response
 
     r1, r2 = await asyncio.gather(request_with_polling(), request_with_polling())
