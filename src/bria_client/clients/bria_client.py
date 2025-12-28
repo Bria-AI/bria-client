@@ -21,9 +21,11 @@ class BriaClient(BriaBackend):
     ):
         self.settings = BriaSettings()
         self.retry = retry
-        if api_token := (self.settings.api_token or api_token) is None:
+        api_token = self.settings.api_token or api_token
+        base_url = self.settings.base_url or base_url
+        if api_token is None:
             raise ValueError("api_token is required, please set BRIA_API_TOKEN or pass it explicitly to client")
-        if base_url := (self.settings.base_url or base_url) is None:
+        if base_url is None:
             raise ValueError("base_url is required, please set BRIA_BASE_URL or pass it explicitly to client")
         self.api_token = api_token
         self.base_url = base_url
