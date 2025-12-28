@@ -13,10 +13,12 @@ from bria_client.results import BriaResponse, BriaResult
 T = TypeVar("T", bound=BriaResult)
 
 
-class ApiEngine(AsyncHTTPRequest):
+class ApiEngine(AsyncHTTPRequest[Any]):
     """this should be the abstract base class for all engines"""
 
-    def __init__(self, default_headers: dict | Callable[[], dict], base_url: str, retry: Retry = Retry(total=3, backoff_factor=2)):
+    def __init__(self, default_headers: dict | Callable[[], dict], base_url: str, retry: Retry | None = None):
+        if retry is None:
+            retry = Retry(total=3, backoff_factor=2)
         self.base_url = base_url
         self.retry = retry
         self._default_headers = default_headers
@@ -30,16 +32,32 @@ class ApiEngine(AsyncHTTPRequest):
 
     @enable_run_synchronously
     @override
-    async def post(self, url: str, payload: BriaPayload, result_obj: type[T], headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse[T]:
+    async def post(
+        self,
+        url: str,
+        payload: BriaPayload,
+        headers: dict[str, str] | None = None,
+        *,
+        result_obj: type[T],
+        **kwargs: Any,
+    ) -> BriaResponse[T]:
         if headers is None:
             headers = {}
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
         response = await super().post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
-        return BriaResponse[result_obj].from_http_response(response)
+        return BriaResponse[result_obj].from_http_response(response)  # type: ignore
 
     @enable_run_synchronously
-    async def get(self, url: str, result_obj: type[T], headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse[T]:
+    @override
+    async def get(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+        *,
+        result_obj: type[T],
+        **kwargs: Any,
+    ) -> BriaResponse[T]:
         if headers is None:
             headers = {}
 
@@ -48,4 +66,4 @@ class ApiEngine(AsyncHTTPRequest):
 
         response = await super().get(url, headers={**headers, **self.default_headers}, **kwargs)
 
-        return BriaResponse[result_obj].from_http_response(response)
+        return BriaResponse[result_obj].from_http_response(response)  # type: ignore

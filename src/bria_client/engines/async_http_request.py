@@ -3,15 +3,17 @@ import threading
 import weakref
 from abc import ABC
 from collections.abc import Awaitable
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 import httpx
 from httpx_retries import Retry, RetryTransport
 
 from bria_client.decorators.enable_sync_decorator import running_in_async_context
 
+RT = TypeVar("RT")
 
-class AsyncHTTPRequest(ABC):
+
+class AsyncHTTPRequest(ABC, Generic[RT]):
     def __init__(self, request_timeout: int = 30, retry: Retry | None = None) -> None:
         """
         Initialize the AsyncHTTPClient
@@ -35,28 +37,22 @@ class AsyncHTTPRequest(ABC):
             limits=self._limits,
         )
 
-    def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[httpx.Response] | httpx.Response:
+    def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
         response = self._request(url, "GET", headers=headers, **kwargs)
-        return response
+        return response  # type: ignore
 
-    def post(
-        self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> Awaitable[httpx.Response] | httpx.Response:
-        return self._request(url, "POST", payload=payload, headers=headers, **kwargs)
+    def post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
+        return self._request(url, "POST", payload=payload, headers=headers, **kwargs)  # type: ignore
 
-    def put(
-        self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> Awaitable[httpx.Response] | httpx.Response:
-        return self._request(url, "PUT", payload=payload, headers=headers, **kwargs)
+    def put(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
+        return self._request(url, "PUT", payload=payload, headers=headers, **kwargs)  # type: ignore
 
-    def delete(
-        self, url: str, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> Awaitable[httpx.Response] | httpx.Response:
-        return self._request(url, "DELETE", params=params, headers=headers, **kwargs)
+    def delete(self, url: str, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
+        return self._request(url, "DELETE", params=params, headers=headers, **kwargs)  # type: ignore
 
     def _request(
         self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> Awaitable[httpx.Response] | httpx.Response:
+    ) -> Awaitable[RT] | RT:
         """
         Make an http request using Bria Engine Client
 
@@ -69,15 +65,15 @@ class AsyncHTTPRequest(ABC):
             `**kwargs` - Additional `httpx.request` compatible keyword arguments to pass to the request
 
         Returns:
-            `Awaitable[httpx.Response] | httpx.Response` - The response from the request
+            `Awaitable[RT] | RT` - The response from the request
 
         Raises:
             `EngineAPIException` - When the request fails
         """
 
         if running_in_async_context():
-            return self._async_request(method, url, payload, headers=headers, **kwargs)
-        return self._sync_request(method, url, payload, headers=headers, **kwargs)
+            return self._async_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
+        return self._sync_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
 
     async def _async_request(
         self, method: str, url: str, payload: dict[str, Any] | None, headers: dict[str, str] | None = None, **kwargs: Any
