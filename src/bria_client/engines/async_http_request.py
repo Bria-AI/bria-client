@@ -37,18 +37,12 @@ class AsyncHTTPRequest(ABC, Generic[RT]):
             limits=self._limits,
         )
 
-    def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
+    def _get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
         response = self._request(url, "GET", headers=headers, **kwargs)
         return response  # type: ignore
 
-    def post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
+    def _post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
         return self._request(url, "POST", payload=payload, headers=headers, **kwargs)  # type: ignore
-
-    def put(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
-        return self._request(url, "PUT", payload=payload, headers=headers, **kwargs)  # type: ignore
-
-    def delete(self, url: str, params: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
-        return self._request(url, "DELETE", params=params, headers=headers, **kwargs)  # type: ignore
 
     def _request(
         self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any

@@ -38,17 +38,17 @@ class BriaBackend(ABC):
             raise NotImplementedError("Cannot wait for status when error occurred")
 
         start_time = time.time()
-        response = None
+        a_response = None
         while time.time() - start_time <= timeout:
             time.sleep(interval)
             logger.debug(f"Polling request status... [{response.request_id}]")
             result_class_R = response.__class__.__pydantic_generic_metadata__["args"][0]
-            response = await self.status.get_status(request_id=response.request_id, result_obj=result_class_R)
+            a_response = await self.status.get_status(request_id=response.request_id, result_obj=result_class_R)
             if raise_on_error:
-                response.raise_for_status()
-            if not response.in_progress():
+                a_response.raise_for_status()
+            if not a_response.in_progress():
                 break
 
-        if response is None:
+        if a_response is None:
             raise TimeoutError("Timeout reached while waiting for status request")
-        return response
+        return a_response

@@ -1,5 +1,4 @@
 import logging
-from collections.abc import Awaitable
 
 from bria_client.apis.api import api_endpoint
 from bria_client.apis.v2.image.image_api import ImageAPI
@@ -15,7 +14,6 @@ from bria_client.payloads.image_editing_payload import (
     RemoveBgPayload,
     ReplaceBgPayload,
 )
-from bria_client.results import BriaResponse
 from bria_client.results.image_editing import (
     BlurBackgroundResult,
     CropForegroundResult,
@@ -88,7 +86,7 @@ class ImageEditingAPI(ImageAPI):
         return response
 
     @api_endpoint("replace_background")
-    def replace_background(self, payload: ReplaceBgPayload) -> Awaitable[BriaResponse[ReplaceBackgroundResult]] | BriaResponse[ReplaceBackgroundResult]:
+    def replace_background(self, payload: ReplaceBgPayload):
         """
         Replace the background of an image with a generated scene or solid color
 

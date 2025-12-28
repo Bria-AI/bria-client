@@ -2,7 +2,6 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 from httpx_retries import Retry
-from typing_extensions import override
 
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.engines.async_http_request import AsyncHTTPRequest
@@ -31,7 +30,6 @@ class ApiEngine(AsyncHTTPRequest[Any]):
         return self._default_headers
 
     @enable_run_synchronously
-    @override
     async def post(
         self,
         url: str,
@@ -45,11 +43,10 @@ class ApiEngine(AsyncHTTPRequest[Any]):
             headers = {}
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
-        response = await super().post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
+        response = await super()._post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
         return BriaResponse[result_obj].from_http_response(response)  # type: ignore
 
     @enable_run_synchronously
-    @override
     async def get(
         self,
         url: str,
@@ -64,6 +61,6 @@ class ApiEngine(AsyncHTTPRequest[Any]):
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
-        response = await super().get(url, headers={**headers, **self.default_headers}, **kwargs)
+        response = await super()._get(url, headers={**headers, **self.default_headers}, **kwargs)
 
         return BriaResponse[result_obj].from_http_response(response)  # type: ignore
