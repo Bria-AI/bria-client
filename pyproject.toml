@@ -25,7 +25,7 @@ pattern = "default-unprefixed"
 fallback-version = "0.0.0"
 
 [tool.uv]
-cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true }}]
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
@@ -57,6 +57,7 @@ ignore = ["PERF203", "E402", "F821"]
 [dependency-groups]
 dev = [
     "pre-commit>=4.3.0",
+    "pyright>=1.1.407",
     "ruff>=0.14.0",
 ]
 test = [
@@ -67,3 +68,6 @@ test = [
 [tool.pytest.ini_options]
 log_cli = true
 python_files = "**/*_tests.py"
+
+[tool.pyright]
+enableExperimentalFeatures = true
