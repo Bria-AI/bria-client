@@ -1,7 +1,8 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 from typing import TypeVar
 
 from httpx_retries import Retry
+from typing_extensions import override
 
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.engines.async_http_request import AsyncHTTPRequest
@@ -28,9 +29,8 @@ class ApiEngine(AsyncHTTPRequest):
         return self._default_headers
 
     @enable_run_synchronously
-    async def post(
-        self, url: str, payload: BriaPayload, result_obj: type[T], headers: dict | None = None, **kwargs
-    ) -> Awaitable[BriaResponse[T]] | BriaResponse[T]:
+    @override
+    async def post(self, url: str, payload: BriaPayload, result_obj: type[T], headers: dict | None = None, **kwargs) -> BriaResponse[T]:
         if headers is None:
             headers = {}
         if list(self.default_headers.values())[0] is None:
@@ -39,7 +39,8 @@ class ApiEngine(AsyncHTTPRequest):
         return BriaResponse[result_obj].from_http_response(response)
 
     @enable_run_synchronously
-    async def get(self, url: str, result_obj: type[T], headers: dict | None = None, **kwargs) -> Awaitable[BriaResponse[T]] | BriaResponse[T]:
+    @override
+    async def get(self, url: str, result_obj: type[T], headers: dict | None = None, **kwargs) -> BriaResponse[T]:
         if headers is None:
             headers = {}
 

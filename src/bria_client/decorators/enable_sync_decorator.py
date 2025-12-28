@@ -16,7 +16,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, T | Awaitable[T]]:
+def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
     """
     Decorator that enables execution of an async function in a sync context (synchronously).
 
