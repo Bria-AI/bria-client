@@ -18,8 +18,7 @@ class TestStatusApi:
     def fake_client(self):
         def get_client(handler) -> BriaClient:
             client = BriaClient(base_url="http://localhost:5000", api_token="fake")
-            transport = httpx.MockTransport(handler)
-            client._engine.transport = transport
+            # transport = httpx.MockTransport(handler)
             return client
 
         return get_client
@@ -71,7 +70,7 @@ class TestStatusApi:
                 200,
                 json={
                     "error": {"code": 400, "message": "Error message here", "details": "Error details here"},
-                    "status": Status.ERROR,
+                    "status": Status.FAILED,
                     "request_id": request_id,
                 },
                 request=request,

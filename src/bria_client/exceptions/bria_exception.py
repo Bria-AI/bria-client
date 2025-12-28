@@ -19,7 +19,7 @@ class BriaException(HTTPException):
     @property
     def name(self) -> str:
         # do this to override the string in the werkzeug exception
-        return self.message
+        return self.message or ""
 
     @classmethod
     def from_error(cls, code: int, message: str, details: str):

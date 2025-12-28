@@ -1,13 +1,16 @@
 import logging
 import time
 from abc import ABC, abstractmethod
+from typing import TypeVar
 
 from bria_client.apis.v2 import ImageEditingAPI, StatusAPI
 from bria_client.apis.v2.video.video_editing import VideoEditingAPI
 from bria_client.apis.v2.video.video_segmenting import VideoSegmentingAPI
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.engines import ApiEngine
-from bria_client.results import BriaResponse
+from bria_client.results import BriaResponse, BriaResult
+
+T = TypeVar("T", bound=BriaResult)
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +28,7 @@ class BriaBackend(ABC):
         pass
 
     @enable_run_synchronously
-    async def wait_for_status(self, response: BriaResponse, raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60) -> BriaResponse:
+    async def wait_for_status(self, response: BriaResponse[T], raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60) -> BriaResponse[T]:
         if response.error is not None:
             if raise_on_error:
                 response.raise_for_status()

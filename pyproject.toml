@@ -14,6 +14,7 @@ dependencies = [
     "httpx~=0.28",
     "httpx-retries~=0.4.5",
     "numpy>=2.2.6",
+    "pillow>=12.0.0",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "strenum~=0.4.15; python_version < '3.11'",

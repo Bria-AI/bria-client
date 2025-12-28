@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class BriaClient(BriaBackend):
+    api_token: str
+    base_url: str
+
     def __init__(
         self,
         base_url: str | None = None,
@@ -17,9 +20,13 @@ class BriaClient(BriaBackend):
         retry: Retry | None = Retry(total=3, backoff_factor=2),
     ):
         self.settings = BriaSettings()
-        self.api_token = self.settings.api_token or api_token
-        self.base_url = self.settings.base_url or base_url
         self.retry = retry
+        if api_token := (self.settings.api_token or api_token) is None:
+            raise ValueError("api_token is required, please set BRIA_API_TOKEN or pass it explicitly to client")
+        if base_url := (self.settings.base_url or base_url) is None:
+            raise ValueError("base_url is required, please set BRIA_BASE_URL or pass it explicitly to client")
+        self.api_token = api_token
+        self.base_url = base_url
         super().__init__()
 
     @property

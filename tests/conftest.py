@@ -4,25 +4,24 @@ from PIL import Image
 
 
 @pytest.fixture
-def pil_image() -> Image.Image:
-    return ""
-
-
-@pytest.fixture
 def np_image() -> np.ndarray:
-    return ""
+    return np.array([])
 
 
 @pytest.fixture
-def local_image_path() -> str:
-    # mock the load of this thing globally
-    return ""
+def pil_image(np_image) -> Image.Image:
+    return Image.fromarray(np_image)
+
+
+@pytest.fixture(scope="session")
+def local_image_path(tmp_path, pil_image) -> str:
+    pil_image.save(f"{tmp_path}/image.png")
+    return f"{tmp_path}/image.png"
 
 
 @pytest.fixture
 def image_url() -> str:
-    # mock the load of this thing globally
-    return ""
+    return "https://www.alleycat.org/wp-content/uploads/2019/03/FELV-cat.jpg"
 
 
 @pytest.fixture

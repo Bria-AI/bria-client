@@ -2,6 +2,7 @@ import pytest
 from pydantic import BaseModel
 
 from bria_client.toolkit.image import Image, ImageSource
+from tests.conftest import base64_image, image_url, local_image_path, np_image, pil_image
 
 
 class TestImage:

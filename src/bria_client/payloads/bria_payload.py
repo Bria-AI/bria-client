@@ -71,21 +71,3 @@ class VideoBasePayload(BriaV2BasePayload):
 
 class VideoInputPayload(BriaV2BasePayload):
     video: str | None = None
-
-
-if __name__ == "__main__":
-    import io
-
-    import requests
-    from PIL import Image
-
-    def download_image_url(url: str) -> Image.Image:
-        res = requests.get(url, timeout=10.0)
-        if res.status_code != requests.codes.ok:
-            raise Exception("failed to download image")
-        return Image.open(io.BytesIO(res.content))
-
-    image = download_image_url("https://bria-image-repository.s3.amazonaws.com/images/8f893e628137ead8.png")
-    x = ImageInputPayload(image=image)
-    x.model_dump()
-    a = 1

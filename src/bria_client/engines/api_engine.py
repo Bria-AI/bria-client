@@ -1,7 +1,6 @@
 from collections.abc import Awaitable, Callable
 from typing import TypeVar
 
-import httpx
 from httpx_retries import Retry
 
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
@@ -50,17 +49,3 @@ class ApiEngine(AsyncHTTPRequest):
         response = await super().get(url, headers={**headers, **self.default_headers}, **kwargs)
 
         return BriaResponse[result_obj].from_http_response(response)
-
-    def put(self, route: str, payload: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
-        url = self.base_url + route
-        if headers is None:
-            headers = {}
-        response = super().put(url, payload=payload, headers=headers, **kwargs)
-        return response
-
-    def delete(self, route: str, params: dict, headers: dict | None = None, **kwargs) -> Awaitable[httpx.Response] | httpx.Response:
-        url = self.base_url + route
-        if headers is None:
-            headers = {}
-        response = super().delete(url, params=params, headers=headers, **kwargs)
-        return response
