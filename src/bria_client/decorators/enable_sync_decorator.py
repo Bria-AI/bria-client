@@ -1,7 +1,7 @@
 import asyncio
 import functools
-from collections.abc import Awaitable, Callable
-from typing import ParamSpec, TypeVar
+from collections.abc import Callable, Coroutine
+from typing import Any, ParamSpec, TypeVar
 
 
 def running_in_async_context() -> bool:
@@ -16,7 +16,7 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T] | T]:
+def enable_run_synchronously(func: Callable[P, Coroutine[Any, Any, T]]) -> Callable[P, Coroutine[Any, Any, T]]:
     """
     Decorator that enables execution of an async function in a sync context (synchronously).
 
@@ -33,7 +33,7 @@ def enable_run_synchronously(func: Callable[P, Awaitable[T]]) -> Callable[P, Awa
     """
 
     @functools.wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Awaitable[T] | T:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> Coroutine[Any, Any, T]:
         if running_in_async_context():
             # Already in async context, return the coroutine
             return func(*args, **kwargs)
