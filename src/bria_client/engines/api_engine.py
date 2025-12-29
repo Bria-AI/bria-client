@@ -34,24 +34,23 @@ class ApiEngine(AsyncHTTPRequest[Any]):
         self,
         url: str,
         payload: BriaPayload,
+        result_obj: type[T],
         headers: dict[str, str] | None = None,
-        *result_obj: type[T],
         **kwargs: Any,
     ) -> BriaResponse[T]:
         if headers is None:
             headers = {}
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
-        response = await super()._post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
+        response = await self._post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
         return BriaResponse[result_obj].from_http_response(response)  # type: ignore
 
     @enable_run_synchronously
     async def get(
         self,
         url: str,
-        headers: dict[str, str] | None = None,
-        *,
         result_obj: type[T],
+        headers: dict[str, str] | None = None,
         **kwargs: Any,
     ) -> BriaResponse[T]:
         if headers is None:
@@ -60,6 +59,6 @@ class ApiEngine(AsyncHTTPRequest[Any]):
         if list(self.default_headers.values())[0] is None:
             raise MissingAuthenticationException
 
-        response = await super()._get(url, headers={**headers, **self.default_headers}, **kwargs)
+        response = await self._get(url, headers={**headers, **self.default_headers}, **kwargs)
 
         return BriaResponse[result_obj].from_http_response(response)  # type: ignore

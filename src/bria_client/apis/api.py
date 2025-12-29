@@ -23,22 +23,19 @@ def api_endpoint(endpoint: str):
         endpoint: could be static string or ':param' which will take it from the kwargs or try the first arg
     """
 
-    def decorator(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            actual_endpoint = endpoint
-            if endpoint.startswith(":"):
-                actual_endpoint = kwargs.get(endpoint[1:])
-                if (actual_endpoint is None) and len(args) > 0:
-                    actual_endpoint = args[0] if args[0] is not None else endpoint
-            original_url = self.url
-            self.url = urljoin(self.url + "/", actual_endpoint)
-            try:
-                return func(self, *args, **kwargs)
-            finally:
-                # ALWAYS restore url to base layer, even if error happens
-                self.url = original_url
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        actual_endpoint = endpoint
+        if endpoint.startswith(":"):
+            actual_endpoint = kwargs.get(endpoint[1:])
+            if (actual_endpoint is None) and len(args) > 0:
+                actual_endpoint = args[0] if args[0] is not None else endpoint
+        original_url = self.url
+        self.url = urljoin(self.url + "/", actual_endpoint)
+        try:
+            return func(self, *args, **kwargs)
+        finally:
+            # ALWAYS restore url to base layer, even if error happens
+            self.url = original_url
 
-        return wrapper
-
-    return decorator
+    return wrapper
