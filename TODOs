@@ -4,3 +4,6 @@
 * fix type hints
 * organize imports as wanted
 * add tests
+* add cicd -> think of pipeline for it
+* fix README -> how to | examples | contribute
+* check all services work
