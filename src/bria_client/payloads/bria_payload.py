@@ -26,6 +26,13 @@ class ImageInputPayload(BriaV2BasePayload):
     preserve_color_bit_depth: bool | None = None
 
 
+class ImagesInputPayload(BriaV2BasePayload):
+    images: list[ImageSource] | None = None
+    visual_input_content_moderation_threshold: float | None = None
+    visual_input_content_moderation: bool | None = None
+    preserve_color_bit_depth: bool | None = None
+
+
 class MaskInputPayload(BriaV2BasePayload):
     mask: ImageSource | None = None
     mask_type: ImageMaskKind | None = None

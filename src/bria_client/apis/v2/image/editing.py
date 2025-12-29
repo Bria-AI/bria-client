@@ -1,7 +1,7 @@
 import logging
 
 from bria_client.apis.api import api_endpoint
-from bria_client.apis.v2.image.image_api import ImageAPI
+from bria_client.apis.v2.image.api import ImageAPI
 from bria_client.payloads.image_editing_payload import (
     BlurBackgroundPayload,
     CropForegroundPayload,

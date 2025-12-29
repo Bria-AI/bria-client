@@ -1,5 +1,5 @@
 from bria_client.apis.api import api_endpoint
-from bria_client.apis.v2.video.video_api import VideoAPI
+from bria_client.apis.v2.video.api import VideoAPI
 from bria_client.payloads.video_editing_payload import VideoMaskByKeypointsPayload, VideoMaskByPromptPayload
 from bria_client.results.video_segmenting import VideoMaskByKeypointsResult, VideoMaskByPromptResult
 

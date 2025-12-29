@@ -2,7 +2,7 @@ from collections.abc import Awaitable
 from typing import TypeVar
 
 from bria_client.apis.api import api_endpoint
-from bria_client.apis.v2.v2_api import V2API
+from bria_client.apis.v2.api import V2API
 from bria_client.results import BriaResponse, BriaResult
 
 T = TypeVar("T", bound=BriaResult)

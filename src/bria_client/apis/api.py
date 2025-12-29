@@ -42,7 +42,8 @@ def api_endpoint(endpoint: str):
                     actual_endpoint = args[0] if args[0] is not None else endpoint
 
             original_url = self.url
-            self.url = urljoin(self.url + "/", str(actual_endpoint))
+
+            self.url = urljoin(self.url + "/", str(actual_endpoint)).rstrip("/")
             try:
                 return func(self, *args, **kwargs)
             finally:
