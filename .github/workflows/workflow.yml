@@ -8,8 +8,23 @@ env:
   OWNER: "Bria.ai"
 
 jobs:
+  lint:
+    name: Run lint and type checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Run lint check
+        run: uv tool run ruff check
+      - name: Run type check
+        run: uv tool run pyright
   test:
     name: Run unit tests
+    needs: lint
     runs-on: ${{ matrix.os }}
     continue-on-error: true
     strategy:
@@ -39,27 +54,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install uv
         uses: astral-sh/setup-uv@v3
-      - name: Set up Git authentication
-        if: runner.os != 'Windows'
-        run: |
-          git config --global url."https://${PAT_USER}:${PAT_TOKEN}@github.com/".insteadOf "https://github.com/"
-        env:
-          PAT_TOKEN: ${{ secrets.OMRI_PAT }}
-          PAT_USER: ${{ secrets.OMRI_USER }}
-      - name: Set up Git authentication
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          git config --global url."https://$Env:PAT_USER:$Env:PAT_TOKEN@github.com/".insteadOf "https://github.com/"
-        env:
-          PAT_TOKEN: ${{ secrets.OMRI_PAT }}
-          PAT_USER: ${{ secrets.OMRI_USER }}
       - name: Show Python version
         run: python --version
       - name: Sync dependencies
-        run: |
-          pip install -U pip setuptools wheel
-          pip install -e .
+        run: uv tool run pytest
   details:
     name: Get Version
     runs-on: ubuntu-latest
