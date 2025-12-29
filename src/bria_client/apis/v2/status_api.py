@@ -17,5 +17,5 @@ class StatusAPI(V2API):
         Args:
             request_id: is used inside the api_endpoint decorator
         """
-        response = self.api_engine._get(self.url, result_obj=result_obj)
+        response = self.api_engine.get(self.url, result_obj=result_obj)
         return response

@@ -32,10 +32,10 @@ class BriaBackend(ABC):
     async def wait_for_status(
         self, response: BriaResponse[T], raise_on_error: bool = False, interval: float = 0.5, timeout: int = 60
     ) -> Awaitable[BriaResponse[T]] | BriaResponse[T]:
-        if response.error is not None:
+        if not response.in_progress():
             if raise_on_error:
                 response.raise_for_status()
-            raise NotImplementedError("Cannot wait for status when error occurred")
+            return response
 
         start_time = time.time()
         a_response = None

@@ -35,8 +35,7 @@ class ApiEngine(AsyncHTTPRequest[Any]):
         url: str,
         payload: BriaPayload,
         headers: dict[str, str] | None = None,
-        *,
-        result_obj: type[T],
+        *result_obj: type[T],
         **kwargs: Any,
     ) -> BriaResponse[T]:
         if headers is None:

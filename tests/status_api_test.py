@@ -6,6 +6,7 @@ import httpx
 import pytest
 
 from bria_client import BriaClient
+from bria_client.engines.async_http_request import AsyncHTTPRequest
 from bria_client.exceptions import BriaException
 from bria_client.results import BriaResponse
 from bria_client.toolkit.status import Status
@@ -15,10 +16,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 class TestStatusApi:
     @pytest.fixture
-    def fake_client(self):
+    def fake_client(self, mocker):
         def get_client(handler) -> BriaClient:
+            fake_client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+            mocker.patch.object(AsyncHTTPRequest, "_get_async_client", return_value=fake_client)
+
             client = BriaClient(base_url="http://localhost:5000", api_token="fake")
-            # transport = httpx.MockTransport(handler)
+
             return client
 
         return get_client
@@ -26,9 +30,10 @@ class TestStatusApi:
     def test_status_api_get_status_on_return_bria_response(self, fake_client):
         # Arrange
         def handler(request: httpx.Request) -> httpx.Response:
+            print(f"HANDLER CALLED: {request.method} {request.url}")
             return httpx.Response(
                 200,
-                json={"error": {"code": 400, "message": "Error message here", "details": "Error details here"}, "status": "ERROR", "request_id": "fake"},
+                json={"result": {"success": "yes"}, "status": "COMPLETED", "request_id": "fake2"},
                 request=request,
             )
 
@@ -57,7 +62,7 @@ class TestStatusApi:
     @pytest.mark.asyncio
     async def test_status_api_get_status_on_async_return_bria_response(self, fake_client):
         # Arrange
-        async def handler(request: httpx.Request) -> httpx.Response:
+        async def async_handler(request: httpx.Request) -> httpx.Response:
             await asyncio.sleep(0.1)
             request_id = request.url.path.rpartition("/")[-1]
             if request_id == "1":
@@ -76,7 +81,7 @@ class TestStatusApi:
                 request=request,
             )
 
-        client = fake_client(handler)
+        client = fake_client(async_handler)
         # Act
         r1, r2 = await asyncio.gather(client.status.get_status(request_id="1"), client.status.get_status(request_id="2"))
         try:
@@ -105,5 +110,5 @@ class TestStatusApi:
         client = fake_client(handler)
         # Act
         response = client.status.get_status(request_id="fake")
-        actual_response = response.wait_for_status(client)
+        actual_response = client.wait_for_status(response=response)
         assert actual_response.result.correct == "good"

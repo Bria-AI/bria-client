@@ -1,15 +1,14 @@
 import pytest
-from conftest import base64_image, image_url, local_image_path, np_image, pil_image
 from pydantic import BaseModel
 
-from bria_client.toolkit.image import Image, ImageSource
+from bria_client.toolkit.image import Image
 
 
 class TestImage:
-    @pytest.mark.skip("uncompleted")
-    @pytest.mark.parametrize("image_source", [pil_image, np_image, local_image_path, image_url, base64_image])
-    def test_image_on_init_should_work_for_all_image_source_types(self, image_source):
+    @pytest.mark.parametrize("image_source", ["pil_image", "np_image", "local_image_path", "image_url", "base64_image"])
+    def test_image_on_init_should_work_for_all_image_source_types(self, image_source, request):
         # Arrange
+        image_source = request.getfixturevalue(image_source)
         # Act
         image = Image(image_source)
         # Assert
@@ -20,7 +19,7 @@ class TestImageSource:
     def test_type_serializer_on_pydantic_model_dump_should_serialize_param_to_base64(self, pil_image):
         # Arrange
         class TestModel(BaseModel):
-            image: ImageSource
+            image: Image
 
         # Act
         model = TestModel(image=pil_image)
