@@ -426,6 +426,6 @@ For support and questions:
 - **Documentation**: [Bria Engine API Documentation](https://docs.bria.ai)
 - **Issues**: [GitHub Issues](https://github.com/bria-ai/bria-sdk/issues)
 
----
+--- 
 
 Made with ❤️ by [Bria.ai](https://bria.ai)
