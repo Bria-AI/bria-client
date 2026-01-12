@@ -212,6 +212,7 @@ class BriaEngineClient(AsyncHTTPClient):
         base_url: str | None = None,
         api_token_ctx: ContextVar[str] | None = None,
         jwt_token_ctx: ContextVar[str] | None = None,
+        ip_project_id_ctx: ContextVar[str] | None = None,
         retry: Retry | None = None,
     ) -> None:
         if api_token_ctx is None and engine_settings.API_KEY:
@@ -224,6 +225,7 @@ class BriaEngineClient(AsyncHTTPClient):
 
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
+        self.ip_project_id_ctx = ip_project_id_ctx
         self.retry = retry
         super().__init__(base_url=base_url, retry=retry)
 
@@ -233,6 +235,9 @@ class BriaEngineClient(AsyncHTTPClient):
             raise ValueError("Authentication token is not set")
 
         headers: dict = {"api_token": self.api_token} if self.api_token else {"jwt": self.jwt_token}
+        ip_project_id = self.ip_project_id
+        if ip_project_id:
+            headers["ip_project_id"] = ip_project_id
         return headers
 
     @property
@@ -254,6 +259,16 @@ class BriaEngineClient(AsyncHTTPClient):
             return self.jwt_token_ctx.get()
         except LookupError:
             # ContextVar exists but not initialized yet
+            return None
+
+    @property
+    def ip_project_id(self) -> str | None:
+        try:
+            if self.ip_project_id_ctx is None:
+                return None
+
+            return self.ip_project_id_ctx.get()
+        except LookupError:
             return None
 
     @staticmethod
