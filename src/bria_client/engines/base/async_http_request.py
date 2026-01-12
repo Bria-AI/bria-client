@@ -1,83 +1,56 @@
 import asyncio
 import threading
 import weakref
-from abc import ABC
 from collections.abc import Awaitable
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 import httpx
-from httpx_retries import Retry, RetryTransport
+from httpx_retries import Retry
 
-from bria_client.decorators.enable_sync_decorator import running_in_async_context
-
-RT = TypeVar("RT")
+from bria_client.engines.base.base_http_request import RT, BaseHTTPRequest
 
 
-class AsyncHTTPRequest(ABC, Generic[RT]):
+class AsyncHTTPRequest(BaseHTTPRequest[RT]):
+    """Async-only HTTP request implementation"""
+
     def __init__(self, request_timeout: int = 30, retry: Retry | None = None) -> None:
         """
         Initialize the AsyncHTTPClient
 
         Args:
             `request_timeout: int` - The default request timeout for reading response from the server (client side rejection)
+            `retry: Retry | None` - Retry configuration for requests
         """
-        self.request_timeout = request_timeout
-        self._retry = retry
-        self._timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=5.0)
-        self._limits = httpx.Limits(max_keepalive_connections=20, max_connections=100, keepalive_expiry=30.0)
+        super().__init__(request_timeout, retry)
 
-        # Saves httpx.AsyncClient instances for each event loop, Using wearkrefDictionary to avoid memory leaks when event loops are garbage collected.
+        # Saves httpx.AsyncClient instances for each event loop, Using weakrefDictionary to avoid memory leaks when event loops are garbage collected.
         self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
         self._async_clients_lock = threading.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
 
-        # One sync client for this process:
-        self._client = httpx.Client(
-            transport=RetryTransport(retry=self._retry) if self._retry is not None else None,
-            timeout=self._timeout,
-            limits=self._limits,
-        )
-
-    def _get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
-        response = self._request(url, "GET", headers=headers, **kwargs)
-        return response  # type: ignore
-
-    def _post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT] | RT:
-        return self._request(url, "POST", payload=payload, headers=headers, **kwargs)  # type: ignore
-
-    def _request(
-        self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> Awaitable[RT] | RT:
+    def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT]:
         """
-        Make an http request using Bria Engine Client
+        Make an async http request
 
         Args:
-            `route: str` - The route to make the request to
+            `url: str` - The URL to make the request to
             `method: str` - The method to use for the request
             `payload: dict | None` - The payload to send with the request
             `headers: dict | None` - The headers to send with the request
-
             `**kwargs` - Additional `httpx.request` compatible keyword arguments to pass to the request
 
         Returns:
-            `Awaitable[RT] | RT` - The response from the request
+            `Awaitable[RT]` - The response from the request
 
         Raises:
             `EngineAPIException` - When the request fails
         """
-
-        if running_in_async_context():
-            return self._async_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
-        return self._sync_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
+        return self._async_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
 
     async def _async_request(
         self, method: str, url: str, payload: dict[str, Any] | None, headers: dict[str, str] | None = None, **kwargs: Any
     ) -> httpx.Response:
         client: httpx.AsyncClient = self._get_async_client()
         response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
-        return response
-
-    def _sync_request(self, method: str, url: str, payload: dict[str, Any] | None, headers: dict[str, str] | None = None, **kwargs: Any) -> httpx.Response:
-        response = self._client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
         return response
 
     def _get_async_client(self) -> httpx.AsyncClient:

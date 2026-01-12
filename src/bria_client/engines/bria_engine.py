@@ -1,8 +1,30 @@
-from httpx_retries import Retry
-
-from bria_client.engines.api_engine import ApiEngine
+from bria_client.clients.settings import BriaSettings
+from bria_client.decorators.temp_api_token import with_temp_api_token
+from bria_client.engines.api_engine import AdditionalHeaders, ApiEngine
 
 
 class BriaEngine(ApiEngine):
-    def __init__(self, base_url: str, api_token: str, retry: Retry | None = None):
-        super().__init__(base_url=base_url, default_headers={"api_token": api_token}, retry=retry)
+    def __init__(
+        self,
+        base_url: str | None,
+        api_token: str | None = None,
+        default_headers: AdditionalHeaders | None = None,
+    ):
+        self.settings = BriaSettings()
+        self._api_token = api_token or self.settings.api_token
+        base_url = base_url or self.settings.base_url
+        if base_url is None:
+            raise ValueError("base_url is required, please set BRIA_BASE_URL or pass it explicitly to client")
+        super().__init__(base_url=base_url, default_headers=default_headers)
+
+    @property
+    def auth_headers(self) -> dict[str, str]:
+        return {"api_token": self._api_token}
+
+    @with_temp_api_token
+    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
+        return super().post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+
+    @with_temp_api_token
+    def get(self, endpoint: str, headers: dict | None = None, **kwargs):
+        return super().get(endpoint=endpoint, headers=headers, **kwargs)

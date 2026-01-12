@@ -1,7 +1,12 @@
-from enum import Enum
+import sys
+
+if sys.version_info < (3, 11):
+    from strenum import StrEnum
+else:
+    from enum import StrEnum
 
 
-class Status(str, Enum):
+class Status(StrEnum):
     UNKNOWN = "UNKNOWN"
     FAILED = "ERROR"
     COMPLETED = "COMPLETED"

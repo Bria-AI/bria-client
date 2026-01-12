@@ -1,64 +1,60 @@
+from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Any, TypeVar
 
-from httpx_retries import Retry
+from bria_client.engines.base.base_http_request import BaseHTTPRequest
+from bria_client.engines.base.sync_http_request import SyncHTTPRequest
 
-from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
-from bria_client.engines.async_http_request import AsyncHTTPRequest
-from bria_client.exceptions import MissingAuthenticationException
-from bria_client.payloads.bria_payload import BriaPayload
-from bria_client.results import BriaResponse, BriaResult
-
-T = TypeVar("T", bound=BriaResult)
+AdditionalHeaders = dict[str, str | Callable[[], str]]
 
 
-class ApiEngine(AsyncHTTPRequest[Any]):
-    """this should be the abstract base class for all engines"""
-
-    def __init__(self, default_headers: dict | Callable[[], dict], base_url: str, retry: Retry | None = None):
-        if retry is None:
-            retry = Retry(total=3, backoff_factor=2)
+class ApiEngine(ABC):
+    def __init__(self, base_url: str | None, default_headers: AdditionalHeaders | None = None):
         self.base_url = base_url
-        self.retry = retry
-        self._default_headers = default_headers
-        super().__init__(retry=retry)
+        self._default_headers = default_headers or {}
+        self.client: BaseHTTPRequest | None = None
+
+    @property
+    @abstractmethod
+    def auth_headers(self) -> dict[str, str]:
+        pass
+
+    def set_http_client(self, http_client: SyncHTTPRequest):
+        self.client = http_client
+
+    # region SYNC HTTP METHODS
+    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
+        assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
+
+        return self.client.post(url=self.prepare_endpoint(endpoint), payload=self.prepare_payload(payload), headers=self.prepare_headers(headers=headers))
+
+    def get(self, endpoint: str, headers: dict | None = None, **kwargs):
+        assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
+
+        return self.client.get(url=self.prepare_endpoint(endpoint), headers=self.prepare_headers(headers=headers))
+
+    # endregion
+    # region ASYNC HTTP METHODS
+    async def post_async(self):
+        raise NotImplementedError("idk")
+        ...
+
+    async def get_async(self):
+        raise NotImplementedError("idk")
+        ...
+
+    # endregion
 
     @property
     def default_headers(self) -> dict[str, str]:
-        if isinstance(self._default_headers, Callable):
-            return self._default_headers()
-        return self._default_headers
+        return {name: get_header() if callable(get_header) else get_header for name, get_header in self._default_headers.items()}
 
-    @enable_run_synchronously
-    async def post(
-        self,
-        url: str,
-        payload: BriaPayload,
-        result_obj: type[T],
-        headers: dict[str, str] | None = None,
-        **kwargs: Any,
-    ) -> BriaResponse[T]:
-        if headers is None:
-            headers = {}
-        if list(self.default_headers.values())[0] is None:
-            raise MissingAuthenticationException
-        response = await self._post(url, payload=payload.model_dump(mode="json"), headers={**headers, **self.default_headers}, **kwargs)
-        return BriaResponse[result_obj].from_http_response(response)  # type: ignore
+    def prepare_headers(self, headers: dict | None = None) -> dict:
+        additional_headers = headers or {}
+        return {**self.default_headers, **additional_headers, **self.auth_headers}
 
-    @enable_run_synchronously
-    async def get(
-        self,
-        url: str,
-        result_obj: type[T],
-        headers: dict[str, str] | None = None,
-        **kwargs: Any,
-    ) -> BriaResponse[T]:
-        if headers is None:
-            headers = {}
+    def prepare_endpoint(self, endpoint: str) -> str:
+        return f"{self.base_url}/v2/{endpoint.lstrip('/')}"
 
-        if list(self.default_headers.values())[0] is None:
-            raise MissingAuthenticationException
-
-        response = await self._get(url, headers={**headers, **self.default_headers}, **kwargs)
-
-        return BriaResponse[result_obj].from_http_response(response)  # type: ignore
+    def prepare_payload(self, payload: dict) -> dict:
+        # TODO: here should convert image to base64 if needed
+        return payload

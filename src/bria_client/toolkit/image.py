@@ -1,22 +1,21 @@
-import base64
-import binascii
-import io
 import sys
-
-import requests
-from pydantic import AnyHttpUrl
-from pydantic_core import core_schema
 
 if sys.version_info < (3, 11):
     from strenum import StrEnum
 else:
     from enum import StrEnum
 
+import base64
+import binascii
+import io
 from typing import TypeAlias
 
 import numpy as np
+import requests
 from PIL import Image as PilImage
 from PIL import UnidentifiedImageError
+from pydantic import AnyHttpUrl
+from pydantic_core import core_schema
 
 
 class ImageOutputType(StrEnum):
@@ -24,15 +23,7 @@ class ImageOutputType(StrEnum):
     JPEG = "jpeg"
 
 
-class ImageMaskKind(StrEnum):
-    MANUAL = "manual"
-    AUTOMATIC = "automatic"
-    AUTOMATIC_FULL = "automatic_full"
-
-
 Base64String: TypeAlias = str
-
-
 ImageSource: TypeAlias = PilImage.Image | AnyHttpUrl | np.ndarray | Base64String
 
 
@@ -62,13 +53,13 @@ class Image:
             if Image.is_base64(image):
                 return image
             if image.startswith("http"):
-                pil_image = self.get_image_from_url(image)
+                pil_image = self._url_2_pil(image)
                 return self._pil_2_b64(pil_image)
             # infer it is a local path
             pil_image = PilImage.open(image)
             return self._pil_2_b64(pil_image)
         if isinstance(image, AnyHttpUrl):
-            pil_image = self.get_image_from_url(str(image))
+            pil_image = self._url_2_pil(str(image))
             return self._pil_2_b64(pil_image)
         if isinstance(image, PilImage.Image):
             return self._pil_2_b64(image)
@@ -91,7 +82,7 @@ class Image:
         image.save(buffer, format=image.format or "PNG")
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    def get_image_from_url(self, image_url: str) -> PilImage.Image:
+    def _url_2_pil(self, image_url: str) -> PilImage.Image:
         with requests.get(image_url, stream=True, timeout=10) as response:
             response.raise_for_status()
             chunks = [chunk for chunk in response.iter_content(chunk_size=8192) if chunk]

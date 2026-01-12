@@ -1,22 +1,42 @@
 import logging
-import os
 
 from dotenv import load_dotenv
-
-from bria_client.payloads.image_editing_payload import ReplaceBgPayload
+from httpx_retries import Retry
 
 load_dotenv()
 
-from bria_client import BriaClient
+from bria_client import BriaSyncClient
+
+
+class PlatformSyncClient(BriaSyncClient):
+    def __init__(self, base_url: str | None = None, jwt_token: str | None = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
+        self.jwt = jwt_token
+        super().__init__(base_url=base_url, api_token=None, retry=retry)
+
+    @property
+    def auth_headers(self) -> dict[str, str]:
+        return {"jwt_token": self.jwt}
+
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
-client = BriaClient(base_url="https://engine.prod.bria-api.com", api_token=os.environ.get("BRIA_API_TOKEN"))
 
-replace_bg_input = ReplaceBgPayload(sync=False, image="https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png", prompt="starry night")
+def polling_client_use():
+    client = BriaSyncClient(base_url="https://engine.prod.bria-api.com")
 
-response = client.image_editing.replace_background(payload=replace_bg_input)
-actual_response = client.wait_for_status(response=response)
+    resp = client.submit(
+        endpoint="video/edit/remove_background",
+        payload={
+            "background_color": "Transparent",
+            "output_container_and_codec": "webm_vp9",
+            "video": "https://bria-test-images.s3.us-east-1.amazonaws.com/videos/1_min_video.mp4",
+        },
+    )
 
-print(actual_response.result.image_url)
+    actual_resp = client.poll(request_id=resp.request_id, interval=1, timeout=300)
+    return actual_resp
+
+
+resp = polling_client_use()
+print(resp)

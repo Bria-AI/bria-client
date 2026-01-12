@@ -69,8 +69,13 @@ test = [
 ]
 
 [tool.pytest.ini_options]
+markers = [
+    "unit: fast unit tests",
+    "integration: tests requiring external resources",
+    "e2e: full system end-to-end tests",
+]
+testpaths = ["tests"]
 log_cli = true
-python_files = "**/*_test.py"
 
 [tool.pyright]
 enableExperimentalFeatures = true

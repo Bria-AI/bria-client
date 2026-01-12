@@ -6,4 +6,4 @@
 * add tests
 * add cicd -> think of pipeline for it
 * fix README -> how to | examples | contribute
-* check all services work
+* create image/video puiblic bucket and instead of sending b64 upload it and give a url

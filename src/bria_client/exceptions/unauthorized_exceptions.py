@@ -1,4 +1,4 @@
-from bria_client.exceptions.bria_exception import BriaException
+from bria_client.exceptions import BriaException
 
 
 class MissingAuthenticationException(BriaException):
