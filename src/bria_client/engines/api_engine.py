@@ -19,7 +19,7 @@ class ApiEngine(ABC):
     def auth_headers(self) -> dict[str, str]:
         pass
 
-    def set_http_client(self, http_client: SyncHTTPRequest):
+    def set_http_client(self, http_client: BaseHTTPRequest):
         self.client = http_client
 
     # region SYNC HTTP METHODS
@@ -34,7 +34,7 @@ class ApiEngine(ABC):
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
         url = self.prepare_endpoint(endpoint)
         headers = self.prepare_headers(headers=headers)
-        return self.client.get_async(url=url, headers=headers)
+        return self.client.get(url=url, headers=headers)
 
     # endregion
     # region ASYNC HTTP METHODS

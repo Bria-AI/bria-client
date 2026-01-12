@@ -17,3 +17,4 @@ def success_client_use():
 
 
 resp = success_client_use()
+print(resp)

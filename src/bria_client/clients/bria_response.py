@@ -62,4 +62,4 @@ class BriaResponse(ExcludeNoneBaseModel):
             raise self.error.throw()
 
     def in_progress(self) -> bool:
-        return self.status is Status.RUNNING
+        return self.status is Status.RUNNING.value

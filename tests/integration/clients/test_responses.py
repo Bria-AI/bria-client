@@ -5,7 +5,7 @@ from bria_client.exceptions import BriaException
 from bria_client.toolkit.status import Status
 
 
-@pytest.mark.integartion
+@pytest.mark.integration
 class TestBriaErrorIntegrations:
     def test_error_on_raise_as_error_should_raise_exception_and_keep_fields_values(self):
         # Arrange
@@ -20,7 +20,7 @@ class TestBriaErrorIntegrations:
             assert e.details == "fake details"
 
 
-@pytest.mark.integartion
+@pytest.mark.integration
 class TestBriaResponseIntegrations:
     def test_bria_response_model_dump_on_excluding_none_valued_fields(self):
         # Arrange

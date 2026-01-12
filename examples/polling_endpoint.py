@@ -26,12 +26,8 @@ def polling_client_use():
     client = BriaSyncClient(base_url="https://engine.prod.bria-api.com")
 
     resp = client.submit(
-        endpoint="video/edit/remove_background",
-        payload={
-            "background_color": "Transparent",
-            "output_container_and_codec": "webm_vp9",
-            "video": "https://bria-test-images.s3.us-east-1.amazonaws.com/videos/1_min_video.mp4",
-        },
+        endpoint="video/segment/mask_by_prompt",
+        payload={"video": "https://bria-test-images.s3.us-east-1.amazonaws.com/videos/eraser_mask/woman_right_side.mov", "prompt": "women"},
     )
 
     actual_resp = client.poll(request_id=resp.request_id, interval=1, timeout=300)
