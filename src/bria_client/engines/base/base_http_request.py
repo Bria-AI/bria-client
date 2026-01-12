@@ -33,6 +33,14 @@ class BaseHTTPRequest(ABC):
         response = self._request(url, "POST", payload=payload, headers=headers, **kwargs)
         return BriaResponse.from_http_response(response)  # type: ignore
 
+    async def get_async(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any):
+        response = await self._request(url, "GET", headers=headers, **kwargs)
+        return BriaResponse.from_http_response(response)  # type: ignore
+
+    async def post_async(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any):
+        response = await self._request(url, "POST", payload=payload, headers=headers, **kwargs)
+        return BriaResponse.from_http_response(response)  # type: ignore
+
     @abstractmethod
     def _request(
         self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any

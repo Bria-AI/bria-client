@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
+from bria_client.engines.base.async_http_request import AsyncHTTPRequest
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
 
@@ -24,23 +25,31 @@ class ApiEngine(ABC):
     # region SYNC HTTP METHODS
     def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
-
-        return self.client.post(url=self.prepare_endpoint(endpoint), payload=self.prepare_payload(payload), headers=self.prepare_headers(headers=headers))
+        url = self.prepare_endpoint(endpoint)
+        payload = self.prepare_payload(payload)
+        headers = self.prepare_headers(headers=headers)
+        return self.client.post(url=url, payload=payload, headers=headers)
 
     def get(self, endpoint: str, headers: dict | None = None, **kwargs):
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
-
-        return self.client.get(url=self.prepare_endpoint(endpoint), headers=self.prepare_headers(headers=headers))
+        url = self.prepare_endpoint(endpoint)
+        headers = self.prepare_headers(headers=headers)
+        return self.client.get_async(url=url, headers=headers)
 
     # endregion
     # region ASYNC HTTP METHODS
-    async def post_async(self):
-        raise NotImplementedError("idk")
-        ...
+    async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
+        assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .post() method"
+        url = self.prepare_endpoint(endpoint)
+        payload = self.prepare_payload(payload)
+        headers = self.prepare_headers(headers=headers)
+        return await self.client.post_async(url=url, payload=payload, headers=headers)
 
-    async def get_async(self):
-        raise NotImplementedError("idk")
-        ...
+    async def get_async(self, endpoint: str, headers: dict | None = None, **kwargs):
+        assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .get() method"
+        url = self.prepare_endpoint(endpoint)
+        headers = self.prepare_headers(headers=headers)
+        return await self.client.get_async(url=url, headers=headers)
 
     # endregion
 
