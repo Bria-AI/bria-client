@@ -1,16 +1,16 @@
 import asyncio
 import threading
 import weakref
-from collections.abc import Awaitable
 from typing import Any
 
 import httpx
-from httpx_retries import Retry
+from httpx import Response
+from httpx_retries import Retry, RetryTransport
 
-from bria_client.engines.base.base_http_request import RT, BaseHTTPRequest
+from bria_client.engines.base.base_http_request import BaseHTTPRequest
 
 
-class AsyncHTTPRequest(BaseHTTPRequest[RT]):
+class AsyncHTTPRequest(BaseHTTPRequest):
     """Async-only HTTP request implementation"""
 
     def __init__(self, request_timeout: int = 30, retry: Retry | None = None) -> None:
@@ -27,7 +27,14 @@ class AsyncHTTPRequest(BaseHTTPRequest[RT]):
         self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
         self._async_clients_lock = threading.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
 
-    def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Awaitable[RT]:
+    async def aclose(self) -> None:
+        """Close all async clients"""
+        with self._async_clients_lock:
+            for client in list(self._async_clients.values()):
+                await client.aclose()
+            self._async_clients.clear()
+
+    async def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Response:
         """
         Make an async http request
 
@@ -39,16 +46,11 @@ class AsyncHTTPRequest(BaseHTTPRequest[RT]):
             `**kwargs` - Additional `httpx.request` compatible keyword arguments to pass to the request
 
         Returns:
-            `Awaitable[RT]` - The response from the request
+            `RT` - The response from the request
 
         Raises:
             `EngineAPIException` - When the request fails
         """
-        return self._async_request(method, url, payload, headers=headers, **kwargs)  # type: ignore
-
-    async def _async_request(
-        self, method: str, url: str, payload: dict[str, Any] | None, headers: dict[str, str] | None = None, **kwargs: Any
-    ) -> httpx.Response:
         client: httpx.AsyncClient = self._get_async_client()
         response = await client.request(method, url, headers=headers, json=payload, timeout=self.request_timeout, **kwargs)
         return response
@@ -76,6 +78,7 @@ class AsyncHTTPRequest(BaseHTTPRequest[RT]):
 
             # Otherwise create a new AsyncClient bound to this loop
             client = httpx.AsyncClient(
+                transport=RetryTransport(retry=self._retry) if self._retry is not None else None,
                 timeout=self._timeout,
                 limits=self._limits,
             )
