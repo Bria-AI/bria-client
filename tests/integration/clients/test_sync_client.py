@@ -35,7 +35,7 @@ class TestSyncClientApiToken:
         test_api_token = "test_override_token"
 
         # Mock the HTTP client's post method
-        mock_response = BriaResponse(status=Status.PENDING, request_id="test_456", result=None)
+        mock_response = BriaResponse(status=Status.RUNNING, request_id="test_456", result=None)
         mock_post = mocker.patch.object(client.engine.client, "post", return_value=mock_response)
 
         # Act
