@@ -15,17 +15,21 @@ class BriaClient:
         base_url: str | None = None,
         api_token_ctx: ContextVar[str] | str | None = None,
         jwt_token_ctx: ContextVar[str] | str | None = None,
+        ip_project_id_ctx: ContextVar[str] | str | None = None,
         retry: Retry | None = None,
     ):
         if isinstance(api_token_ctx, str):
             api_token_ctx = ContextVar("bria_engine_api_token", default=api_token_ctx)
         if isinstance(jwt_token_ctx, str):
             jwt_token_ctx = ContextVar("bria_engine_jwt_token", default=jwt_token_ctx)
+        if isinstance(ip_project_id_ctx, str):
+            ip_project_id_ctx = ContextVar("ip_project_id", default=ip_project_id_ctx)
 
         self._client = BriaEngineClient(
             base_url=base_url,
             api_token_ctx=api_token_ctx,
             jwt_token_ctx=jwt_token_ctx,
+            ip_project_id_ctx=ip_project_id_ctx,
             retry=retry,
         )
         self.status = StatusAPI(self._client)
