@@ -19,6 +19,8 @@ class BriaEngine(ApiEngine):
 
     @property
     def auth_headers(self) -> dict[str, str]:
+        if self._api_token is None:
+            raise ValueError("api_token is required, please set BRIA_API_TOKEN or pass it explicitly to method")
         return {"api_token": self._api_token}
 
     @with_temp_api_token

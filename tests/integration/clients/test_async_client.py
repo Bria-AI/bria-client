@@ -1,7 +1,7 @@
 import pytest
 
 from bria_client.clients.bria_clients import BriaAsyncClient
-from bria_client.clients.bria_response import BriaResponse
+from bria_client.clients.bria_response import BriaResponse, BriaResult
 from bria_client.toolkit.status import Status
 
 
@@ -17,7 +17,7 @@ class TestAsyncClientApiToken:
         test_api_token = "test_override_token"
 
         # Mock the HTTP client's post_async method
-        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result={"data": "test"})
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
         mock_post = mocker.patch.object(client.engine.client, "post_async", return_value=mock_response)
 
         # Act
@@ -57,7 +57,7 @@ class TestAsyncClientApiToken:
         client = BriaAsyncClient(base_url="https://test.example.com", api_token=default_token)
 
         # Mock the HTTP client's post_async method
-        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_789", result={"data": "test"})
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_789", result=BriaResult())
         mock_post = mocker.patch.object(client.engine.client, "post_async", return_value=mock_response)
 
         # Act
