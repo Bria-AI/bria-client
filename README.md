@@ -3,429 +3,212 @@
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A Python package for the Bria Engine API, designed to make integrating powerful image editing capabilities into your applications seamless and straightforward.
+A Python client library for the Bria Engine API, designed to make integrating powerful image and video editing capabilities into your applications seamless and straightforward. The library provides both synchronous and asynchronous clients with flexible request execution modes.
 
 ## Table of Contents
 
-- [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [API Reference](#api-reference)
+- [Usage Guide](#usage-guide)
 - [Examples](#examples)
-- [Error Handling](#error-handling)
-- [Async/Sync Support](#asyncsync-support)
-- [Development](#development)
 - [Contributing](#contributing)
-- [License](#license)
 - [Support](#support)
 
-## Features
-
-### Core Capabilities
-
-- **Async/Sync Support**: Works seamlessly in both synchronous and asynchronous contexts
-- **Type Safety**: Full type hints and Pydantic models for request/response validation
-- **Status Polling**: Automatic status checking with configurable timeouts and intervals
-- **Exception Handling**: Predefined exception types for different error scenarios
-- **ContextVar Support**: Flexible authentication using Python's `ContextVar` for multi-threaded/async environments
-- **Retry Support**: Configurable automatic retry logic for handling transient HTTP errors
-
 ## Installation
-
-Currently the only available option to install the package is from the git repository.
-
-### Using uv (Recommended)
-
-```bash
-uv add git+https://<username>:<password>@github.com/Bria-AI/bria-client
-```
-
-### Using pip
-
-```bash
-pip install git+https://<username>:<password>@github.com/Bria-AI/bria-client
-```
-
-<details>
-    <summary>When published to pypi</summary>
-    
-### Using uv (Recommended)
-
-```bash
-uv add bria-client
-```
-
-### Using pip
 
 ```bash
 pip install bria-client
 ```
 
-</details>
-
 ## Quick Start
 
-### Basic Example
-
-```python
-from bria_client import BriaClient
-from bria_client.payloads.image_editing.size_editing import ExpandImageRequestPayload
-
-# Initialize the client
-bria = BriaClient()
-
-# Expand an image
-response = bria.image_editing.expand_image(
-    payload=ExpandImageRequestPayload(
-        image="https://example.com/image.jpg",
-        aspect_ratio="1:1"
-    )
-)
-
-print(f"Result URL: {response.get_result().image_url}")
-```
-
-### Environment Setup
-
-Set your API key as an environment variable:
+Set your API key:
 
 ```bash
-export BRIA_ENGINE_API_KEY="your-api-key-here"
+export BRIA_API_TOKEN="your-api-key-here"
 ```
 
-Or create a `.env` file:
-
-```env
-BRIA_ENGINE_API_KEY=your-api-key-here
-```
-
-## Configuration
-
-### Environment Variables
-
-| Variable              | Description              | Required | Default                          |
-| --------------------- | ------------------------ | -------- | -------------------------------- |
-| `BRIA_ENGINE_API_KEY` | Your Bria Engine API key | Yes\*    | None, can be provided at runtime |
-| `BRIA_ENGINE_URL`     | Custom API endpoint      | No       | Production URL                   |
-
-\*Required unless using JWT token authentication
-
-### Custom Authentication
-
-The SDK supports multiple authentication methods:
-
-#### Using API Token (ContextVar)
+Basic example:
 
 ```python
-from contextvars import ContextVar
-from bria_client import BriaClient
+from bria_client import BriaSyncClient
+from bria_client.toolkit.image import Image
 
-# Using API token
-api_token: ContextVar[str] = ContextVar("bria_engine_api_token", default="your-api-key")
-bria = BriaClient(api_token_ctx=api_token)
-```
+client = BriaSyncClient()
 
-#### Using JWT Token
-
-```python
-from contextvars import ContextVar
-from bria_client import BriaClient
-
-# Using JWT token
-jwt_token: ContextVar[str] = ContextVar("bria_engine_jwt_token", default="your-jwt-token")
-bria = BriaClient(jwt_token_ctx=jwt_token)
-```
-
-#### Direct String Authentication
-
-```python
-from bria_client import BriaClient
-
-# Pass token directly as string
-bria = BriaClient(api_token_ctx="your-api-key")
-```
-
-### Retry Configuration
-
-The SDK supports automatic retry logic for handling transient HTTP errors using `httpx-retries`. You can configure custom retry strategies when initializing the client:
-
-#### Default (No Retries)
-
-```python
-from bria_client import BriaClient
-
-# No retry logic (default behavior)
-client = BriaClient()
-```
-
-#### Custom Retry Strategy
-
-```python
-from bria_client import BriaClient
-from httpx_retries import Retry
-
-# Configure retry with custom settings
-retry = Retry(
-    total=5,              # Maximum number of retry attempts
-    backoff_factor=0.5,  # Backoff factor for exponential backoff
-    status_forcelist=[500, 502, 503, 504]  # HTTP status codes to retry on
+# Process an image and get the result immediately
+response = client.run(
+    endpoint="image/edit/remove_background",
+    payload={"image": Image("https://example.com/image.jpg").as_bria_api_input}
 )
-bria = BriaClient(retry=retry)
+
+print(response.result)
 ```
 
-#### Retry with Authentication
+## Usage Guide
 
+### Two Client Types
+
+Choose the client that fits your use case:
+
+**`BriaSyncClient`** - For simple scripts and traditional applications
 ```python
-from bria_client import BriaClient
-from httpx_retries import Retry
+from bria_client import BriaSyncClient
 
-# Combine retry with authentication
-retry = Retry(total=3, backoff_factor=1.0)
-bria = BriaClient(api_token_ctx="your-api-key", retry=retry)
+client = BriaSyncClient()
+response = client.run(endpoint="image/edit/remove_background", payload={...})
 ```
 
-**Retry Configuration Options:**
-
-- `total`: Maximum number of retry attempts (default: varies by `httpx-retries`)
-- `backoff_factor`: Multiplier for exponential backoff between retries
-- `status_forcelist`: List of HTTP status codes that should trigger a retry
-- Other options available in the `httpx-retries` library
-
-For more information on retry configuration, see the [httpx-retries documentation](https://will-ockmore.github.io/httpx-retries/).
-
-## API Reference
-
-### Client Initialization
-
+**`BriaAsyncClient`** - For async applications and concurrent processing
 ```python
-from bria_client import BriaClient
+from bria_client import BriaAsyncClient
 
-# Default initialization (uses environment variables)
-client = BriaClient()
-
-# With custom authentication
-client = BriaClient(api_token_ctx="your-token")
-
-# With retry configuration
-from httpx_retries import Retry
-retry = Retry(total=5, backoff_factor=0.5)
-client = BriaClient(retry=retry)
+async with BriaAsyncClient() as client:
+    response = await client.run(endpoint="image/edit/remove_background", payload={...})
 ```
 
-### Image Editing API
+### Three Request Methods
 
-All image editing methods are available through the `image_editing` property:
-
-For example:
-
+**`.run()`** - Wait for immediate result
 ```python
-bria = BriaClient()
-
-bria.image_editing.remove_background(payload)
-bria.image_editing.replace_background(payload)
+# Good for quick operations
+response = client.run(endpoint="image/edit/remove_background", payload={...})
+print(response.result)
 ```
 
-### Status API
-
-Check the status of operations:
-
+**`.submit()`** - Submit and continue working
 ```python
-status_response = bria.status.get_status(job_id="your-job-id")
+# Good for long operations - returns immediately with request_id
+response = client.submit(endpoint="video/segment/mask_by_prompt", payload={...})
+print(f"Submitted: {response.request_id}")
+# Do other work...
 ```
+
+**`.poll()`** - Wait for a submitted request to complete
+```python
+# Check request status until done
+response = client.submit(endpoint="...", payload={...})
+final = client.poll(response, interval=2, timeout=300)
+print(final.result)
+```
+
+### Available Operations
+
+**Image Editing:**
+- `image/edit/remove_background` - Remove image background
+- `image/edit/replace_background` - Replace image background
+- `image/edit/expand` - Expand image canvas
+- `image/edit/enhance` - Enhance image quality
+
+**Video Processing:**
+- `video/segment/mask_by_prompt` - Generate video masks from text prompts
 
 ## Examples
 
-### Remove Background
+### Basic Usage
 
 ```python
-from bria_client import BriaClient
-from bria_client.payloads.image_editing.background_editing import RemoveBackgroundRequestPayload
+from bria_client import BriaSyncClient
+from bria_client.toolkit.image import Image
 
-bria = BriaClient()
+client = BriaSyncClient()
 
-response = bria.image_editing.remove_background(
-    payload=RemoveBackgroundRequestPayload(
-        image="https://example.com/image.jpg"
+response = client.run(
+    endpoint="image/edit/remove_background",
+    payload={"image": Image("https://example.com/image.jpg").as_bria_api_input}
+)
+
+print(response.result)
+```
+
+### Batch Processing
+
+```python
+from bria_client import BriaSyncClient
+from bria_client.toolkit.image import Image
+
+client = BriaSyncClient()
+images = ["image1.jpg", "image2.jpg", "image3.jpg"]
+
+# Submit all requests
+responses = [
+    client.submit(
+        endpoint="image/edit/remove_background",
+        payload={"image": Image(img).as_bria_api_input}
     )
-)
+    for img in images
+]
 
-print(f"Result: {response.get_result().image_url}")
+# Wait for all to complete
+results = [client.poll(r, timeout=120) for r in responses]
+print(f"Processed {len(results)} images")
 ```
 
-### Enhance Image Quality
-
-```python
-from bria_client import BriaClient
-from bria_client.payloads.image_editing.size_editing import EnhanceImageRequestPayload, Resolution
-
-bria = BriaClient()
-
-response = bria.image_editing.enhance_image(
-    payload=EnhanceImageRequestPayload(
-        image="https://example.com/image.jpg",
-        resolution=Resolution.FOUR_MEGA_PIXEL
-    )
-)
-
-print(f"Enhanced image: {response.get_result().image_url}")
-```
-
-### Replace Background
-
-```python
-from bria_client import BriaClient
-from bria_client.payloads.image_editing.background_editing import ReplaceBackgroundRequestPayload
-
-bria = BriaClient()
-
-response = bria.image_editing.replace_background(
-    payload=ReplaceBackgroundRequestPayload(
-        image="https://example.com/image.jpg",
-        background="https://example.com/new-background.jpg"
-    )
-)
-
-print(f"Result: {response.get_result().image_url}")
-```
-
-For more examples, check the [`examples/`](examples/) directory in the repository.
-
-## Error Handling
-
-The SDK provides specific exception types for different error scenarios:
-
-```python
-from bria_client.exceptions.old.engine_api_exception import (
-    EngineAPIException,
-    ContentModerationException
-)
-from bria_client.exceptions.old.polling_exception import PollingException
-from bria_client.exceptions.old.status_exception import StatusException
-
-try:
-    response = bria.image_editing.remove_background(payload)
-except ContentModerationException as e:
-    print(f"Content moderation failed: {e}")
-except EngineAPIException as e:
-    print(f"API error: {e}")
-except StatusException as e:
-    print(f"Status check error: {e}")
-except PollingException as e:
-    print(f"Polling error: {e}")
-```
-
-### Exception Types
-
-- **`EngineAPIException`**: Base exception for API errors
-- **`ContentModerationException`**: Raised when content moderation fails
-- **`PollingException`**: Raised during status polling errors
-- **`StatusException`**: Raised when status check fails
-- **`UnknownStatusException`**: Raised for unknown status responses
-
-## Async/Sync Support
-
-All API methods work in both sync and async contexts:
-
-### Synchronous Usage
-
-```python
-from bria_client import BriaClient
-
-bria = BriaClient()
-response = bria.image_editing.remove_background(payload)
-```
-
-### Asynchronous Usage
+### Async Processing
 
 ```python
 import asyncio
-from bria_client import BriaClient
+from bria_client import BriaAsyncClient
+from bria_client.toolkit.image import Image
 
-async def main():
-    bria = BriaClient()
-    response = await bria.image_editing.remove_background(payload)
-    return response
+async def process_images():
+    async with BriaAsyncClient() as client:
+        tasks = [
+            client.run(
+                endpoint="image/edit/remove_background",
+                payload={"image": Image(url).as_bria_api_input}
+            )
+            for url in ["image1.jpg", "image2.jpg", "image3.jpg"]
+        ]
+        return await asyncio.gather(*tasks)
 
-result = asyncio.run(main())
+results = asyncio.run(process_images())
 ```
 
-## Development
+### Error Handling
 
-### Setup Development Environment
-
-```bash
-# Clone the repository
-git clone https://github.com/bria-ai/bria-sdk.git
-cd bria-sdk
-
-# Install dependencies
-uv sync
-
-# Install pre-commit hooks
-uv run pre-commit install
+```python
+try:
+    response = client.run(endpoint="...", payload={...}, raise_for_status=True)
+    print(response.result)
+except TimeoutError:
+    print("Request timed out")
+except Exception as e:
+    print(f"Error: {e}")
 ```
-
-### Running Examples
-
-```bash
-# Run a specific example
-uv run examples/enhance_image.py
-
-# Run with custom environment
-BRIA_ENGINE_API_KEY=your-key uv run examples/enhance_image.py
-```
-
-### Testing
-
-```bash
-# Run tests
-uv run pytest
-
-# Run with coverage
-uv run pytest --cov
-```
-
-### Code Quality
-
-```bash
-# Format code
-uv run ruff format .
-
-# Lint code
-uv run ruff check .
-```
-
-We welcome community feedback and contributions! See [Contributing](#contributing) for more information.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Here's how:
 
 1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes and add tests
+4. Run tests: `uv run pytest`
+5. Format code: `uv run ruff format .`
+6. Submit a pull request
 
-### Development Guidelines
-
-- Follow the existing code style and conventions
-- Add tests for new features
+**Guidelines:**
+- Add type hints to new code
+- Include tests for new features
+- Follow existing code style
 - Update documentation as needed
-- Ensure all tests pass and linting checks succeed
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Found a bug?** [Open an issue](https://github.com/Bria-AI/bria-client/issues) with:
+- Description of the problem
+- Steps to reproduce
+- Python version and environment
 
 ## Support
 
-For support and questions:
+- **Documentation**: [docs.bria.ai](https://docs.bria.ai)
+- **Issues**: [GitHub Issues](https://github.com/Bria-AI/bria-client/issues)
+- **Examples**: See [`examples/`](examples/) directory
 
-- **Documentation**: [Bria Engine API Documentation](https://docs.bria.ai)
-- **Issues**: [GitHub Issues](https://github.com/bria-ai/bria-sdk/issues)
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-Made with ❤️ by [Bria.ai](https://bria.ai)
+Made by [Bria.ai](https://bria.ai)

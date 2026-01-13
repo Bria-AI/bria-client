@@ -1,9 +1,5 @@
 * maybe do error conversion for api, to return object named exceptions -> maybe we cant because the api returns different things
 
 
-* fix type hints
-* organize imports as wanted
-* add tests
-* add cicd -> think of pipeline for it
-* fix README -> how to | examples | contribute
-* create image/video puiblic bucket and instead of sending b64 upload it and give a url
+* implement poll_many, async_poll_many, to poll N request_id simultaneously (maybe add api endpoint)
+
