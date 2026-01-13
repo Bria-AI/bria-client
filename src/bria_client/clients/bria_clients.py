@@ -63,6 +63,19 @@ class BaseBriaClient(ABC):
 class BriaSyncClient(BaseBriaClient):
     """Synchronous Bria API client"""
 
+    def __enter__(self):
+        """Async context manager entry"""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit"""
+        self.close()
+
+    def close(self) -> None:
+        """Close the async HTTP client"""
+        if isinstance(self.engine.client, SyncHTTPRequest):
+            self.engine.client.close()
+
     def _setup_http_client(self, retry: Retry | None) -> None:
         """Setup synchronous HTTP client"""
         self.engine.set_http_client(http_client=SyncHTTPRequest(retry=retry))
