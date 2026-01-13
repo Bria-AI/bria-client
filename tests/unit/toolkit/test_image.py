@@ -13,7 +13,7 @@ class TestImage:
         # Act
         image = Image(image_source)
         # Assert
-        assert image.base64 is not None
+        assert image.as_bria_api_input is not None
 
 
 @pytest.mark.unit

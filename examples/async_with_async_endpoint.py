@@ -3,6 +3,8 @@ import logging
 
 from dotenv import load_dotenv
 
+from bria_client.toolkit.image import Image
+
 load_dotenv()
 
 from bria_client.clients.bria_clients import BriaAsyncClient
@@ -16,7 +18,8 @@ async def request_and_poll():
 
     async def request_with_polling():
         response = await aclient.submit(
-            endpoint="image/edit/remove_background", payload={"image": "https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png"}
+            endpoint="image/edit/remove_background",
+            payload={"image": Image("https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png").as_bria_api_input},
         )
         actual_response = await aclient.poll(response=response)
         return actual_response

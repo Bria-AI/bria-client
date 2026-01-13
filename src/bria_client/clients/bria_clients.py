@@ -26,6 +26,7 @@ class BaseBriaClient(ABC):
         base_url: str | None = None,
         api_token: str | Callable[[], str] | None = None,
         retry: Retry | None = Retry(total=3, backoff_factor=2),
+        *,
         api_engine: ApiEngine | None = None,
     ):
         if (base_url is not None or api_token is not None) and api_engine is not None:

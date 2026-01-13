@@ -23,7 +23,7 @@ logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
 
 def polling_client_use():
-    client = BriaSyncClient(base_url="https://engine.prod.bria-api.com")
+    client = BriaSyncClient()
 
     resp = client.submit(
         endpoint="video/segment/mask_by_prompt",

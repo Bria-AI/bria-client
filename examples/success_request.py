@@ -3,6 +3,7 @@ import logging
 from dotenv import load_dotenv
 
 from bria_client import BriaSyncClient
+from bria_client.toolkit.image import Image
 
 load_dotenv()
 
@@ -11,8 +12,12 @@ logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
 
 def success_client_use():
-    client = BriaSyncClient(base_url="https://engine.prod.bria-api.com")
-    resp = client.run(endpoint="image/edit/remove_background", payload={"image": "https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png"})
+    client = BriaSyncClient()
+
+    resp = client.run(
+        endpoint="image/edit/remove_background",
+        payload={"image": Image("https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png").as_bria_api_input},
+    )
     return resp
 
 

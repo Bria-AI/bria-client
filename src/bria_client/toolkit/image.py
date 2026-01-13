@@ -1,4 +1,5 @@
 import sys
+from pathlib import Path
 
 if sys.version_info < (3, 11):
     from strenum import StrEnum
@@ -24,43 +25,49 @@ class ImageOutputType(StrEnum):
 
 
 Base64String: TypeAlias = str
-ImageSource: TypeAlias = PilImage.Image | AnyHttpUrl | np.ndarray | Base64String
+LocalPath: TypeAlias = str | Path
+
+ImageSource: TypeAlias = PilImage.Image | AnyHttpUrl | np.ndarray | Base64String | LocalPath
 
 
 class Image:
     def __init__(self, image: ImageSource) -> None:
-        self._base64: str = self._to_base64(image)
+        self._base64_or_url: str = self._safely_process_image(image)
 
     @property
-    def base64(self) -> str:
-        return self._base64
-
-    def __str__(self) -> str:
-        return self._base64
+    def as_bria_api_input(self) -> str:
+        return self._base64_or_url
 
     @classmethod
     def __get_pydantic_core_schema__(cls, source, handler):
         return core_schema.no_info_plain_validator_function(
             lambda v: v if isinstance(v, cls) else cls(v),
             serialization=core_schema.plain_serializer_function_ser_schema(
-                lambda v: v.base64,
+                lambda v: v.as_bria_api_input,
                 return_schema=core_schema.str_schema(),
             ),
         )
 
-    def _to_base64(self, image: ImageSource) -> str:
+    def _safely_process_image(self, image: ImageSource) -> Base64String | str:
+        try:
+            return self._process_image(image)
+        except Exception as e:
+            raise ValueError(f"Failed to process image: {image!r}") from e
+
+    def _process_image(self, image: ImageSource) -> Base64String | str:
         if isinstance(image, str):
             if Image.is_base64(image):
                 return image
             if image.startswith("http"):
-                pil_image = self._url_2_pil(image)
-                return self._pil_2_b64(pil_image)
+                return image
             # infer it is a local path
             pil_image = PilImage.open(image)
             return self._pil_2_b64(pil_image)
-        if isinstance(image, AnyHttpUrl):
-            pil_image = self._url_2_pil(str(image))
+        if isinstance(image, Path):
+            pil_image = PilImage.open(str(image))
             return self._pil_2_b64(pil_image)
+        if isinstance(image, AnyHttpUrl):
+            return str(image)
         if isinstance(image, PilImage.Image):
             return self._pil_2_b64(image)
         if isinstance(image, np.ndarray):
