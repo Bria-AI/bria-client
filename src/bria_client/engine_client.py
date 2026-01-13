@@ -226,6 +226,7 @@ class BriaEngineClient(AsyncHTTPClient):
         self.api_token_ctx = api_token_ctx
         self.jwt_token_ctx = jwt_token_ctx
         self.ip_project_id_ctx = ip_project_id_ctx
+
         self.retry = retry
         super().__init__(base_url=base_url, retry=retry)
 
