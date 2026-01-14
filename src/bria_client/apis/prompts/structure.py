@@ -60,5 +60,5 @@ class StructuredPromptsAPI(StatusBasedAPI):
             response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_PROMPT_LITE, payload.payload_dump())
             return response
 
-        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_GENERATION, payload.payload_dump())
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_PROMPT, payload.payload_dump())
         return response

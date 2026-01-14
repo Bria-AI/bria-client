@@ -1,3 +1,4 @@
+import json
 from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import Concatenate, ParamSpec, TypeVar
@@ -56,7 +57,10 @@ def auto_wait_for_status(
             response = await f(self, *args, **kwargs)
             if isinstance(response, httpx.Response):
                 res_body: dict = response.json()
-                response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval)
+                request_body: dict = json.loads(response.request.content)
+                if not bool(request_body.get("sync")):
+                    response = await self._status_api.wait_for_status_request(res_body["request_id"], timeout=timeout, interval=interval)
+
             return response
 
         return wrapper
