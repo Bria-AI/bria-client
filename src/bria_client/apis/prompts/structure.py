@@ -6,7 +6,7 @@ from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_client.engine_client import BriaEngineClient
-from bria_client.schemas.prompts.sturcture import GenerateStructuredInstructionRequestPayload
+from bria_client.schemas.prompts.sturcture import GenerateStructuredInstructionRequestPayload, GenerateStructuredPromptRequestPayload
 
 
 class StructuredPromptsAPI(StatusBasedAPI):
@@ -33,5 +33,32 @@ class StructuredPromptsAPI(StatusBasedAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GENERATE_STRUCTURED_INSTRUCTION, payload.payload_dump())
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_INSTRUCTION, payload.payload_dump())
+        return response
+
+    @enable_run_synchronously
+    @auto_wait_for_status
+    async def generate_structured_prompt(self, payload: GenerateStructuredPromptRequestPayload, lite: bool = False) -> Response:
+        """
+        Generate a structured instruction for the edit request with an image
+
+        Args:
+            `payload: GenerateStructuredInstructionWithImageRequestPayload` - The payload for the generate structured instruction request
+            `lite: bool` - Whether to use the lite version of the API
+
+        Returns:
+            `Response | StatusAPIResponse` - `StatusAPIResponse` if `wait_for_status` is True, else `httpx.Response`
+
+        Raises:
+            `EngineAPIException` - In cases error is returned from the API
+
+            `ContentModerationException` - In cases content moderation is enabled and the image is not suitable
+
+            `TimeoutError` - If the timeout is reached while waiting for the status request
+        """
+        if lite:
+            response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_PROMPT_LITE, payload.payload_dump())
+            return response
+
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_GENERATION, payload.payload_dump())
         return response

@@ -24,6 +24,8 @@ class StatusAPIResultBody(APIPayloadModel):
     seed: int | None = None
     prompt: str | None = None
     refined_prompt: str | None = None
+    structured_prompt: str | None = None
+    structured_instruction: str | None = None
 
 
 class StatusAPIErrorBody(APIPayloadModel):

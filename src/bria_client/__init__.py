@@ -2,6 +2,7 @@ from contextvars import ContextVar
 
 from httpx_retries import Retry
 
+from bria_client.apis.image import ImageAPI
 from bria_client.apis.image_editing import ImageEditingAPI
 from bria_client.apis.prompts.structure import StructuredPromptsAPI
 from bria_client.apis.status import StatusAPI
@@ -34,5 +35,6 @@ class BriaClient:
         )
         self.status = StatusAPI(self._client)
         self.image_editing = ImageEditingAPI(self._client, self.status)
+        self.image = ImageAPI(self._client, self.status)
         self.prompts = StructuredPromptsAPI(self._client, self.status)
         self.video = VideoAPI(self._client, self.status)
