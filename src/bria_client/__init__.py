@@ -24,7 +24,7 @@ class BriaClient:
         if isinstance(jwt_token_ctx, str):
             jwt_token_ctx = ContextVar("bria_engine_jwt_token", default=jwt_token_ctx)
         if isinstance(ip_project_id_ctx, str):
-            ip_project_id_ctx = ContextVar("ip_project_id", default=ip_project_id_ctx)
+            ip_project_id_ctx = ContextVar("bria_engine_ip_project_id", default=ip_project_id_ctx)
 
         self._client = BriaEngineClient(
             base_url=base_url,
