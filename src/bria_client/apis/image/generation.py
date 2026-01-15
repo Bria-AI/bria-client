@@ -31,6 +31,8 @@ class ImageGenerationAPI(StatusBasedAPI):
         response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_GENERATION, payload.payload_dump())
         return response
 
+    @enable_run_synchronously
+    @auto_wait_for_status
     async def generate_lite(self, payload: GenerateImageLiteRequestPayload) -> Response:
         """
         Generate an image using the lite pipeline of the Fibo Image Generation API
