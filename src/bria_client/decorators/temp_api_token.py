@@ -16,8 +16,7 @@ def with_temp_api_token(func: Callable[P, R]) -> Callable[P, R]:
     """
 
     @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self = args[0]
+    def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> R:
         api_token = kwargs.pop("api_token", self._api_token)
         old_token = self._api_token
         try:
@@ -39,8 +38,7 @@ def async_with_temp_api_token(func: Callable[P, Awaitable[R]]) -> Callable[P, Aw
     """
 
     @wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        self = args[0]
+    async def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> R:
         api_token = kwargs.pop("api_token", self._api_token)
         old_token = self._api_token
         try:

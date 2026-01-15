@@ -1,21 +1,10 @@
 import logging
 
 from dotenv import load_dotenv
-from httpx_retries import Retry
-
-load_dotenv()
 
 from bria_client import BriaSyncClient
 
-
-class PlatformSyncClient(BriaSyncClient):
-    def __init__(self, base_url: str | None = None, jwt_token: str | None = None, retry: Retry | None = Retry(total=3, backoff_factor=2)):
-        self.jwt = jwt_token
-        super().__init__(base_url=base_url, api_token=None, retry=retry)
-
-    @property
-    def auth_headers(self) -> dict[str, str]:
-        return {"jwt_token": self.jwt}
+load_dotenv()
 
 
 logging.basicConfig(level=logging.ERROR)
