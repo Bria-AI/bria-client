@@ -1,5 +1,6 @@
 import asyncio
 import time
+from typing import Final
 
 from httpx import Response
 
@@ -34,12 +35,19 @@ class StatusAPI:
         timeout = timeout if timeout is not None else 120
         interval = interval if interval is not None else 2
         start_time = time.time()
+        UNKNOWN_STATUS_THRESHOLD: Final[int] = 3
+        unknown_status_count: int = 0
+
         while time.time() - start_time < timeout:
             res: Response = await self.engine_api.get(f"{BriaEngineAPIRoutes.V2_STATUS}/{request_id}")
             data: dict = res.json()
 
             status_response: StatusAPIResponse = StatusAPIResponse(**data, http_request_status=res.status_code)
-            if status_response.status != StatusAPIState.IN_PROGRESS.value:
+            if status_response.status == StatusAPIState.UNKNOWN.value:
+                unknown_status_count += 1
+                if unknown_status_count > UNKNOWN_STATUS_THRESHOLD:
+                    return status_response
+            elif status_response.status != StatusAPIState.IN_PROGRESS.value:
                 return status_response
 
             await asyncio.sleep(interval)
