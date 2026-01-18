@@ -25,7 +25,7 @@ class BaseBriaClient(ABC):
         self,
         base_url: str | None = None,
         api_token: str | Callable[[], str] | None = None,
-        retry: Retry | None = Retry(total=3, backoff_factor=2),
+        retry: Retry | None = None,
         *,
         api_engine: ApiEngine | None = None,
     ):
@@ -33,7 +33,7 @@ class BaseBriaClient(ABC):
             warnings.warn("ApiEngine is provided..., Other input parameters will be ignored")
 
         self.engine = api_engine or BriaEngine(base_url=base_url.rstrip("/") if base_url else None, api_token=api_token)
-        self._setup_http_client(retry)
+        self._setup_http_client(retry or Retry(total=3, backoff_factor=2))
 
     @abstractmethod
     def _setup_http_client(self, retry: Retry | None) -> None:
@@ -161,7 +161,7 @@ class BriaSyncClient(BaseBriaClient):
 
         bria_response = call_status_service()
         start_time = time.time()
-        while bria_response.in_progress():
+        while bria_response.in_progress:
             logger.debug(f"Polling request ID: {request_id}, current status: {bria_response.status}")
             time.sleep(interval)
             bria_response = call_status_service()
@@ -302,7 +302,7 @@ class BriaAsyncClient(BaseBriaClient):
 
         bria_response = await call_status_service()
         start_time = time.time()
-        while bria_response.in_progress() or bria_response.status == Status.UNKNOWN:
+        while bria_response.in_progress or bria_response.status == Status.UNKNOWN:
             logger.debug(f"Polling request ID: {extracted_id}, current status: {bria_response.status}")
             await asyncio.sleep(interval)
             bria_response = await call_status_service()
