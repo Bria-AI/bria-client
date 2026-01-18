@@ -19,6 +19,14 @@ class TestBriaErrorIntegrations:
             assert e.message == "fake message"
             assert e.details == "fake details"
 
+    def test_error_response_on_throw_should_raise_as_bria_exception(self):
+        # Arrange
+        error = BriaError(code=1, message="fake message", details="fake details")
+        # Act
+        with pytest.raises(BriaException):
+            # Assert
+            error.throw()
+
 
 @pytest.mark.integration
 class TestBriaResponseIntegrations:
