@@ -13,8 +13,6 @@ class BriaEngine(ApiEngine):
         self.settings = BriaSettings()
         self._api_token = api_token or self.settings.api_token
         base_url = base_url or self.settings.base_url
-        if base_url is None:
-            raise ValueError("base_url is required, please set BRIA_BASE_URL or pass it explicitly to client")
         super().__init__(base_url=base_url, default_headers=default_headers)
 
     @property
