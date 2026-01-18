@@ -5,8 +5,8 @@ from bria_client.exceptions import BriaException
 from bria_client.toolkit.status import Status
 
 
-@pytest.mark.integration
-class TestBriaErrorIntegrations:
+@pytest.mark.unit
+class TestBriaError:
     def test_error_on_raise_as_error_should_raise_exception_and_keep_fields_values(self):
         # Arrange
         error = BriaError(code=1, message="fake message", details="fake details")
@@ -28,8 +28,8 @@ class TestBriaErrorIntegrations:
             error.throw()
 
 
-@pytest.mark.integration
-class TestBriaResponseIntegrations:
+@pytest.mark.unit
+class TestBriaResponse:
     def test_bria_response_model_dump_on_excluding_none_valued_fields(self):
         # Arrange
         response = BriaResponse(status=Status.COMPLETED, request_id="123", result=None)
