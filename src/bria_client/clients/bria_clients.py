@@ -238,7 +238,7 @@ class BriaAsyncClient(BaseBriaClient):
 
     async def status(self, request_id: str, headers: dict | None = None, **kwargs):
         """
-        Get status of a request
+        Get the status of a request
 
         Args:
             request_id: The request ID to check status for
