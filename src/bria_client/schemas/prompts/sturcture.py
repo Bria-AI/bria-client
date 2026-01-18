@@ -4,6 +4,7 @@ from bria_client.schemas.base_models import PromptContentModeratedPayloadModel
 class GenerateStructuredInstructionRequestPayload(PromptContentModeratedPayloadModel):
     instruction: str
     images: list[str]
+    mask: str | None = None
 
     seed: int | None = None
     sync: bool | None = None
