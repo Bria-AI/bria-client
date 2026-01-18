@@ -57,5 +57,5 @@ class EditAPI(StatusBasedAPI):
 
             `TimeoutError` - If the timeout is reached while waiting for the status request
         """
-        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_IMAGE_EDIT_GENERATE_STRUCTURED_INSTRUCTION, payload.payload_dump())
+        response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_INSTRUCTION, payload.payload_dump())
         return response

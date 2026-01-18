@@ -2,7 +2,7 @@ from enum import Enum
 
 from pydantic import ConfigDict
 
-from bria_client.exceptions.status_exception import InProgressException, StatusAPIException
+from bria_client.exceptions.status_exception import InProgressException, StatusAPIException, SyncAPIException
 from bria_client.exceptions.unkown_status_exception import UnknownStatusException
 from bria_client.schemas.base_models import APIPayloadModel
 
@@ -24,6 +24,8 @@ class StatusAPIResultBody(APIPayloadModel):
     seed: int | None = None
     prompt: str | None = None
     refined_prompt: str | None = None
+    structured_prompt: str | None = None
+    structured_instruction: str | None = None
 
 
 class StatusAPIErrorBody(APIPayloadModel):
@@ -32,11 +34,29 @@ class StatusAPIErrorBody(APIPayloadModel):
     details: str
 
 
-class StatusAPIResponse(APIPayloadModel):
+class SyncAPIResponse(APIPayloadModel):
     request_id: str
-    status: StatusAPIState
     result: StatusAPIResultBody | None = None
     error: StatusAPIErrorBody | None = None
+    warning: str | None = None
+
+    def get_result(self) -> StatusAPIResultBody:
+        """
+        Get the result nested object if exists
+
+        Returns:
+            `StatusAPIResultBody` - The object status when ready
+
+        Raises:
+            `APIException` - When the result is not found
+        """
+        if self.result:
+            return self.result
+        raise SyncAPIException(**self.error)
+
+
+class StatusAPIResponse(SyncAPIResponse):
+    status: StatusAPIState
 
     http_request_status: int | None = None
 

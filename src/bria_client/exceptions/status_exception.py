@@ -11,3 +11,6 @@ class StatusAPIException(Exception):
         self.message = message
         self.details = details
         super().__init__(self.message)
+
+
+class SyncAPIException(StatusAPIException): ...
