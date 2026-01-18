@@ -12,6 +12,7 @@ class GenerateImageLiteRequestPayload(PromptContentModeratedPayloadModel):
     seed: int | None = None
     sync: bool | None = None
     ip_signal: bool | None = None
+    steps_num: int | None = None
 
 
 class GenerateImageRequestPayload(GenerateImageLiteRequestPayload):
