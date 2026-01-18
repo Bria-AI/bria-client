@@ -55,10 +55,12 @@ class Image:
             raise ValueError(f"Failed to process image: {image!r}") from e
 
     def _process_image(self, image: ImageSource) -> Base64String | str:
+        if isinstance(image, AnyHttpUrl):
+            return str(image)
         if isinstance(image, str):
-            if Image.is_base64(image):
-                return image
             if image.startswith("http"):
+                return image
+            if Image.is_base64(image):
                 return image
             # infer it is a local path
             pil_image = PilImage.open(image)
@@ -66,8 +68,6 @@ class Image:
         if isinstance(image, Path):
             pil_image = PilImage.open(str(image))
             return self._pil_2_b64(pil_image)
-        if isinstance(image, AnyHttpUrl):
-            return str(image)
         if isinstance(image, PilImage.Image):
             return self._pil_2_b64(image)
         if isinstance(image, np.ndarray):
