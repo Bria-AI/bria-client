@@ -16,5 +16,4 @@ class TestModels:
         # Act
         dump_response = model.model_dump(exclude_none=exclude_none)
         # Assert
-        assert "a" not in dump_response
-        assert "b" in dump_response
+        assert dump_response == {"b": "fake"}
