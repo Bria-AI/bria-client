@@ -40,15 +40,18 @@ class BaseBriaClient(ABC):
         """Setup the HTTP client for this client instance"""
         pass
 
-    def _validate_run_payload(self, payload: dict) -> None:
+    @staticmethod
+    def _validate_run_payload(payload: dict) -> None:
         """Validate payload for run() method"""
         assert "sync" not in payload, ".run() always runs in sync=True (to use async call .submit())"
 
-    def _validate_submit_payload(self, payload: dict) -> None:
+    @staticmethod
+    def _validate_submit_payload(payload: dict) -> None:
         """Validate payload for submit() method"""
         assert "sync" not in payload, ".submit() always runs in sync=False (to use sync call .run())"
 
-    def _extract_request_id(self, target: str | BriaResponse | None, response: BriaResponse | None = None, request_id: str | None = None) -> str:
+    @staticmethod
+    def _extract_request_id(target: str | BriaResponse | None, response: BriaResponse | None = None, request_id: str | None = None) -> str:
         """Extract request_id from various input formats"""
         extracted_id = request_id
         if response is not None:

@@ -84,12 +84,14 @@ class Image:
         except (binascii.Error, UnidentifiedImageError, OSError):
             return False
 
-    def _pil_2_b64(self, image: PilImage.Image) -> Base64String:
+    @staticmethod
+    def _pil_2_b64(image: PilImage.Image) -> Base64String:
         buffer = io.BytesIO()
         image.save(buffer, format=image.format or "PNG")
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    def _url_2_pil(self, image_url: str) -> PilImage.Image:
+    @staticmethod
+    def _url_2_pil(image_url: str) -> PilImage.Image:
         with requests.get(image_url, stream=True, timeout=10) as response:
             response.raise_for_status()
             chunks = [chunk for chunk in response.iter_content(chunk_size=8192) if chunk]

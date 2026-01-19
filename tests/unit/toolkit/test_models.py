@@ -6,7 +6,7 @@ from bria_client.toolkit.models import ExcludeNoneBaseModel
 @pytest.mark.unit
 class TestModels:
     @pytest.mark.parametrize("exclude_none", [True, False])
-    def test_ExcludeNoneBaseModel_on_model_dump_should_always_exclude_none_values(self, exclude_none):
+    def test_exclude_none_base_model_on_model_dump_should_always_exclude_none_values(self, exclude_none):
         # Arrange
         class TestModel(ExcludeNoneBaseModel):
             a: str | None = None

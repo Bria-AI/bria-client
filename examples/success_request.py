@@ -14,12 +14,12 @@ logging.getLogger("bria_client").setLevel(logging.DEBUG)
 def success_client_use():
     client = BriaSyncClient()
 
-    resp = client.run(
+    response = client.run(
         endpoint="image/edit/remove_background",
         payload={"image": Image("https://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png").as_bria_api_input},
     )
-    return resp
+    return response
 
 
-resp = success_client_use()
-print(resp)
+result = success_client_use()
+print(result)
