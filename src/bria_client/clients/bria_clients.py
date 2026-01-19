@@ -129,11 +129,11 @@ class BriaSyncClient(BaseBriaClient):
 
     @overload
     def poll(
-        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
+        self, target: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
     ): ...
 
     @overload
-    def poll(self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
+    def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
 
     def poll(
         self,
@@ -253,13 +253,11 @@ class BriaAsyncClient(BaseBriaClient):
 
     @overload
     async def poll(
-        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
+        self, target: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
     ): ...
 
     @overload
-    async def poll(
-        self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
+    async def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
 
     async def poll(
         self,
