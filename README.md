@@ -63,8 +63,11 @@ response = client.run(endpoint="image/edit/remove_background", payload={...})
 ```python
 from bria_client import BriaAsyncClient
 
-async with BriaAsyncClient() as client:
-    response = await client.run(endpoint="image/edit/remove_background", payload={...})
+async def process_images():
+    async with BriaAsyncClient() as client:
+        response = await client.run(endpoint="image/edit/remove_background", payload={...})
+    return response
+
 ```
 
 ### Three Request Methods
