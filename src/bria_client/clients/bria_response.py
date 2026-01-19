@@ -46,11 +46,11 @@ class BriaResponse(ExcludeNoneBaseModel):
         return self
 
     def __str__(self) -> str:
-        # reason for is to exclude none from str
+        # The reason for is to exclude none from str
         return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     def __repr__(self) -> str:
-        # reason for is to exclude none from repr
+        # The reason for is to exclude none from repr
         return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     @classmethod

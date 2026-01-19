@@ -5,6 +5,7 @@ from pydantic_core.core_schema import SerializationInfo, SerializerFunctionWrapH
 
 
 class ExcludeNoneBaseModel(BaseModel):
+    # noinspection PyUnusedLocal
     @model_serializer(mode="wrap")
     def serialize_model(self, handler: SerializerFunctionWrapHandler, info: SerializationInfo) -> dict[str, Any]:
         result = handler(self)

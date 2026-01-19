@@ -72,7 +72,7 @@ class AsyncHTTPRequest(BaseHTTPRequest):
         with self._async_clients_lock:
             client = self._async_clients.get(loop)
 
-            # Dual-check to prevent race conditions, client might have been created by another thread.
+            # Dual-check to prevent race conditions, the client might have been created by another thread.
             if client is not None:
                 return client
 

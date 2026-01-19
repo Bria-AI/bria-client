@@ -64,6 +64,7 @@ class ApiEngine(ABC):
     def prepare_endpoint(self, endpoint: str) -> str:
         return f"{self.base_url}/v2/{endpoint.lstrip('/')}"
 
-    def prepare_payload(self, payload: dict) -> dict:
+    @staticmethod
+    def prepare_payload(payload: dict) -> dict:
         # TODO: here should convert image to base64 if needed
         return payload

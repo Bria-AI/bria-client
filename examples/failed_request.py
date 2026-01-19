@@ -13,7 +13,7 @@ logging.getLogger("bria_client").setLevel(logging.DEBUG)
 def failed_client_use():
     client = BriaSyncClient()
 
-    resp = client.run(endpoint="image/edit/remove_background", payload={"image": "htts://bria-test-images.s3.us-east-1.amazonaws.com/sun-example.png"})
+    resp = client.run(endpoint="image/edit/remove_background", payload={"image": "https://error.com/non-existing-image.png"})
     return resp
 
 

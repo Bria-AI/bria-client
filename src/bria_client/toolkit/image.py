@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+# noinspection PyUnreachableCode
 if sys.version_info < (3, 11):
     from strenum import StrEnum
 else:
@@ -38,6 +39,7 @@ class Image:
     def as_bria_api_input(self) -> str:
         return self._base64_or_url
 
+    # noinspection PyUnusedLocal
     @classmethod
     def __get_pydantic_core_schema__(cls, source, handler):
         return core_schema.no_info_plain_validator_function(

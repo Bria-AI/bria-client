@@ -1,5 +1,6 @@
 import sys
 
+# noinspection PyUnreachableCode
 if sys.version_info < (3, 11):
     from strenum import StrEnum
 else:

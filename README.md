@@ -206,7 +206,7 @@ Contributions are welcome! Here's how:
 
 - **Documentation**: [docs.bria.ai](https://docs.bria.ai)
 - **Issues**: [GitHub Issues](https://github.com/Bria-AI/bria-client/issues)
-- **Examples**: See [`examples/`](examples/) directory
+- **Examples**: See [examples/](examples/) directory
 
 ## License
 

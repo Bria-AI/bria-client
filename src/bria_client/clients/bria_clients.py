@@ -37,17 +37,17 @@ class BaseBriaClient(ABC):
 
     @abstractmethod
     def _setup_http_client(self, retry: Retry | None) -> None:
-        """Setup the HTTP client for this client instance"""
+        """Set up the HTTP client for this client instance"""
         pass
 
     @staticmethod
     def _validate_run_payload(payload: dict) -> None:
-        """Validate payload for run() method"""
+        """Validate payload for .run() method"""
         assert "sync" not in payload, ".run() always runs in sync=True (to use async call .submit())"
 
     @staticmethod
     def _validate_submit_payload(payload: dict) -> None:
-        """Validate payload for submit() method"""
+        """Validate payload for .submit() method"""
         assert "sync" not in payload, ".submit() always runs in sync=False (to use sync call .run())"
 
     @staticmethod
@@ -136,7 +136,15 @@ class BriaSyncClient(BaseBriaClient):
     ): ...
 
     @overload
+    def poll(
+        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
+    ): ...
+
+    @overload
     def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
+
+    @overload
+    def poll(self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
 
     def poll(
         self,
@@ -180,7 +188,7 @@ class BriaAsyncClient(BaseBriaClient):
     """Asynchronous Bria API client"""
 
     def _setup_http_client(self, retry: Retry | None) -> None:
-        """Setup asynchronous HTTP client"""
+        """Set up the asynchronous HTTP client"""
         self.engine.set_http_client(http_client=AsyncHTTPRequest(retry=retry))
 
     async def __aenter__(self):
@@ -260,7 +268,17 @@ class BriaAsyncClient(BaseBriaClient):
     ): ...
 
     @overload
+    async def poll(
+        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
+    ): ...
+
+    @overload
     async def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
+
+    @overload
+    async def poll(
+        self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
+    ): ...
 
     async def poll(
         self,
