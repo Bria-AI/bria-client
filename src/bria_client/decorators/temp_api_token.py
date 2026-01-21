@@ -1,12 +1,21 @@
 from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import ParamSpec, TypeVar
+from typing import Concatenate, ParamSpec, Protocol, TypeVar, cast
 
 P = ParamSpec("P")
 R = TypeVar("R")
 
 
-def with_temp_api_token(func: Callable[P, R]) -> Callable[P, R]:
+class HasApiToken(Protocol):
+    """Protocol for objects that have an _api_token attribute."""
+
+    _api_token: str
+
+
+T = TypeVar("T", bound=HasApiToken)
+
+
+def with_temp_api_token(func: Callable[Concatenate[T, P], R]) -> Callable[Concatenate[T, P], R]:
     """
     Decorator that temporarily swaps the instance's _api_token if an api_token
     parameter is provided in the method call.
@@ -16,8 +25,8 @@ def with_temp_api_token(func: Callable[P, R]) -> Callable[P, R]:
     """
 
     @wraps(func)
-    def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        api_token = kwargs.pop("api_token", self._api_token)
+    def wrapper(self: T, *args: P.args, **kwargs: P.kwargs) -> R:
+        api_token = cast(str, kwargs.pop("api_token", self._api_token))
         old_token = self._api_token
         try:
             self._api_token = api_token
@@ -28,7 +37,7 @@ def with_temp_api_token(func: Callable[P, R]) -> Callable[P, R]:
     return wrapper
 
 
-def async_with_temp_api_token(func: Callable[P, Awaitable[R]]) -> Callable[P, Awaitable[R]]:
+def async_with_temp_api_token(func: Callable[Concatenate[T, P], Awaitable[R]]) -> Callable[Concatenate[T, P], Awaitable[R]]:
     """
     Async decorator that temporarily swaps the instance's _api_token if an api_token
     parameter is provided in the method call.
@@ -38,8 +47,8 @@ def async_with_temp_api_token(func: Callable[P, Awaitable[R]]) -> Callable[P, Aw
     """
 
     @wraps(func)
-    async def wrapper(self, *args: P.args, **kwargs: P.kwargs) -> R:
-        api_token = kwargs.pop("api_token", self._api_token)
+    async def wrapper(self: T, *args: P.args, **kwargs: P.kwargs) -> R:
+        api_token = cast(str, kwargs.pop("api_token", self._api_token))
         old_token = self._api_token
         try:
             self._api_token = api_token
