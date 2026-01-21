@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
+from bria_client.clients.bria_response import BriaResponse
 from bria_client.engines.base.async_http_request import AsyncHTTPRequest
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
@@ -23,14 +24,14 @@ class ApiEngine(ABC):
         self.client = http_client
 
     # region SYNC HTTP METHODS
-    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
+    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
         url = self.prepare_endpoint(endpoint)
         payload = self.prepare_payload(payload)
         headers = self.prepare_headers(headers=headers)
         return self.client.post(url=url, payload=payload, headers=headers)
 
-    def get(self, endpoint: str, headers: dict | None = None, **kwargs):
+    def get(self, endpoint: str, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
         url = self.prepare_endpoint(endpoint)
         headers = self.prepare_headers(headers=headers)
@@ -38,14 +39,14 @@ class ApiEngine(ABC):
 
     # endregion
     # region ASYNC HTTP METHODS
-    async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
+    async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .post() method"
         url = self.prepare_endpoint(endpoint)
         payload = self.prepare_payload(payload)
         headers = self.prepare_headers(headers=headers)
         return await self.client.post_async(url=url, payload=payload, headers=headers)
 
-    async def get_async(self, endpoint: str, headers: dict | None = None, **kwargs):
+    async def get_async(self, endpoint: str, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .get() method"
         url = self.prepare_endpoint(endpoint)
         headers = self.prepare_headers(headers=headers)
