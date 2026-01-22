@@ -1,6 +1,5 @@
 from bria_client.schemas.base_models import PromptContentModeratedPayloadModel
 
-
 class GenerateStructuredInstructionRequestPayload(PromptContentModeratedPayloadModel):
     instruction: str
     images: list[str]
@@ -25,6 +24,7 @@ class GenerateStructuredPromptRequestPayload(PromptContentModeratedPayloadModel)
     seed: int | None = None
     sync: bool | None = None
     ip_signal: bool | None = None
+    model_version: str | None = None
 
     # TODO: Change to the new base classes after the refactor is complete
     # Disabling this specific field because it doesn't have the `visual_output_content_moderation` field that exists in the parent
@@ -33,5 +33,3 @@ class GenerateStructuredPromptRequestPayload(PromptContentModeratedPayloadModel)
 
 class GenerateStructuredPromptFromDiffPayload(GenerateStructuredPromptRequestPayload):
     user_adjusted_structured_prompt: str | None = None
-    model_version: str | None = None
-
