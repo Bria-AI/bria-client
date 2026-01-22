@@ -25,6 +25,7 @@ class MyCustomEngine(ApiEngine):
     @property
     def auth_headers(self) -> dict[str, str]:
         api_token = api_token_var.get() or self.default_api_token
+        assert api_token is not None, "api_token is required"
         return {"api_token": api_token}
 
 

@@ -1,5 +1,5 @@
+from bria_client.clients.bria_response import BriaResponse
 from bria_client.clients.settings import BriaSettings
-from bria_client.decorators.temp_api_token import async_with_temp_api_token, with_temp_api_token
 from bria_client.engines.api_engine import AdditionalHeaders, ApiEngine
 
 
@@ -21,18 +21,38 @@ class BriaEngine(ApiEngine):
             raise ValueError("api_token is required, please set BRIA_API_TOKEN or pass it explicitly to method")
         return {"api_token": self._api_token}
 
-    @with_temp_api_token
-    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
-        return super().post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+    def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
+        api_token = kwargs.pop("api_token", self._api_token)
+        old_token = self._api_token
+        try:
+            self._api_token = api_token
+            return super().post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        finally:
+            self._api_token = old_token
 
-    @with_temp_api_token
-    def get(self, endpoint: str, headers: dict | None = None, **kwargs):
-        return super().get(endpoint=endpoint, headers=headers, **kwargs)
+    def get(self, endpoint: str, headers: dict | None = None, **kwargs) -> BriaResponse:
+        api_token = kwargs.pop("api_token", self._api_token)
+        old_token = self._api_token
+        try:
+            self._api_token = api_token
+            return super().get(endpoint=endpoint, headers=headers, **kwargs)
+        finally:
+            self._api_token = old_token
 
-    @async_with_temp_api_token
-    async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs):
-        return await super().post_async(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+    async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
+        api_token = kwargs.pop("api_token", self._api_token)
+        old_token = self._api_token
+        try:
+            self._api_token = api_token
+            return await super().post_async(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        finally:
+            self._api_token = old_token
 
-    @async_with_temp_api_token
-    async def get_async(self, endpoint: str, headers: dict | None = None, **kwargs):
-        return await super().get_async(endpoint=endpoint, headers=headers, **kwargs)
+    async def get_async(self, endpoint: str, headers: dict | None = None, **kwargs) -> BriaResponse:
+        api_token = kwargs.pop("api_token", self._api_token)
+        old_token = self._api_token
+        try:
+            self._api_token = api_token
+            return await super().get_async(endpoint=endpoint, headers=headers, **kwargs)
+        finally:
+            self._api_token = old_token

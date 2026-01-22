@@ -7,6 +7,7 @@ import httpx
 from httpx import Response
 from httpx_retries import Retry, RetryTransport
 
+from bria_client.clients.bria_response import BriaResponse
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 
 
@@ -33,6 +34,14 @@ class AsyncHTTPRequest(BaseHTTPRequest):
             for client in list(self._async_clients.values()):
                 await client.aclose()
             self._async_clients.clear()
+
+    async def get_async(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+        response = await self._request(url, "GET", headers=headers, **kwargs)
+        return BriaResponse.from_http_response(response)  # type: ignore
+
+    async def post_async(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+        response = await self._request(url, "POST", payload=payload, headers=headers, **kwargs)
+        return BriaResponse.from_http_response(response)  # type: ignore
 
     async def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Response:
         """

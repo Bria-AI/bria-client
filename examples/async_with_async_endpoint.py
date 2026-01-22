@@ -25,8 +25,10 @@ async def request_and_poll():
         return actual_response
 
     r1, r2 = await asyncio.gather(request_with_polling(), request_with_polling())
-    print(r1.result.image_url)
-    print(r2.result.image_url)
+    if r1.result:
+        print(r1.result.image_url)
+    if r2.result:
+        print(r2.result.image_url)
     return r1, r2
 
 

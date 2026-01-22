@@ -1,5 +1,5 @@
 import logging
-from typing import NoReturn
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from httpx import Response
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -13,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 class BriaResult(BaseModel):
     model_config = ConfigDict(extra="allow")
+
+    if TYPE_CHECKING:
+        # Type checkers see this - allows any attribute access
+        def __getattr__(self, name: str) -> Any: ...
 
 
 class BriaError(BaseModel):
@@ -34,16 +38,17 @@ class BriaResponse(ExcludeNoneBaseModel):
     status_url: str | None = Field(default=None)
 
     @model_validator(mode="before")
-    def _prepare_model(self):
+    @classmethod
+    def _prepare_model(cls, data: Any) -> Any:
         status = Status.UNKNOWN
-        if self.get("error") is not None:
+        if data.get("error") is not None:
             status = Status.FAILED
-        elif self.get("result") is not None:
+        elif data.get("result") is not None:
             status = Status.COMPLETED
-        elif self.get("status_url") is not None:
+        elif data.get("status_url") is not None:
             status = Status.RUNNING
-        self["status"] = self.get("status", status)
-        return self
+        data["status"] = data.get("status", status)
+        return data
 
     def __str__(self) -> str:
         # The reason for is to exclude none from str

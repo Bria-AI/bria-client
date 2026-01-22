@@ -3,8 +3,6 @@ import logging
 import time
 import warnings
 from abc import ABC, abstractmethod
-from collections.abc import Callable
-from typing import overload
 
 from httpx_retries import Retry
 
@@ -24,7 +22,7 @@ class BaseBriaClient(ABC):
     def __init__(
         self,
         base_url: str | None = None,
-        api_token: str | Callable[[], str] | None = None,
+        api_token: str | None = None,
         retry: Retry | None = None,
         *,
         api_engine: ApiEngine | None = None,
@@ -129,22 +127,6 @@ class BriaSyncClient(BaseBriaClient):
     def status(self, request_id: str, headers: dict | None = None, **kwargs):
         bria_response = self.engine.get(endpoint=f"status/{request_id}", headers=headers, **kwargs)
         return bria_response.status
-
-    @overload
-    def poll(
-        self, target: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
-
-    @overload
-    def poll(
-        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
-
-    @overload
-    def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
-
-    @overload
-    def poll(self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
 
     def poll(
         self,
@@ -261,24 +243,6 @@ class BriaAsyncClient(BaseBriaClient):
         """
         bria_response = await self.engine.get_async(endpoint=f"status/{request_id}", headers=headers, **kwargs)
         return bria_response.status
-
-    @overload
-    async def poll(
-        self, target: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
-
-    @overload
-    async def poll(
-        self, response: BriaResponse, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
-
-    @overload
-    async def poll(self, target: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs): ...
-
-    @overload
-    async def poll(
-        self, request_id: str, headers: dict | None = None, interval: int | float = 1, timeout: int = 60, raise_for_status: bool = True, **kwargs
-    ): ...
 
     async def poll(
         self,
