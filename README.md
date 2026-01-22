@@ -95,17 +95,6 @@ final = client.poll(response, interval=2, timeout=300)
 print(final.result)
 ```
 
-### Available Operations
-
-**Image Editing:**
-- `image/edit/remove_background` - Remove image background
-- `image/edit/replace_background` - Replace image background
-- `image/edit/expand` - Expand image canvas
-- `image/edit/enhance` - Enhance image quality
-
-**Video Processing:**
-- `video/segment/mask_by_prompt` - Generate video masks from text prompts
-
 ## Examples
 
 ### Basic Usage

@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 class BaseBriaClient(ABC):
     """Abstract base class for Bria clients"""
 
+    engine: ApiEngine
+
     def __init__(
         self,
         base_url: str | None = None,
