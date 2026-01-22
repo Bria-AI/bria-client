@@ -24,7 +24,6 @@ dependencies = [
 ]
 
 [tool.uv-dynamic-versioning]
-pattern = "default-unprefixed"
 fallback-version = "0.0.0"
 
 [tool.uv]
