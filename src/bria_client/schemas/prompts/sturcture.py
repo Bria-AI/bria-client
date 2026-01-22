@@ -29,3 +29,8 @@ class GenerateStructuredPromptRequestPayload(PromptContentModeratedPayloadModel)
     # TODO: Change to the new base classes after the refactor is complete
     # Disabling this specific field because it doesn't have the `visual_output_content_moderation` field that exists in the parent
     visual_output_content_moderation: None = None
+
+
+class GenerateStructuredPromptFromDiffPayload(GenerateStructuredPromptRequestPayload):
+    user_adjusted_structured_prompt: str | None = None
+    model_version: str = ""

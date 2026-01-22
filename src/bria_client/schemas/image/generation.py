@@ -18,3 +18,4 @@ class GenerateImageLiteRequestPayload(PromptContentModeratedPayloadModel):
 class GenerateImageRequestPayload(GenerateImageLiteRequestPayload):
     negative_prompt: str | None = None
     steps_num: int | None = None
+    model_version: str | None = None
