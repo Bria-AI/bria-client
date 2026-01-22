@@ -8,6 +8,20 @@ maintainers = [
     { name = "omri", email = "omriassa@bria.ai" },
     { name = "noam", email = "noam@bria.ai" }
 ]
+license = { text = "MIT" }
+keywords = ["bria", "api-client", "image-generation", "sdk"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Multimedia :: Graphics",
+]
 
 requires-python = ">=3.10"
 dependencies = [
@@ -22,6 +36,12 @@ dependencies = [
     "strenum~=0.4.15; python_version < '3.11'",
     "werkzeug>=3",
 ]
+
+[project.urls]
+Homepage = "https://bria.ai"
+Documentation = "https://docs.bria.ai"
+Repository = "https://github.com/Bria-AI/bria-client"
+Issues = "https://github.com/Bria-AI/bria-client/issues"
 
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
