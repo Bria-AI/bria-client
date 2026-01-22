@@ -33,4 +33,5 @@ class GenerateStructuredPromptRequestPayload(PromptContentModeratedPayloadModel)
 
 class GenerateStructuredPromptFromDiffPayload(GenerateStructuredPromptRequestPayload):
     user_adjusted_structured_prompt: str | None = None
-    model_version: str = ""
+    model_version: str | None = None
+
