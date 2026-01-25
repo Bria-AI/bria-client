@@ -27,7 +27,6 @@ class ApiEngine(ABC):
     def post(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .post_async() method"
         url = self.prepare_endpoint(endpoint)
-        payload = self.prepare_payload(payload)
         headers = self.prepare_headers(headers=headers)
         return self.client.post(url=url, payload=payload, headers=headers)
 
@@ -42,7 +41,6 @@ class ApiEngine(ABC):
     async def post_async(self, endpoint: str, payload: dict, headers: dict | None = None, **kwargs) -> BriaResponse:
         assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .post() method"
         url = self.prepare_endpoint(endpoint)
-        payload = self.prepare_payload(payload)
         headers = self.prepare_headers(headers=headers)
         return await self.client.post_async(url=url, payload=payload, headers=headers)
 
@@ -64,8 +62,3 @@ class ApiEngine(ABC):
 
     def prepare_endpoint(self, endpoint: str) -> str:
         return f"{self.base_url}/v2/{endpoint.lstrip('/')}"
-
-    @staticmethod
-    def prepare_payload(payload: dict) -> dict:
-        # TODO: here should convert image to base64 if needed
-        return payload
