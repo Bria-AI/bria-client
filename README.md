@@ -11,6 +11,7 @@ A Python client library for the Bria Engine API, designed to make integrating po
 - [Quick Start](#quick-start)
 - [Usage Guide](#usage-guide)
 - [Examples](#examples)
+- [Development Setup](#development-setup)
 - [Contributing](#contributing)
 - [Support](#support)
 
@@ -169,16 +170,54 @@ except Exception as e:
     print(f"Error: {e}")
 ```
 
+## Development Setup
+
+### Prerequisites
+
+- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) package manager
+
+### Installation
+
+Install development and test dependencies:
+
+```bash
+uv sync --group dev
+```
+
+### Pre-commit Hooks
+
+This project uses pre-commit hooks to ensure code quality. Install them with:
+
+```bash
+pre-commit install
+```
+
+The following hooks run automatically on each commit:
+
+| Hook | Description |
+|------|-------------|
+| `prettier` | Formats YAML and JSON files |
+| `ruff-format` | Formats Python code |
+| `ruff` | Lints Python code with auto-fix |
+| `pyright` | Type checking |
+| `uv-lock-check` | Ensures `uv.lock` is in sync with `pyproject.toml` |
+
+To run all hooks manually:
+
+```bash
+pre-commit run --all-files
+```
+
 ## Contributing
 
-Contributions are welcome! Here's how:
+Contributions are welcome! Please follow the [Development Setup](#development-setup) instructions first, then:
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
 3. Make your changes and add tests
 4. Run tests: `uv run pytest`
-5. Format code: `uv run ruff format .`
-6. Submit a pull request
+5. Submit a pull request
 
 **Guidelines:**
 - Add type hints to new code
