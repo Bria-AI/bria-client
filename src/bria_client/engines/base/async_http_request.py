@@ -7,8 +7,8 @@ import httpx
 from httpx import Response
 from httpx_retries import Retry, RetryTransport
 
-from bria_client.clients.bria_response import BriaResponse
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
+from bria_client.toolkit.models import BriaResponse
 
 
 class AsyncHTTPRequest(BaseHTTPRequest):
@@ -28,18 +28,18 @@ class AsyncHTTPRequest(BaseHTTPRequest):
         self._async_clients: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, httpx.AsyncClient] = weakref.WeakKeyDictionary()
         self._async_clients_lock = threading.Lock()  # Lock to prevent race conditions when writing the `_async_clients` dictionary.
 
-    async def aclose(self) -> None:
+    async def close(self) -> None:
         """Close all async clients"""
         with self._async_clients_lock:
             for client in list(self._async_clients.values()):
                 await client.aclose()
             self._async_clients.clear()
 
-    async def get_async(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+    async def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
         response = await self._request(url, "GET", headers=headers, **kwargs)
         return BriaResponse.from_http_response(response)  # type: ignore
 
-    async def post_async(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+    async def post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
         response = await self._request(url, "POST", payload=payload, headers=headers, **kwargs)
         return BriaResponse.from_http_response(response)  # type: ignore
 

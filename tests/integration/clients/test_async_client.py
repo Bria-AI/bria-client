@@ -1,7 +1,7 @@
 import pytest
 
 from bria_client.clients.bria_clients import BriaAsyncClient
-from bria_client.clients.bria_response import BriaResponse, BriaResult
+from bria_client.toolkit.models import BriaResponse, BriaResult
 from bria_client.toolkit.status import Status
 
 

@@ -92,7 +92,7 @@ test = [
 markers = [
     "unit: fast unit tests",
     "integration: tests requiring external resources",
-    "e2e: full system end-to-end tests",
+    "component: system component end-to-end tests",
 ]
 testpaths = ["tests"]
 log_cli = true

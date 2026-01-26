@@ -6,11 +6,11 @@ from abc import ABC, abstractmethod
 
 from httpx_retries import Retry
 
-from bria_client.clients.bria_response import BriaResponse
 from bria_client.engines.api_engine import ApiEngine
 from bria_client.engines.base.async_http_request import AsyncHTTPRequest
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
 from bria_client.engines.bria_engine import BriaEngine
+from bria_client.toolkit.models import BriaResponse
 from bria_client.toolkit.status import Status
 
 logger = logging.getLogger(__name__)
@@ -186,7 +186,7 @@ class BriaAsyncClient(BaseBriaClient):
     async def aclose(self) -> None:
         """Close the async HTTP client"""
         if isinstance(self.engine.client, AsyncHTTPRequest):
-            await self.engine.client.aclose()
+            await self.engine.client.close()
 
     async def run(self, endpoint: str, payload: dict, headers: dict | None = None, raise_for_status: bool = False, **kwargs):
         """

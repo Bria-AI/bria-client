@@ -4,8 +4,8 @@ import httpx
 from httpx import Response
 from httpx_retries import Retry, RetryTransport
 
-from bria_client.clients.bria_response import BriaResponse
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
+from bria_client.toolkit.models import BriaResponse
 
 
 class SyncHTTPRequest(BaseHTTPRequest):

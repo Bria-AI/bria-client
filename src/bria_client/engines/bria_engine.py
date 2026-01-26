@@ -1,6 +1,6 @@
-from bria_client.clients.bria_response import BriaResponse
 from bria_client.clients.settings import BriaSettings
 from bria_client.engines.api_engine import AdditionalHeaders, ApiEngine
+from bria_client.toolkit.models import BriaResponse
 
 
 class BriaEngine(ApiEngine):

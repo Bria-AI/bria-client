@@ -1,7 +1,7 @@
 import pytest
 
-from bria_client.clients.bria_response import BriaError, BriaResponse
 from bria_client.exceptions import BriaException
+from bria_client.toolkit.models import BriaError, BriaResponse
 from bria_client.toolkit.status import Status
 
 
