@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 
 from bria_client import BriaSyncClient
-from bria_client.toolkit.image import Image
+from bria_client.toolkit import Image
 
 load_dotenv()
 

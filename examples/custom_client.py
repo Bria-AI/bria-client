@@ -4,12 +4,12 @@ from _contextvars import ContextVar
 
 from dotenv import load_dotenv
 
-from bria_client.toolkit.image import Image
+from bria_client.engines import ApiEngine
+from bria_client.toolkit import Image
 
 load_dotenv()
 
 from bria_client import BriaSyncClient
-from bria_client.engines.api_engine import ApiEngine
 
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("bria_client").setLevel(logging.DEBUG)
