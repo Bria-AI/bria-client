@@ -1,6 +1,6 @@
 import pytest
 
-from bria_client.clients.bria_clients import BriaSyncClient
+from bria_client.clients.sync_client import BriaSyncClient
 from bria_client.toolkit.models import BriaResponse, BriaResult
 from bria_client.toolkit.status import Status
 
@@ -14,7 +14,7 @@ class TestClient:
 
         # Mock the HTTP client's post method
         mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
-        mock_post = mocker.patch.object(client.engine.client, "post", return_value=mock_response)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
 
         # Act
         client.run(endpoint="/test/endpoint", payload={"test": "data"}, api_token=test_api_token)
@@ -33,7 +33,7 @@ class TestClient:
 
         # Mock the HTTP client's post method
         mock_response = BriaResponse(status=Status.RUNNING, request_id="test_456", result=None)
-        mock_post = mocker.patch.object(client.engine.client, "post", return_value=mock_response)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
 
         # Act
         client.submit(endpoint="/test/endpoint", payload={"test": "data"}, api_token=test_api_token)

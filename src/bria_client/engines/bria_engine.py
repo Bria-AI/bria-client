@@ -26,7 +26,7 @@ class BriaEngine(ApiEngine):
         old_token = self._api_token
         try:
             self._api_token = api_token
-            return super().post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+            return self.sync_request(endpoint=endpoint, method="POST", payload=payload, headers=headers, **kwargs)
         finally:
             self._api_token = old_token
 
@@ -35,7 +35,7 @@ class BriaEngine(ApiEngine):
         old_token = self._api_token
         try:
             self._api_token = api_token
-            return super().get(endpoint=endpoint, headers=headers, **kwargs)
+            return self.sync_request(endpoint=endpoint, method="GET", headers=headers, **kwargs)
         finally:
             self._api_token = old_token
 
@@ -44,7 +44,7 @@ class BriaEngine(ApiEngine):
         old_token = self._api_token
         try:
             self._api_token = api_token
-            return await super().post_async(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+            return await self.async_request(endpoint=endpoint, method="POST", payload=payload, headers=headers, **kwargs)
         finally:
             self._api_token = old_token
 
@@ -53,6 +53,6 @@ class BriaEngine(ApiEngine):
         old_token = self._api_token
         try:
             self._api_token = api_token
-            return await super().get_async(endpoint=endpoint, headers=headers, **kwargs)
+            return await self.async_request(endpoint=endpoint, method="GET", headers=headers, **kwargs)
         finally:
             self._api_token = old_token

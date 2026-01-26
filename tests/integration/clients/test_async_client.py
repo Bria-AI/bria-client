@@ -1,6 +1,6 @@
 import pytest
 
-from bria_client.clients.bria_clients import BriaAsyncClient
+from bria_client.clients.async_client import BriaAsyncClient
 from bria_client.toolkit.models import BriaResponse, BriaResult
 from bria_client.toolkit.status import Status
 
@@ -18,7 +18,7 @@ class TestAsyncClientApiToken:
 
         # Mock the HTTP client's post_async method
         mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
-        mock_post = mocker.patch.object(client.engine.client, "post_async", return_value=mock_response)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
 
         # Act
         await client.run(endpoint="/test/endpoint", payload={"test": "data"}, api_token=test_api_token)
@@ -38,7 +38,7 @@ class TestAsyncClientApiToken:
 
         # Mock the HTTP client's post_async method
         mock_response = BriaResponse(status=Status.RUNNING, request_id="test_456", result=None)
-        mock_post = mocker.patch.object(client.engine.client, "post_async", return_value=mock_response)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
 
         # Act
         await client.submit(endpoint="/test/endpoint", payload={"test": "data"}, api_token=test_api_token)
@@ -58,7 +58,7 @@ class TestAsyncClientApiToken:
 
         # Mock the HTTP client's post_async method
         mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_789", result=BriaResult())
-        mock_post = mocker.patch.object(client.engine.client, "post_async", return_value=mock_response)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
 
         # Act
         await client.run(endpoint="/test/endpoint", payload={"test": "data"})

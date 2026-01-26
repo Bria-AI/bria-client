@@ -35,12 +35,8 @@ class AsyncHTTPRequest(BaseHTTPRequest):
                 await client.aclose()
             self._async_clients.clear()
 
-    async def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
-        response = await self._request(url, "GET", headers=headers, **kwargs)
-        return BriaResponse.from_http_response(response)  # type: ignore
-
-    async def post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
-        response = await self._request(url, "POST", payload=payload, headers=headers, **kwargs)
+    async def request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+        response = await self._request(url, method, payload=payload, headers=headers, **kwargs)
         return BriaResponse.from_http_response(response)  # type: ignore
 
     async def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Response:

@@ -31,12 +31,8 @@ class SyncHTTPRequest(BaseHTTPRequest):
     def close(self) -> None:
         self._client.close()
 
-    def get(self, url: str, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
-        response = self._request(url, "GET", headers=headers, **kwargs)
-        return BriaResponse.from_http_response(response)  # type: ignore
-
-    def post(self, url: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
-        response = self._request(url, "POST", payload=payload, headers=headers, **kwargs)
+    def request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
+        response = self._request(url, method, payload=payload, headers=headers, **kwargs)
         return BriaResponse.from_http_response(response)  # type: ignore
 
     def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Response:
