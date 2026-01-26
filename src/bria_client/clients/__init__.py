@@ -1,3 +1,4 @@
-from bria_client.clients.bria_clients import BriaAsyncClient, BriaSyncClient
+from bria_client.clients.async_client import BriaAsyncClient
+from bria_client.clients.sync_client import BriaSyncClient
 
 __all__ = ["BriaSyncClient", "BriaAsyncClient"]
