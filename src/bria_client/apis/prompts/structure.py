@@ -6,7 +6,7 @@ from bria_client.constants import BriaEngineAPIRoutes
 from bria_client.decorators.enable_sync_decorator import enable_run_synchronously
 from bria_client.decorators.wait_for_status_decorator import auto_wait_for_status
 from bria_client.engine_client import BriaEngineClient
-from bria_client.schemas.prompts.sturcture import GenerateStructuredInstructionRequestPayload, GenerateStructuredPromptRequestPayload
+from bria_client.schemas.prompts.sturcture import GenerateStructuredInstructionRequestPayload, GenerateStructuredPromptRequestPayload, GenerateStructuredPromptFromDiffPayload
 
 
 class StructuredPromptsAPI(StatusBasedAPI):
@@ -61,4 +61,19 @@ class StructuredPromptsAPI(StatusBasedAPI):
             return response
 
         response: Response = await self._engine_client.post(BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_PROMPT, payload.payload_dump())
+        return response
+
+    @enable_run_synchronously
+    @auto_wait_for_status
+    async def generate_structured_prompt_diff(
+            self,
+            payload: GenerateStructuredPromptFromDiffPayload,
+    ) -> Response:
+        """
+        Generate structured prompt from diff - applies user adjustments.
+        """
+        response: Response = await self._engine_client.post(
+            BriaEngineAPIRoutes.V2_GENERATE_STRUCTURED_PROMPT_FROM_DIFF,
+            payload.payload_dump(),
+        )
         return response
