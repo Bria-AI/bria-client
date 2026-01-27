@@ -93,6 +93,7 @@ markers = [
     "unit: fast unit tests",
     "integration: tests requiring external resources",
     "component: system component end-to-end tests",
+    "concurrency: tests for race conditions and concurrent execution",
 ]
 testpaths = ["tests"]
 log_cli = true
