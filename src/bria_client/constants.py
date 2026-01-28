@@ -46,6 +46,7 @@ class BriaEngineAPIRoutes(StrEnum):
     V2_GENERATE_STRUCTURED_INSTRUCTION = "v2/structured_instruction/generate"
     V2_GENERATE_STRUCTURED_PROMPT = "v2/structured_prompt/generate"
     V2_GENERATE_STRUCTURED_PROMPT_LITE = "v2/structured_prompt/generate/lite"
+    V2_GENERATE_STRUCTURED_PROMPT_FROM_DIFF = "v2/structured_prompt/generate_from_diff"
 
     # V2 Image Generation
     V2_IMAGE_GENERATION = "v2/image/generate"
