@@ -1,5 +1,12 @@
 from pydantic import Field
 from bria_client.schemas.base_models import PromptContentModeratedPayloadModel
+from typing import Optional
+from typing_extensions import Annotated
+
+from pydantic import Field, model_validator
+from pydantic.functional_validators import AfterValidator
+
+
 
 
 class GenerateImageLiteRequestPayload(PromptContentModeratedPayloadModel):
