@@ -51,3 +51,4 @@ class BriaEngineAPIRoutes(StrEnum):
     # V2 Image Generation
     V2_IMAGE_GENERATION = "v2/image/generate"
     V2_IMAGE_GENERATION_LITE = "v2/image/generate/lite"
+    V2_IMAGE_GENERATION_TAILORED = "v2/image/generate/tailored"
