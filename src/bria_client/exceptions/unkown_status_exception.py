@@ -1,2 +1,0 @@
-class UnknownStatusException(Exception):
-    pass
