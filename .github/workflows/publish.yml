@@ -1,0 +1,80 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build package
+        run: uv build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+  codeartifact-publish:
+    name: Publish to CodeArtifact
+    needs: [build]
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Get CodeArtifact token
+        id: codeartifact
+        run: |
+          TOKEN=$(aws codeartifact get-authorization-token \
+            --domain bria \
+            --domain-owner 300465780738 \
+            --query authorizationToken \
+            --output text)
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Publish to CodeArtifact
+        env:
+          UV_PUBLISH_USERNAME: aws
+          UV_PUBLISH_PASSWORD: ${{ steps.codeartifact.outputs.token }}
+        run: |
+          uv publish --index codearetifact
+
+#  pypi-publish:
+#    name: Publish to PyPI
+#    needs: build
+#    runs-on: ubuntu-latest
+#    environment:
+#      name: release
+#    permissions:
+#      id-token: write
+#    steps:
+#      - name: Download artifacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: dist
+#          path: dist/
+#      - name: Install uv
+#        uses: astral-sh/setup-uv@v5
+#      - name: Publish to PyPI
+#        run: uv publish
