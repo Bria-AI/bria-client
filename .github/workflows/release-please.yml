@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
 
 jobs:
   release-please:
@@ -64,22 +63,39 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  pypi-publish:
-    name: Publish to PyPI
+  codeartifact-publish:
+    name: Publish to CodeArtifact
     needs: [release-please, build]
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     environment:
       name: release
-    permissions:
-      id-token: write
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Get CodeArtifact token
+        id: codeartifact
+        run: |
+          TOKEN=$(aws codeartifact get-authorization-token \
+            --domain bria \
+            --domain-owner 300465780738 \
+            --query authorizationToken \
+            --output text)
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
       - name: Install uv
         uses: astral-sh/setup-uv@v5
-      - name: Publish to PyPI
-        run: uv publish
+      - name: Publish to CodeArtifact
+        run: |
+          uv publish \
+            --publish-url https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria_client/ \
+            --token "aws:${{ steps.codeartifact.outputs.token }}"
