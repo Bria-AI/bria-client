@@ -6,6 +6,10 @@ on:
     branches:
       - main
 
+permissions:
+  pull-requests: read
+  contents: read
+
 jobs:
   pr-title:
     name: Validate PR Title
