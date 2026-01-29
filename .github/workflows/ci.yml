@@ -18,7 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Check formatting
         run: uv run ruff format --check
 
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Run linter
         run: uv run ruff check
 
@@ -40,7 +40,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Run type checker
         run: uv run pyright
 
@@ -60,7 +60,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
       - name: Install dependencies
         run: uv sync --group test
       - name: Run unit tests
