@@ -13,8 +13,89 @@ jobs:
   release-please:
     name: Create Release PR
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - name: Run release-please
+        id: release
         uses: googleapis/release-please-action@v4
         with:
           release-type: python
+
+  build:
+    name: Build Package
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Build package
+        run: uv build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  github-release:
+    name: Update GitHub Release
+    needs: [release-please, build]
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Upload artifacts to release
+        run: gh release upload ${{ needs.release-please.outputs.tag_name }} dist/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  codeartifact-publish:
+    name: Publish to CodeArtifact
+    needs: [release-please, build]
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Get CodeArtifact token
+        id: codeartifact
+        run: |
+          TOKEN=$(aws codeartifact get-authorization-token \
+            --domain bria \
+            --domain-owner 300465780738 \
+            --query authorizationToken \
+            --output text)
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Publish to CodeArtifact
+        run: |
+          uv publish \
+            --publish-url https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria_client/ \
+            --token "aws:${{ steps.codeartifact.outputs.token }}"

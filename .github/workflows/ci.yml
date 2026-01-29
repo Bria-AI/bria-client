@@ -6,17 +6,11 @@ on:
     branches:
       - main
 
-jobs:
-  pr-title:
-    name: Validate PR Title
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check PR title follows conventional commits
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+permissions:
+  pull-requests: read
+  contents: read
 
+jobs:
   format:
     name: Format Check
     runs-on: ubuntu-latest
