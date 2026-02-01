@@ -47,13 +47,7 @@ Issues = "https://github.com/Bria-AI/bria-client/issues"
 fallback-version = "0.0.0"
 
 [tool.uv]
-index-url = "https://pypi.org/simple"
 cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true, tags = true } }]
-
-[[tool.uv.index]]
-name = "codeartifact"
-url = "https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria_client/simple/"
-publish-url = "https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria_client/"
 
 [build-system]
 requires = ["hatchling", "uv-dynamic-versioning"]
