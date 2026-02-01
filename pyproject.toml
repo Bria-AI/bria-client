@@ -1,5 +1,5 @@
 [project]
-name = "bria_client"
+name = "bria-client"
 dynamic = ["version"]
 description = "Bria.ai Python SDK"
 readme = "README.md"
