@@ -28,7 +28,7 @@ repos:
         pass_filenames: false
       - id: pyright
         name: Pyright
-        entry: uv run pyright
+        entry: uv run --all-groups pyright
         language: system
         types: [python]
         pass_filenames: true
