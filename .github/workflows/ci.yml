@@ -11,6 +11,19 @@ permissions:
   contents: read
 
 jobs:
+  gitleaks:
+    name: Gitleaks Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   format:
     name: Format Check
     runs-on: ubuntu-latest
@@ -46,7 +59,7 @@ jobs:
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
-    needs: [format, lint, typecheck]
+    needs: [format, lint, typecheck, gitleaks]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
