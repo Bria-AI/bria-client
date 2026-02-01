@@ -46,6 +46,7 @@ jobs:
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    needs: [format, lint, typecheck]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
