@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel
 
-from bria_client.toolkit.image import Image
+from bria_client.toolkit import Image
 
 
 @pytest.mark.unit
