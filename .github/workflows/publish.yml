@@ -25,7 +25,6 @@ jobs:
   codeartifact-publish:
     name: Publish to CodeArtifact
     needs: [build]
-    if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     environment:
       name: release
@@ -58,7 +57,7 @@ jobs:
           UV_PUBLISH_USERNAME: aws
           UV_PUBLISH_PASSWORD: ${{ steps.codeartifact.outputs.token }}
         run: |
-          uv publish --index codearetifact
+          uv publish --publish-url https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria_client/
 
 #  pypi-publish:
 #    name: Publish to PyPI
