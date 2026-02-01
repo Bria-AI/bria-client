@@ -6,7 +6,6 @@ from bria_client import BriaSyncClient
 
 load_dotenv()
 
-
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("bria_client").setLevel(logging.DEBUG)
 
