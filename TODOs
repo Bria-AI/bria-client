@@ -1,5 +1,0 @@
-* maybe do error conversion for api, to return object named exceptions -> maybe we cant because the api returns different things
-
-
-* implement poll_many, async_poll_many, to poll N request_id simultaneously (maybe add api endpoint)
-
