@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.2](https://github.com/Bria-AI/bria-client/compare/v0.1.0...v0.1.2) (2026-02-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* sdk remodel ([#31](https://github.com/Bria-AI/bria-client/issues/31))
+
+### Features
+
+* version prealpha ([e0a6071](https://github.com/Bria-AI/bria-client/commit/e0a607155530d047397f421ade319af29981ca58))
+
+
+### Bug Fixes
+
+* example format ([2ab1b25](https://github.com/Bria-AI/bria-client/commit/2ab1b2562a6ec4f4409d86aa338d2f979221ab96))
+* example import ([087bc24](https://github.com/Bria-AI/bria-client/commit/087bc2475c9b0aa3d333b2b76a4e8d115a58d0b7))
+
+
+### Miscellaneous Chores
+
+* loose deps ([e2a0bed](https://github.com/Bria-AI/bria-client/commit/e2a0bedf12031fab84e7556c440a5b453c45187c))
+* **main:** release 0.1.1 ([#86](https://github.com/Bria-AI/bria-client/issues/86)) ([0fe633f](https://github.com/Bria-AI/bria-client/commit/0fe633fb5c04f553531599284e46201cba1cfc50))
+
+
+### Code Refactoring
+
+* sdk remodel ([#31](https://github.com/Bria-AI/bria-client/issues/31)) ([fe839f1](https://github.com/Bria-AI/bria-client/commit/fe839f13a2cf9f1e75432bb51d2074934543a8d7))
+
 ## [0.1.1](https://github.com/Bria-AI/bria-client/compare/v0.1.0...v0.1.1) (2026-02-01)
 
 
