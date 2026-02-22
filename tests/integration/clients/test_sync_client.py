@@ -85,7 +85,7 @@ class TestSyncClientApiTokenIntegrations:
         call_args = mock_post.call_args
         headers = call_args.kwargs["headers"]
         assert "User-Agent" in headers
-        assert headers["User-Agent"].startswith("Bria-SDK/")
+        assert headers["User-Agent"].startswith("BriaSDK/")
         assert headers["User-Agent"].endswith("(python)")
 
     def test_concurrent_threads_use_correct_api_tokens(self, mocker):

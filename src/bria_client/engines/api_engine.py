@@ -23,7 +23,7 @@ class ApiEngine(ABC):
 
     @property
     def user_agent_headers(self) -> dict[str, str]:
-        return {"User-Agent": f"Bria-SDK/{__version__} (python)"}
+        return {"User-Agent": f"BriaSDK/{__version__} (python)"}
 
     @property
     @abstractmethod
