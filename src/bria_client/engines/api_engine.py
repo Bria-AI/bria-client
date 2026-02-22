@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Literal
 
+from bria_client._version import __version__
 from bria_client.engines.base.async_http_request import AsyncHTTPRequest
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
@@ -19,6 +20,10 @@ class ApiEngine(ABC):
     @property
     def default_headers(self) -> dict[str, str]:
         return {name: get_header() if callable(get_header) else get_header for name, get_header in self._default_headers.items()}
+
+    @property
+    def user_agent_headers(self) -> dict[str, str]:
+        return {"User-Agent": f"BriaSDK/{__version__} (python)"}
 
     @property
     @abstractmethod
@@ -88,7 +93,7 @@ class ApiEngine(ABC):
     def _prepare_headers(self, headers: dict | None = None, auth_override: dict[str, str] | None = None) -> dict:
         additional_headers = headers or {}
         auth = auth_override if auth_override is not None else self.auth_headers
-        return {**self.default_headers, **additional_headers, **auth}
+        return {**self.user_agent_headers, **self.default_headers, **additional_headers, **auth}
 
     def _prepare_endpoint(self, endpoint: str) -> str:
         return f"{self.base_url}/v2/{endpoint.lstrip('/')}"

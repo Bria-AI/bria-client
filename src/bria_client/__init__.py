@@ -1,11 +1,4 @@
-import importlib.metadata
-
+from bria_client._version import __version__
 from bria_client.clients import BriaAsyncClient, BriaSyncClient
 
-try:
-    __version__ = importlib.metadata.version(__name__)
-except importlib.metadata.PackageNotFoundError:
-    __version__ = "0.1.1"
-
-
-__all__ = ["BriaSyncClient", "BriaAsyncClient"]
+__all__ = ["BriaSyncClient", "BriaAsyncClient", "__version__"]
