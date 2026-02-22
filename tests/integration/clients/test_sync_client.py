@@ -70,6 +70,24 @@ class TestSyncClientApiTokenIntegrations:
         headers = call_args.kwargs["headers"]
         assert headers["api_token"] == default_token
 
+    def test_request_includes_user_agent_header(self, mocker):
+        """Verify that every request includes the User-Agent header with SDK version"""
+        # Arrange
+        client = BriaSyncClient(base_url="https://test.example.com", api_token="default_token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        # Act
+        client.run(endpoint="/test/endpoint", payload={"test": "data"})
+
+        # Assert
+        mock_post.assert_called_once()
+        call_args = mock_post.call_args
+        headers = call_args.kwargs["headers"]
+        assert "User-Agent" in headers
+        assert headers["User-Agent"].startswith("Bria-SDK/")
+        assert headers["User-Agent"].endswith("(python)")
+
     def test_concurrent_threads_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaSyncClient(base_url="https://test.example.com", api_token="default_token")
