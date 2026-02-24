@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/Bria-AI/bria-client/compare/v0.1.1...v0.2.0) (2026-02-24)
+
+
+### Features
+
+* user-agent header ([#91](https://github.com/Bria-AI/bria-client/issues/91)) ([c55fc39](https://github.com/Bria-AI/bria-client/commit/c55fc399b08cdfe7fb347df4ca239b80ae1962ef))
+
+
+### Bug Fixes
+
+* base64 header support ([#93](https://github.com/Bria-AI/bria-client/issues/93)) ([bd00a9a](https://github.com/Bria-AI/bria-client/commit/bd00a9aac47348b391a647da0a7528ddde802c8c))
+
 ## [0.1.1](https://github.com/Bria-AI/bria-client/compare/v0.1.0...v0.1.1) (2026-02-01)
 
 
