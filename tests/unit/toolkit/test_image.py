@@ -15,6 +15,15 @@ class TestImage:
         # Assert
         assert image.as_bria_api_input is not None
 
+    @pytest.mark.parametrize("prefix", ["data:image/png;base64,", "data:image/jpeg;base64,"])
+    def test_image_on_init_with_base64_data_uri_should_process_successfully(self, base64_image, prefix):
+        # Arrange
+        base64_with_header = f"{prefix}{base64_image}"
+        # Act
+        image = Image(base64_with_header)
+        # Assert
+        assert Image.is_base64(image.as_bria_api_input)
+
 
 @pytest.mark.unit
 class TestImageSource:

@@ -62,6 +62,8 @@ class Image:
         if isinstance(image, str):
             if image.startswith("http"):
                 return image
+            if image.startswith("data:"):
+                image = image.split(",", 1)[-1]
             if Image.is_base64(image):
                 return image
             # infer it is a local path
