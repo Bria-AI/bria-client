@@ -1,5 +1,9 @@
 fail_fast: true
 
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
+
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0
@@ -10,6 +14,11 @@ repos:
     hooks:
       - id: prettier
         types_or: [yaml, json5]
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.29.1
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
   - repo: local
     hooks:
       - id: ruff-format
