@@ -3,10 +3,6 @@ name: Publish
 on:
   release:
     types: [published]
-  push:
-    tags:
-      - "v*.*.*"
-      - "v*.*.*-*"
 
 jobs:
   build:
@@ -34,6 +30,7 @@ jobs:
       name: release
     permissions:
       id-token: write
+      contents: write
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4

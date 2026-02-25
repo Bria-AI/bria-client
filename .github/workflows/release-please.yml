@@ -19,5 +19,6 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v4
         with:
+          token: ${{ secrets.TEMP_RELEASE_TOKEN }}
           release-type: python
           package-name: bria_client
