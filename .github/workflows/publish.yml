@@ -26,46 +26,6 @@ jobs:
         with:
           name: dist
           path: dist/
-  codeartifact-publish:
-    name: Publish to CodeArtifact
-    needs: [build]
-    runs-on: arc-production
-    environment:
-      name: release
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist/
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Get CodeArtifact token
-        id: codeartifact
-        run: |
-          TOKEN=$(aws codeartifact get-authorization-token \
-            --domain bria \
-            --domain-owner 300465780738 \
-            --query authorizationToken \
-            --output text)
-          echo "::add-mask::$TOKEN"
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-      - name: Publish to CodeArtifact
-        env:
-          UV_PUBLISH_USERNAME: aws
-          UV_PUBLISH_PASSWORD: ${{ steps.codeartifact.outputs.token }}
-        run: |
-          uv publish --publish-url https://bria-300465780738.d.codeartifact.us-east-1.amazonaws.com/pypi/bria-client/
-      - name: Upload wheel to release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*.whl
   pypi-publish:
     name: Publish to PyPI
     needs: build
@@ -87,3 +47,7 @@ jobs:
           UV_PUBLISH_USERNAME: __token__
           UV_PUBLISH_PASSWORD: ${{ secrets.PYPI_AUTH_TOKEN }}
         run: uv publish
+      - name: Upload wheel to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.whl
