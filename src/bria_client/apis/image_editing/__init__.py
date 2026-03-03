@@ -2,15 +2,17 @@ from bria_client.apis.image_editing.background_editing import BackgroundEditingA
 from bria_client.apis.image_editing.edit import EditAPI
 from bria_client.apis.image_editing.foreground_editing import ForegroundEditingAPI
 from bria_client.apis.image_editing.mask_based_editing import MasksBasedEditingAPI
+from bria_client.apis.image_editing.product_integrate import ProductIntegrateAPI
 from bria_client.apis.image_editing.size_editing import SizeEditingAPI
 
 __all__ = [
     "BackgroundEditingAPI",
     "ForegroundEditingAPI",
     "MasksBasedEditingAPI",
+    "ProductIntegrateAPI",
     "SizeEditingAPI",
 ]
 
 
-class ImageEditingAPI(BackgroundEditingAPI, MasksBasedEditingAPI, ForegroundEditingAPI, SizeEditingAPI, EditAPI):
+class ImageEditingAPI(BackgroundEditingAPI, MasksBasedEditingAPI, ForegroundEditingAPI, SizeEditingAPI, EditAPI, ProductIntegrateAPI):
     pass

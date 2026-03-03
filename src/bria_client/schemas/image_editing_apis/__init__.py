@@ -12,6 +12,11 @@ from bria_client.schemas.image_editing_apis.mask_based_editing import (
     ObjectEraserRequestPayload,
     ObjectGenFillRequestPayload,
 )
+from bria_client.schemas.image_editing_apis.product_integrate import (
+    ProductCoordinates,
+    ProductIntegrateRequestPayload,
+    ProductItem,
+)
 from bria_client.schemas.image_editing_apis.size_editing import (
     EnhanceImageRequestPayload,
     ExpandImageRequestPayload,
@@ -37,4 +42,7 @@ __all__ = [
     "Resolution",
     "EnhanceImageRequestPayload",
     "IncreaseResolutionRequestPayload",
+    "ProductCoordinates",
+    "ProductItem",
+    "ProductIntegrateRequestPayload",
 ]
