@@ -45,8 +45,7 @@ class BriaSyncClient(BaseBriaClient):
             BriaResponse: The API response
         """
         self._validate_run_payload(payload)
-        payload["sync"] = True
-        bria_response = self.engine.post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        bria_response = self.engine.post(endpoint=endpoint, payload={**payload, "sync": True}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
@@ -66,9 +65,7 @@ class BriaSyncClient(BaseBriaClient):
             BriaResponse: The API response with request_id for polling
         """
         self._validate_submit_payload(payload)
-        payload["sync"] = False
-
-        bria_response = self.engine.post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        bria_response = self.engine.post(endpoint=endpoint, payload={**payload, "sync": False}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response

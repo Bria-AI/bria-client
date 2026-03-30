@@ -88,6 +88,30 @@ class TestSyncClientApiTokenIntegrations:
         assert headers["User-Agent"].startswith("BriaSDK/")
         assert headers["User-Agent"].endswith("(python)")
 
+    def test_run_does_not_mutate_payload(self, mocker):
+        """Verify that .run() does not mutate the caller's payload dict"""
+        client = BriaSyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        payload = {"image": "https://example.com/image.jpg"}
+        client.run(endpoint="/test/endpoint", payload=payload)
+
+        assert "sync" not in payload
+        assert payload == {"image": "https://example.com/image.jpg"}
+
+    def test_submit_does_not_mutate_payload(self, mocker):
+        """Verify that .submit() does not mutate the caller's payload dict"""
+        client = BriaSyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.RUNNING, request_id="test_123", result=None)
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        payload = {"image": "https://example.com/image.jpg"}
+        client.submit(endpoint="/test/endpoint", payload=payload)
+
+        assert "sync" not in payload
+        assert payload == {"image": "https://example.com/image.jpg"}
+
     def test_concurrent_threads_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaSyncClient(base_url="https://test.example.com", api_token="default_token")

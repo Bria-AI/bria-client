@@ -73,6 +73,32 @@ class TestAsyncClientApiTokenIntegrations:
         assert headers["api_token"] == default_token
 
     @pytest.mark.asyncio
+    async def test_run_does_not_mutate_payload(self, mocker):
+        """Verify that .run() does not mutate the caller's payload dict"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        payload = {"image": "https://example.com/image.jpg"}
+        await client.run(endpoint="/test/endpoint", payload=payload)
+
+        assert "sync" not in payload
+        assert payload == {"image": "https://example.com/image.jpg"}
+
+    @pytest.mark.asyncio
+    async def test_submit_does_not_mutate_payload(self, mocker):
+        """Verify that .submit() does not mutate the caller's payload dict"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.RUNNING, request_id="test_123", result=None)
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        payload = {"image": "https://example.com/image.jpg"}
+        await client.submit(endpoint="/test/endpoint", payload=payload)
+
+        assert "sync" not in payload
+        assert payload == {"image": "https://example.com/image.jpg"}
+
+    @pytest.mark.asyncio
     async def test_concurrent_tasks_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")
