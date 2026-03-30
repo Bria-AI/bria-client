@@ -45,8 +45,8 @@ class BriaSyncClient(BaseBriaClient):
             BriaResponse: The API response
         """
         self._validate_run_payload(payload)
-        payload["sync"] = True
-        bria_response = self.engine.post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        # Unpack payload and headers to avoid mutating the original input
+        bria_response = self.engine.post(endpoint=endpoint, payload={**payload, "sync": True}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
@@ -66,9 +66,8 @@ class BriaSyncClient(BaseBriaClient):
             BriaResponse: The API response with request_id for polling
         """
         self._validate_submit_payload(payload)
-        payload["sync"] = False
-
-        bria_response = self.engine.post(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        # Unpack payload and headers to avoid mutating the original input
+        bria_response = self.engine.post(endpoint=endpoint, payload={**payload, "sync": False}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
@@ -95,8 +94,7 @@ class BriaSyncClient(BaseBriaClient):
         if target is not None:
             request_id = target.request_id if isinstance(target, BriaResponse) else target
 
-        if headers is None:
-            headers = {}
+        headers = {**(headers or {})}
 
         def call_status_service():
             return self.engine.get(endpoint=f"status/{request_id}", headers=headers, **kwargs)

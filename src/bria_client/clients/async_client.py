@@ -47,8 +47,8 @@ class BriaAsyncClient(BaseBriaClient):
             BriaResponse: The API response
         """
         self._validate_run_payload(payload)
-        payload["sync"] = True
-        bria_response = await self.engine.post_async(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        # Unpack payload and headers to avoid mutating the original input
+        bria_response = await self.engine.post_async(endpoint=endpoint, payload={**payload, "sync": True}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
@@ -68,9 +68,8 @@ class BriaAsyncClient(BaseBriaClient):
             BriaResponse: The API response with request_id for polling
         """
         self._validate_submit_payload(payload)
-        payload["sync"] = False
-
-        bria_response = await self.engine.post_async(endpoint=endpoint, payload=payload, headers=headers, **kwargs)
+        # Unpack payload and headers to avoid mutating the original input
+        bria_response = await self.engine.post_async(endpoint=endpoint, payload={**payload, "sync": False}, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
@@ -123,8 +122,7 @@ class BriaAsyncClient(BaseBriaClient):
         """
         extracted_id = self._extract_request_id(target, response, request_id)
 
-        if headers is None:
-            headers = {}
+        headers = {**(headers or {})}
 
         async def call_status_service():
             return await self.engine.get_async(endpoint=f"status/{extracted_id}", headers=headers, **kwargs)
