@@ -1,16 +1,20 @@
+import logging
 from typing import Any, NoReturn
 
 from httpx import Response
-from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_serializer, model_validator
 from pydantic_core.core_schema import SerializationInfo, SerializerFunctionWrapHandler
 
+from bria_client.toolkit.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, BriaResult, Status
+
+logger = logging.getLogger(__name__)
 
 
 class BriaResponse(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
-    request_id: str
+    request_id: str = "unknown"
     status: Status
     error: BriaError | None = Field(default=None)
     result: BriaResult | None = Field(default=None)
@@ -48,7 +52,20 @@ class BriaResponse(BaseModel):
 
     @classmethod
     def from_http_response(cls, response: Response):
-        return cls(**response.json(), headers=dict(response.headers))
+        if response.status_code == 404:
+            return cls(status=Status.FAILED, error=EndpointNotFoundError(url=str(response.url)))
+        try:
+            return cls(**response.json())
+        except (ValueError, ValidationError) as e:
+            logger.debug("Failed to parse response as BriaResponse: %s", e)
+            return cls(
+                status=Status.FAILED,
+                error=BriaError(
+                    code=response.status_code,
+                    message=response.reason_phrase or f"HTTP {response.status_code}",
+                    details=response.text,
+                ),
+            )
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:
