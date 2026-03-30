@@ -9,6 +9,8 @@ from httpx_retries import Retry, RetryTransport
 
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 from bria_client.toolkit import BriaResponse
+from bria_client.toolkit.custom_errors import ServerConnectionError
+from bria_client.toolkit.models import Status
 
 
 class AsyncHTTPRequest(BaseHTTPRequest):
@@ -36,7 +38,10 @@ class AsyncHTTPRequest(BaseHTTPRequest):
             self._async_clients.clear()
 
     async def request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> BriaResponse:
-        response = await self._request(url, method, payload=payload, headers=headers, **kwargs)
+        try:
+            response = await self._request(url, method, payload=payload, headers=headers, **kwargs)
+        except httpx.ConnectError:
+            return BriaResponse(status=Status.FAILED, error=ServerConnectionError(url=url))
         return BriaResponse.from_http_response(response)
 
     async def _request(self, url: str, method: str, payload: dict[str, Any] | None = None, headers: dict[str, str] | None = None, **kwargs: Any) -> Response:
