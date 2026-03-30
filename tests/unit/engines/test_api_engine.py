@@ -21,3 +21,12 @@ class TestApiEngine:
     def test_prepare_payload_returns_empty_dict_when_all_values_are_none(self):
         result = ApiEngine._prepare_payload({"a": None, "b": None})
         assert result == {}
+
+    @pytest.mark.parametrize("endpoint", ["/v2/test/endpoint", "v2/test/endpoint", "test/endpoint", "/test/endpoint"])
+    def test_prepare_endpoint_removes_v2_refs_from_entered_endpoint_to_keep_it_valid(self, endpoint, api_engine):
+        # Arrange
+        correct_endpoint = "/v2/test/endpoint"
+        # Act
+        result = api_engine._prepare_endpoint(endpoint)
+        # Assert
+        assert result == correct_endpoint

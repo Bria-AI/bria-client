@@ -104,4 +104,4 @@ class ApiEngine(ABC):
         return {**self.user_agent_headers, **self.default_headers, **additional_headers, **auth}
 
     def _prepare_endpoint(self, endpoint: str) -> str:
-        return f"{self.base_url}/v2/{endpoint.lstrip('/')}"
+        return f"{self.base_url}/v2/{endpoint.replace('/v2', '').replace('v2', '').lstrip('/')}"
