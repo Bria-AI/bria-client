@@ -97,7 +97,6 @@ class TestSyncClientApiTokenIntegrations:
         payload = {"image": "https://example.com/image.jpg"}
         client.run(endpoint="/test/endpoint", payload=payload)
 
-        assert "sync" not in payload
         assert payload == {"image": "https://example.com/image.jpg"}
 
     def test_submit_does_not_mutate_payload(self, mocker):
@@ -109,7 +108,6 @@ class TestSyncClientApiTokenIntegrations:
         payload = {"image": "https://example.com/image.jpg"}
         client.submit(endpoint="/test/endpoint", payload=payload)
 
-        assert "sync" not in payload
         assert payload == {"image": "https://example.com/image.jpg"}
 
     def test_concurrent_threads_use_correct_api_tokens(self, mocker):

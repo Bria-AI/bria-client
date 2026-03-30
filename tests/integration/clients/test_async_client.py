@@ -82,7 +82,6 @@ class TestAsyncClientApiTokenIntegrations:
         payload = {"image": "https://example.com/image.jpg"}
         await client.run(endpoint="/test/endpoint", payload=payload)
 
-        assert "sync" not in payload
         assert payload == {"image": "https://example.com/image.jpg"}
 
     @pytest.mark.asyncio
@@ -95,7 +94,6 @@ class TestAsyncClientApiTokenIntegrations:
         payload = {"image": "https://example.com/image.jpg"}
         await client.submit(endpoint="/test/endpoint", payload=payload)
 
-        assert "sync" not in payload
         assert payload == {"image": "https://example.com/image.jpg"}
 
     @pytest.mark.asyncio
