@@ -96,6 +96,20 @@ final = client.poll(response, interval=2, timeout=300)
 print(final.result)
 ```
 
+### Payload Handling
+
+The client automatically strips `None` values from payloads before sending requests. This means you can safely include optional parameters without worrying about sending `null` values to the API:
+
+```python
+response = client.run(
+    endpoint="image/edit/remove_background",
+    payload={
+        "image": Image("https://example.com/image.jpg").as_bria_api_input,
+        "bg_color": None,  # Will be omitted from the request
+    }
+)
+```
+
 ## Examples
 
 ### Basic Usage
