@@ -1,6 +1,9 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from bria_client.toolkit import BriaException, BriaResponse
+from bria_client.toolkit.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, Status
 
 
@@ -29,6 +32,55 @@ class TestBriaError:
 
 @pytest.mark.unit
 class TestBriaResponse:
+    def test_from_http_response_on_404_should_return_endpoint_not_found_error(self):
+        # Arrange
+        response = MagicMock()
+        response.status_code = 404
+        response.url = "https://engine.prod.bria.cc/v1/image/edit/remove_backgrund"
+        # Act
+        result = BriaResponse.from_http_response(response)
+        # Assert
+        assert result.status == Status.FAILED.value
+        assert isinstance(result.error, EndpointNotFoundError)
+
+    def test_from_http_response_on_non_json_body_should_return_structured_error(self):
+        # Arrange
+        response = MagicMock()
+        response.json.side_effect = ValueError("No JSON")
+        response.status_code = 500
+        response.reason_phrase = "Internal Server Error"
+        response.text = "Something went wrong"
+        # Act
+        result = BriaResponse.from_http_response(response)
+        # Assert
+        assert result.status == Status.FAILED.value
+        assert result.error is not None
+        assert result.error.code == 500
+
+    def test_from_http_response_on_error_json_should_return_structured_error(self):
+        # Arrange
+        response = MagicMock()
+        response.json.return_value = {
+            "request_id": "abc-123",
+            "error": {"code": 502, "message": "Bad Gateway", "details": "upstream failed"},
+        }
+        # Act
+        result = BriaResponse.from_http_response(response)
+        # Assert
+        assert result.status == Status.FAILED.value
+        assert result.error is not None
+        assert result.error.code == 502
+
+    def test_from_http_response_on_valid_json_should_parse_normally(self):
+        # Arrange
+        response = MagicMock()
+        response.json.return_value = {"request_id": "abc-123", "result": {"url": "https://example.com"}}
+        # Act
+        result = BriaResponse.from_http_response(response)
+        # Assert
+        assert result.status == Status.COMPLETED.value
+        assert result.error is None
+
     def test_bria_response_model_dump_on_excluding_none_valued_fields(self):
         # Arrange
         response = BriaResponse(status=Status.COMPLETED, request_id="123", result=None)
