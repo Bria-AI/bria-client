@@ -110,6 +110,17 @@ class TestSyncClientApiTokenIntegrations:
 
         assert payload == {"image": "https://example.com/image.jpg"}
 
+    def test_poll_does_not_mutate_headers(self, mocker):
+        """Verify that .poll() does not mutate the caller's headers dict"""
+        client = BriaSyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        headers = {"X-Custom": "value"}
+        client.poll(request_id="test_123", headers=headers)
+
+        assert headers == {"X-Custom": "value"}
+
     def test_concurrent_threads_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaSyncClient(base_url="https://test.example.com", api_token="default_token")

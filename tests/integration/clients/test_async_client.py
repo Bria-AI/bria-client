@@ -97,6 +97,18 @@ class TestAsyncClientApiTokenIntegrations:
         assert payload == {"image": "https://example.com/image.jpg"}
 
     @pytest.mark.asyncio
+    async def test_poll_does_not_mutate_headers(self, mocker):
+        """Verify that .poll() does not mutate the caller's headers dict"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        headers = {"X-Custom": "value"}
+        await client.poll(request_id="test_123", headers=headers)
+
+        assert headers == {"X-Custom": "value"}
+
+    @pytest.mark.asyncio
     async def test_concurrent_tasks_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")
