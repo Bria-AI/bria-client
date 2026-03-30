@@ -61,6 +61,7 @@ class ApiEngine(ABC):
         assert isinstance(self.client, SyncHTTPRequest), "with async client please use .async_request() method"
         url = self._prepare_endpoint(endpoint)
         headers = self._prepare_headers(headers=headers, auth_override=auth_override)
+        payload = self._prepare_payload(payload)
         return self.client.request(url=url, method=method, payload=payload, headers=headers, **kwargs)
 
     # endregion
@@ -86,9 +87,16 @@ class ApiEngine(ABC):
         assert isinstance(self.client, AsyncHTTPRequest), "with sync client please use .sync_request() method"
         url = self._prepare_endpoint(endpoint)
         headers = self._prepare_headers(headers=headers, auth_override=auth_override)
+        payload = self._prepare_payload(payload)
         return await self.client.request(url=url, method=method, payload=payload, headers=headers, **kwargs)
 
     # endregion
+
+    @staticmethod
+    def _prepare_payload(payload: dict | None) -> dict | None:
+        if payload is None:
+            return None
+        return {k: v for k, v in payload.items() if v is not None}
 
     def _prepare_headers(self, headers: dict | None = None, auth_override: dict[str, str] | None = None) -> dict:
         additional_headers = headers or {}
