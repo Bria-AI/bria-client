@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1](https://github.com/Bria-AI/bria-client/compare/v0.2.0...v0.2.1) (2026-03-30)
+
+
+### Bug Fixes
+
+* drop none values from payload ([#102](https://github.com/Bria-AI/bria-client/issues/102)) ([6a1bb67](https://github.com/Bria-AI/bria-client/commit/6a1bb67648420457b0580498376d64c68323120d))
+* mutation of payload and headers ([#99](https://github.com/Bria-AI/bria-client/issues/99)) ([dbf62fe](https://github.com/Bria-AI/bria-client/commit/dbf62fed880223f69993843bcf7e332a859d2b23))
+* normalize endpoint v2 ([#103](https://github.com/Bria-AI/bria-client/issues/103)) ([6f53603](https://github.com/Bria-AI/bria-client/commit/6f536032f710f3992f3a1a4de622c605de31e586))
+
 ## [0.2.0](https://github.com/Bria-AI/bria-client/compare/v0.1.1...v0.2.0) (2026-02-24)
 
 
