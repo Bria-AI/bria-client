@@ -32,6 +32,16 @@ class TestBriaError:
 
 @pytest.mark.unit
 class TestBriaResponse:
+    def test_from_error_should_return_failed_response_with_error(self):
+        # Arrange
+        error = BriaError(code=503, message="Service Unavailable", details="server down")
+        # Act
+        result = BriaResponse.from_error(error)
+        # Assert
+        assert result.status == Status.FAILED.value
+        assert result.error is error
+        assert result.request_id == "unknown"
+
     def test_from_http_response_on_404_should_return_endpoint_not_found_error(self):
         # Arrange
         response = MagicMock()
