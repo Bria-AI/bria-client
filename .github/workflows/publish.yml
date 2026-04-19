@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     name: Build Package
-    runs-on: arc-production
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,7 +25,7 @@ jobs:
   pypi-publish:
     name: Publish to PyPI
     needs: build
-    runs-on: arc-production
+    runs-on: ubuntu-latest
     environment:
       name: release
     permissions:
