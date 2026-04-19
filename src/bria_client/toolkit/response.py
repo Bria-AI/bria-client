@@ -57,9 +57,12 @@ class BriaResponse(BaseModel):
     def from_http_response(cls, response: Response) -> "BriaResponse":
         headers = dict(response.headers)
         try:
-            parsed = cls(**response.json(), headers=headers)
+            if isinstance(response.json(), dict):
+                parsed = cls(**response.json(), headers=headers)
+            else:
+                raise ValueError("Response is not a JSON object")
         except (ValueError, ValidationError):
-            logger.debug("Failed to parse response as BriaResponse", exc_info=True)
+            logger.debug("Failed to parse response as BriaResponse")
             parsed = None
         if parsed is None or (response.status_code >= 400 and parsed.error is None):
             return cls.from_error(cls._error_from_response(response), headers=headers)
