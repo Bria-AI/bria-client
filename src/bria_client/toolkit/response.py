@@ -5,7 +5,6 @@ from httpx import Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_serializer, model_validator
 from pydantic_core.core_schema import SerializationInfo, SerializerFunctionWrapHandler
 
-from bria_client.toolkit.errors.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, BriaResult, Status
 
 logger = logging.getLogger(__name__)
@@ -57,8 +56,6 @@ class BriaResponse(BaseModel):
     @classmethod
     def from_http_response(cls, response: Response) -> "BriaResponse":
         headers = dict(response.headers)
-        if response.status_code == 404:
-            return cls.from_error(EndpointNotFoundError(url=str(response.url)), headers=headers)
         try:
             parsed = cls(**response.json(), headers=headers)
         except (ValueError, ValidationError):
