@@ -15,6 +15,7 @@ class BriaResponse(BaseModel):
     error: BriaError | None = Field(default=None)
     result: BriaResult | None = Field(default=None)
     status_url: str | None = Field(default=None)
+    headers: dict[str, str] | None = Field(default=None, exclude=True)
 
     @model_validator(mode="before")
     @classmethod
@@ -47,7 +48,7 @@ class BriaResponse(BaseModel):
 
     @classmethod
     def from_http_response(cls, response: Response):
-        return cls(**response.json())
+        return cls(**response.json(), headers=dict(response.headers))
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:
