@@ -51,15 +51,16 @@ class BriaResponse(BaseModel):
         return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     @classmethod
-    def from_error(cls, error: BriaError) -> "BriaResponse":
-        return cls(status=Status.FAILED, error=error)
+    def from_error(cls, error: BriaError, headers: dict[str, str] | None = None) -> "BriaResponse":
+        return cls(status=Status.FAILED, error=error, headers=headers)
 
     @classmethod
     def from_http_response(cls, response: Response) -> "BriaResponse":
+        headers = dict(response.headers)
         if response.status_code == 404:
-            return cls.from_error(EndpointNotFoundError(url=str(response.url)))
+            return cls.from_error(EndpointNotFoundError(url=str(response.url)), headers=headers)
         try:
-            return cls(**response.json())
+            return cls(**response.json(), headers=headers)
         except (ValueError, ValidationError) as e:
             logger.debug("Failed to parse response as BriaResponse: %s", e)
             return cls.from_error(
@@ -68,6 +69,7 @@ class BriaResponse(BaseModel):
                     message=response.reason_phrase or f"HTTP {response.status_code}",
                     details=response.text,
                 ),
+                headers=headers,
             )
 
     def raise_for_status(self) -> NoReturn | None:

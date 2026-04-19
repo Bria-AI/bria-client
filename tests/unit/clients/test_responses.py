@@ -47,11 +47,13 @@ class TestBriaResponse:
         response = MagicMock()
         response.status_code = 404
         response.url = "https://engine.prod.bria.cc/v1/image/edit/remove_backgrund"
+        response.headers = {"x-request-id": "req-404"}
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
         assert result.status == Status.FAILED.value
         assert isinstance(result.error, EndpointNotFoundError)
+        assert result.headers == {"x-request-id": "req-404"}
 
     def test_from_http_response_on_non_json_body_should_return_structured_error(self):
         # Arrange
@@ -60,16 +62,20 @@ class TestBriaResponse:
         response.status_code = 500
         response.reason_phrase = "Internal Server Error"
         response.text = "Something went wrong"
+        response.headers = {"x-request-id": "req-500"}
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
         assert result.status == Status.FAILED.value
         assert result.error is not None
         assert result.error.code == 500
+        assert result.headers == {"x-request-id": "req-500"}
 
     def test_from_http_response_on_error_json_should_return_structured_error(self):
         # Arrange
         response = MagicMock()
+        response.status_code = 502
+        response.headers = {"x-request-id": "req-502"}
         response.json.return_value = {
             "request_id": "abc-123",
             "error": {"code": 502, "message": "Bad Gateway", "details": "upstream failed"},
@@ -80,16 +86,20 @@ class TestBriaResponse:
         assert result.status == Status.FAILED.value
         assert result.error is not None
         assert result.error.code == 502
+        assert result.headers == {"x-request-id": "req-502"}
 
     def test_from_http_response_on_valid_json_should_parse_normally(self):
         # Arrange
         response = MagicMock()
+        response.status_code = 200
+        response.headers = {"x-request-id": "req-200"}
         response.json.return_value = {"request_id": "abc-123", "result": {"url": "https://example.com"}}
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
         assert result.status == Status.COMPLETED.value
         assert result.error is None
+        assert result.headers == {"x-request-id": "req-200"}
 
     def test_bria_response_model_dump_on_excluding_none_valued_fields(self):
         # Arrange
