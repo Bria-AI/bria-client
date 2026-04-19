@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from bria_client.toolkit import BriaException, BriaResponse
-from bria_client.toolkit.custom_errors import EndpointNotFoundError
+from bria_client.toolkit.errors.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, Status
 
 
@@ -41,6 +41,7 @@ class TestBriaResponse:
         assert result.status == Status.FAILED.value
         assert result.error is error
         assert result.request_id == "unknown"
+        assert result.headers == {}
 
     def test_from_http_response_on_404_should_return_endpoint_not_found_error(self):
         # Arrange
@@ -70,6 +71,21 @@ class TestBriaResponse:
         assert result.error is not None
         assert result.error.code == 500
         assert result.headers == {"x-request-id": "req-500"}
+
+    def test_from_http_response_on_4xx_with_no_error_field_should_return_structured_error(self):
+        # Arrange
+        response = MagicMock()
+        response.status_code = 401
+        response.reason_phrase = "Unauthorized"
+        response.text = "Unauthorized"
+        response.headers = {"x-request-id": "req-401"}
+        response.json.return_value = {"detail": "unauthorized"}
+        # Act
+        result = BriaResponse.from_http_response(response)
+        # Assert
+        assert result.status == Status.FAILED.value
+        assert result.error is not None
+        assert result.error.code == 401
 
     def test_from_http_response_on_error_json_should_return_structured_error(self):
         # Arrange
@@ -120,6 +136,7 @@ class TestBriaResponse:
     def test_from_http_response_should_capture_headers(self):
         # Arrange
         mock_response = MagicMock()
+        mock_response.status_code = 200
         mock_response.json.return_value = {"request_id": "req-1", "status": "COMPLETED"}
         mock_response.headers = {"content-type": "application/json", "x-request-id": "req-1"}
         # Act

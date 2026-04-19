@@ -5,7 +5,7 @@ from httpx import Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_serializer, model_validator
 from pydantic_core.core_schema import SerializationInfo, SerializerFunctionWrapHandler
 
-from bria_client.toolkit.custom_errors import EndpointNotFoundError
+from bria_client.toolkit.errors.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, BriaResult, Status
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class BriaResponse(BaseModel):
     error: BriaError | None = Field(default=None)
     result: BriaResult | None = Field(default=None)
     status_url: str | None = Field(default=None)
-    headers: dict[str, str] | None = Field(default=None, exclude=True)
+    headers: dict[str, str] = Field(default_factory=dict, exclude=True)
 
     @model_validator(mode="before")
     @classmethod
@@ -52,7 +52,7 @@ class BriaResponse(BaseModel):
 
     @classmethod
     def from_error(cls, error: BriaError, headers: dict[str, str] | None = None) -> "BriaResponse":
-        return cls(status=Status.FAILED, error=error, headers=headers)
+        return cls(status=Status.FAILED, error=error, headers=headers or {})
 
     @classmethod
     def from_http_response(cls, response: Response) -> "BriaResponse":
@@ -60,17 +60,21 @@ class BriaResponse(BaseModel):
         if response.status_code == 404:
             return cls.from_error(EndpointNotFoundError(url=str(response.url)), headers=headers)
         try:
-            return cls(**response.json(), headers=headers)
-        except (ValueError, ValidationError) as e:
-            logger.debug("Failed to parse response as BriaResponse: %s", e)
-            return cls.from_error(
-                BriaError(
-                    code=response.status_code,
-                    message=response.reason_phrase or f"HTTP {response.status_code}",
-                    details=response.text,
-                ),
-                headers=headers,
-            )
+            parsed = cls(**response.json(), headers=headers)
+        except (ValueError, ValidationError):
+            logger.debug("Failed to parse response as BriaResponse", exc_info=True)
+            parsed = None
+        if parsed is None or (response.status_code >= 400 and parsed.error is None):
+            return cls.from_error(cls._error_from_response(response), headers=headers)
+        return parsed
+
+    @staticmethod
+    def _error_from_response(response: Response) -> BriaError:
+        return BriaError(
+            code=response.status_code,
+            message=response.reason_phrase or f"HTTP {response.status_code}",
+            details=response.text,
+        )
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:

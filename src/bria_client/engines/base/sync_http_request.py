@@ -6,7 +6,7 @@ from httpx_retries import Retry, RetryTransport
 
 from bria_client.engines.base.base_http_request import BaseHTTPRequest
 from bria_client.toolkit import BriaResponse
-from bria_client.toolkit.custom_errors import ServerConnectionError
+from bria_client.toolkit.errors.custom_errors import ServerConnectionError
 
 
 class SyncHTTPRequest(BaseHTTPRequest):

@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
-from bria_client.toolkit.custom_errors import ServerConnectionError
+from bria_client.toolkit.errors.custom_errors import ServerConnectionError
 from bria_client.toolkit.models import Status
 
 
