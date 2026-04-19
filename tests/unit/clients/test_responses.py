@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 
 from bria_client.toolkit import BriaException, BriaResponse
@@ -36,3 +38,21 @@ class TestBriaResponse:
         dumped_result = response.model_dump()
         # Assert
         assert dumped_result == {"status": "COMPLETED", "request_id": "123"}
+
+    def test_bria_response_on_no_headers_should_exclude_from_model_dump(self):
+        # Arrange
+        response = BriaResponse(status=Status.COMPLETED, request_id="123")
+        # Act
+        dumped_result = response.model_dump()
+        # Assert
+        assert "headers" not in dumped_result
+
+    def test_from_http_response_should_capture_headers(self):
+        # Arrange
+        mock_response = MagicMock()
+        mock_response.json.return_value = {"request_id": "req-1", "status": "COMPLETED"}
+        mock_response.headers = {"content-type": "application/json", "x-request-id": "req-1"}
+        # Act
+        bria_response = BriaResponse.from_http_response(mock_response)
+        # Assert
+        assert bria_response.headers == {"content-type": "application/json", "x-request-id": "req-1"}
