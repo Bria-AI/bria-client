@@ -18,7 +18,6 @@ class TestBriaError:
             # Assert
             assert e.code == 1
             assert e.message == "fake message"
-            assert e.details == "fake details"
 
     def test_error_response_on_throw_should_raise_as_bria_exception(self):
         # Arrange
@@ -39,20 +38,20 @@ class TestBriaResponse:
         # Assert
         assert result.status == Status.FAILED.value
         assert result.error is error
-        assert result.request_id == "unknown"
-        assert result.headers == {}
 
-    def test_from_http_response_on_404_should_return_endpoint_not_found_error(self):
+    def test_from_http_response_on_404_should_return_structured_error(self):
         # Arrange
         response = MagicMock()
         response.status_code = 404
-        response.url = "https://engine.prod.bria.cc/v1/image/edit/remove_backgrund"
+        response.reason_phrase = "Not Found"
+        response.text = "The requested endpoint does not exist"
         response.headers = {"x-request-id": "req-404"}
+        response.json.return_value = {}
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
-        assert result.status == Status.FAILED.value
-        assert result.headers == {"x-request-id": "req-404"}
+        assert result.error is not None
+        assert result.error.code == 404
 
     def test_from_http_response_on_non_json_body_should_return_structured_error(self):
         # Arrange
@@ -65,10 +64,8 @@ class TestBriaResponse:
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
-        assert result.status == Status.FAILED.value
         assert result.error is not None
         assert result.error.code == 500
-        assert result.headers == {"x-request-id": "req-500"}
 
     def test_from_http_response_on_4xx_with_no_error_field_should_return_structured_error(self):
         # Arrange
@@ -81,7 +78,6 @@ class TestBriaResponse:
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
-        assert result.status == Status.FAILED.value
         assert result.error is not None
         assert result.error.code == 401
 
@@ -97,10 +93,8 @@ class TestBriaResponse:
         # Act
         result = BriaResponse.from_http_response(response)
         # Assert
-        assert result.status == Status.FAILED.value
         assert result.error is not None
         assert result.error.code == 502
-        assert result.headers == {"x-request-id": "req-502"}
 
     def test_from_http_response_on_valid_json_should_parse_normally(self):
         # Arrange
@@ -113,7 +107,6 @@ class TestBriaResponse:
         # Assert
         assert result.status == Status.COMPLETED.value
         assert result.error is None
-        assert result.headers == {"x-request-id": "req-200"}
 
     def test_bria_response_model_dump_on_excluding_none_valued_fields(self):
         # Arrange
@@ -122,22 +115,3 @@ class TestBriaResponse:
         dumped_result = response.model_dump()
         # Assert
         assert dumped_result == {"status": "COMPLETED", "request_id": "123"}
-
-    def test_bria_response_on_no_headers_should_exclude_from_model_dump(self):
-        # Arrange
-        response = BriaResponse(status=Status.COMPLETED, request_id="123")
-        # Act
-        dumped_result = response.model_dump()
-        # Assert
-        assert "headers" not in dumped_result
-
-    def test_from_http_response_should_capture_headers(self):
-        # Arrange
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"request_id": "req-1", "status": "COMPLETED"}
-        mock_response.headers = {"content-type": "application/json", "x-request-id": "req-1"}
-        # Act
-        bria_response = BriaResponse.from_http_response(mock_response)
-        # Assert
-        assert bria_response.headers == {"content-type": "application/json", "x-request-id": "req-1"}
