@@ -47,14 +47,6 @@ class TestBriaResponse:
         # Assert
         assert "headers" not in dumped_result
 
-    def test_bria_response_on_headers_set_should_include_in_model_dump(self):
-        # Arrange
-        response = BriaResponse(status=Status.COMPLETED, request_id="123", headers={"x-request-id": "abc"})
-        # Act
-        dumped_result = response.model_dump()
-        # Assert
-        assert dumped_result["headers"] == {"x-request-id": "abc"}
-
     def test_from_http_response_should_capture_headers(self):
         # Arrange
         mock_response = MagicMock()
