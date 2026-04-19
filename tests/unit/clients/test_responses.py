@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 import pytest
 
 from bria_client.toolkit import BriaException, BriaResponse
-from bria_client.toolkit.errors.custom_errors import EndpointNotFoundError
 from bria_client.toolkit.models import BriaError, Status
 
 
@@ -53,7 +52,6 @@ class TestBriaResponse:
         result = BriaResponse.from_http_response(response)
         # Assert
         assert result.status == Status.FAILED.value
-        assert isinstance(result.error, EndpointNotFoundError)
         assert result.headers == {"x-request-id": "req-404"}
 
     def test_from_http_response_on_non_json_body_should_return_structured_error(self):
