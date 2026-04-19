@@ -15,6 +15,21 @@
 * normalize endpoint v2 ([#103](https://github.com/Bria-AI/bria-client/issues/103)) ([6f53603](https://github.com/Bria-AI/bria-client/commit/6f536032f710f3992f3a1a4de622c605de31e586))
 * on error always structure to bria error ([#106](https://github.com/Bria-AI/bria-client/issues/106)) ([e69c318](https://github.com/Bria-AI/bria-client/commit/e69c318051359465f73d3bf18600aa78fd7e9f4f))
 
+## [0.2.1](https://github.com/Bria-AI/bria-client/compare/v0.2.0...v0.2.1) (2026-04-19)
+
+
+### Features
+
+* add headers to response obj ([#105](https://github.com/Bria-AI/bria-client/issues/105)) ([25d4019](https://github.com/Bria-AI/bria-client/commit/25d4019fe97d7ef0bb19ad5970c8d7cf7d66482a))
+
+
+### Bug Fixes
+
+* drop none values from payload ([#102](https://github.com/Bria-AI/bria-client/issues/102)) ([6a1bb67](https://github.com/Bria-AI/bria-client/commit/6a1bb67648420457b0580498376d64c68323120d))
+* mutation of payload and headers ([#99](https://github.com/Bria-AI/bria-client/issues/99)) ([dbf62fe](https://github.com/Bria-AI/bria-client/commit/dbf62fed880223f69993843bcf7e332a859d2b23))
+* normalize endpoint v2 ([#103](https://github.com/Bria-AI/bria-client/issues/103)) ([6f53603](https://github.com/Bria-AI/bria-client/commit/6f536032f710f3992f3a1a4de622c605de31e586))
+* on error always structure to bria error ([#106](https://github.com/Bria-AI/bria-client/issues/106)) ([e69c318](https://github.com/Bria-AI/bria-client/commit/e69c318051359465f73d3bf18600aa78fd7e9f4f))
+
 ## [0.2.0](https://github.com/Bria-AI/bria-client/compare/v0.1.1...v0.2.0) (2026-02-24)
 
 
