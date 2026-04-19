@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, NoReturn
 
 from pydantic import BaseModel, ConfigDict
 
-from bria_client.toolkit import BriaException
+from bria_client.toolkit.errors.exception import BriaException
 
 logger = logging.getLogger(__name__)
 

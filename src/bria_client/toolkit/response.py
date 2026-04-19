@@ -1,21 +1,24 @@
+import logging
 from typing import Any, NoReturn
 
 from httpx import Response
-from pydantic import BaseModel, ConfigDict, Field, model_serializer, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_serializer, model_validator
 from pydantic_core.core_schema import SerializationInfo, SerializerFunctionWrapHandler
 
 from bria_client.toolkit.models import BriaError, BriaResult, Status
+
+logger = logging.getLogger(__name__)
 
 
 class BriaResponse(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
-    request_id: str
+    request_id: str = "unknown"
     status: Status
     error: BriaError | None = Field(default=None)
     result: BriaResult | None = Field(default=None)
     status_url: str | None = Field(default=None)
-    headers: dict[str, str] | None = Field(default=None, exclude=True)
+    headers: dict[str, str] = Field(default_factory=dict, exclude=True)
 
     @model_validator(mode="before")
     @classmethod
@@ -47,8 +50,31 @@ class BriaResponse(BaseModel):
         return f"<{self.__class__.__name__} {self.model_dump()}>"
 
     @classmethod
-    def from_http_response(cls, response: Response):
-        return cls(**response.json(), headers=dict(response.headers))
+    def from_error(cls, error: BriaError, headers: dict[str, str] | None = None) -> "BriaResponse":
+        return cls(status=Status.FAILED, error=error, headers=headers or {})
+
+    @classmethod
+    def from_http_response(cls, response: Response) -> "BriaResponse":
+        headers = dict(response.headers)
+        try:
+            if isinstance(response.json(), dict):
+                parsed = cls(**response.json(), headers=headers)
+            else:
+                raise ValueError("Response is not a JSON object")
+        except (ValueError, ValidationError):
+            logger.debug("Failed to parse response as BriaResponse")
+            parsed = None
+        if parsed is None or (response.status_code >= 400 and parsed.error is None):
+            return cls.from_error(cls._error_from_response(response), headers=headers)
+        return parsed
+
+    @staticmethod
+    def _error_from_response(response: Response) -> BriaError:
+        return BriaError(
+            code=response.status_code,
+            message=response.reason_phrase or f"HTTP {response.status_code}",
+            details=response.text,
+        )
 
     def raise_for_status(self) -> NoReturn | None:
         if self.error is not None:
