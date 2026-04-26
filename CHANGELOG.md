@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/Bria-AI/bria-client/compare/v0.2.1...v0.2.2) (2026-04-26)
+
+
+### Features
+
+* add support for get requests ([#108](https://github.com/Bria-AI/bria-client/issues/108)) ([0bb8ac0](https://github.com/Bria-AI/bria-client/commit/0bb8ac0bd332379224a4a804c18862d9aa720f3c))
+
 ## [0.2.1](https://github.com/Bria-AI/bria-client/compare/v0.2.0...v0.2.1) (2026-04-19)
 
 
