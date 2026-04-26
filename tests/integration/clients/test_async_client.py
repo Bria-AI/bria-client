@@ -109,6 +109,75 @@ class TestAsyncClientApiTokenIntegrations:
         assert headers == {"X-Custom": "value"}
 
     @pytest.mark.asyncio
+    async def test_get_with_api_token_kwarg_uses_token_in_header(self, mocker):
+        """Verify that api_token passed to .get() is used in the HTTP request header"""
+        # Arrange
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")
+        test_api_token = "test_override_token"
+
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mock_request = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        # Act
+        await client.get(endpoint="/test/endpoint", api_token=test_api_token)
+
+        # Assert
+        mock_request.assert_called_once()
+        headers = mock_request.call_args.kwargs["headers"]
+        assert headers["api_token"] == test_api_token
+
+    @pytest.mark.asyncio
+    async def test_get_uses_http_get_method(self, mocker):
+        """Verify that .get() dispatches as an HTTP GET with no payload body"""
+        # Arrange
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mock_request = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        # Act
+        await client.get(endpoint="/test/endpoint")
+
+        # Assert
+        mock_request.assert_called_once()
+        assert mock_request.call_args.kwargs["method"] == "GET"
+        assert mock_request.call_args.kwargs.get("payload") is None
+
+    @pytest.mark.asyncio
+    async def test_get_does_not_mutate_headers(self, mocker):
+        """Verify that .get() does not mutate the caller's headers dict"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        headers = {"X-Custom": "value"}
+        await client.get(endpoint="/test/endpoint", headers=headers)
+
+        assert headers == {"X-Custom": "value"}
+
+    @pytest.mark.asyncio
+    async def test_get_forwards_params_to_http_layer(self, mocker):
+        """Verify that query params reach the HTTP layer"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mock_request = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        await client.get(endpoint="/test/endpoint", params={"q": "hello"})
+
+        assert mock_request.call_args.kwargs["params"] == {"q": "hello"}
+
+    @pytest.mark.asyncio
+    async def test_get_does_not_mutate_params(self, mocker):
+        """Verify that .get() does not mutate the caller's params dict"""
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="token")
+        mock_response = BriaResponse(status=Status.COMPLETED, request_id="test_123", result=BriaResult())
+        mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        params = {"q": "hello"}
+        await client.get(endpoint="/test/endpoint", params=params)
+
+        assert params == {"q": "hello"}
+
+    @pytest.mark.asyncio
     async def test_concurrent_tasks_use_correct_api_tokens(self, mocker):
         # Arrange
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")

@@ -72,6 +72,26 @@ class BriaSyncClient(BaseBriaClient):
             bria_response.raise_for_status()
         return bria_response
 
+    def get(self, endpoint: str, params: dict | None = None, headers: dict | None = None, raise_for_status: bool = False, **kwargs):
+        """
+        Perform an HTTP GET request against an API endpoint.
+
+        Args:
+            endpoint: API endpoint to call.
+            params: Optional query string parameters.
+            headers: Optional headers. Not mutated.
+            raise_for_status: Whether to raise an exception on error status.
+            **kwargs: Additional arguments forwarded to the HTTP layer (e.g., ``api_token``).
+
+        Returns:
+            BriaResponse: The API response.
+        """
+        # Unpack headers and params to avoid mutating the original inputs
+        bria_response = self.engine.get(endpoint=endpoint, headers={**(headers or {})}, params={**(params or {})}, **kwargs)
+        if raise_for_status:
+            bria_response.raise_for_status()
+        return bria_response
+
     def status(self, request_id: str, headers: dict | None = None, **kwargs):
         bria_response = self.engine.get(endpoint=f"status/{request_id}", headers=headers, **kwargs)
         return bria_response.status
