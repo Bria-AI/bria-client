@@ -27,7 +27,7 @@ import uvicorn
 from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
 
 try:
-    from pyngrok import ngrok as _ngrok
+    from pyngrok import ngrok as _ngrok  # type: ignore[import-untyped]
 except ImportError:
     _ngrok = None
 
@@ -42,6 +42,7 @@ app = FastAPI()
 # ---------------------------------------------------------------------------
 # Webhook receiver endpoint
 # ---------------------------------------------------------------------------
+
 
 @app.post("/webhook")
 async def receive_webhook(
@@ -88,6 +89,7 @@ async def process_result(data: dict):
 # Submit a job with a webhook_url
 # ---------------------------------------------------------------------------
 
+
 async def submit_with_webhook(webhook_url: str):
     await asyncio.sleep(1)  # wait for uvicorn to finish starting
     async with BriaAsyncClient() as client:
@@ -105,6 +107,7 @@ async def submit_with_webhook(webhook_url: str):
 # Local dev entrypoint: starts ngrok tunnel + uvicorn + submits a job
 # ---------------------------------------------------------------------------
 
+
 async def main():
     if _ngrok is not None:
         tunnel = _ngrok.connect(8080)
@@ -114,8 +117,7 @@ async def main():
         public_url = os.environ.get("WEBHOOK_URL")
         if not public_url:
             raise RuntimeError(
-                "pyngrok is not installed and WEBHOOK_URL is not set. "
-                "Either `pip install pyngrok` or set WEBHOOK_URL to a publicly reachable URL."
+                "pyngrok is not installed and WEBHOOK_URL is not set. Either `pip install pyngrok` or set WEBHOOK_URL to a publicly reachable URL."
             )
         logger.info("Using WEBHOOK_URL: %s", public_url)
 

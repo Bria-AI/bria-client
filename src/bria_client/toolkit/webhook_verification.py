@@ -34,9 +34,7 @@ def verify_webhook_signature(
     """
     signing_key = _derive_signing_key(api_token)
     message = f"{webhook_id}.{timestamp}.{payload.decode()}".encode()
-    expected = base64.b64encode(
-        hmac.new(signing_key, message, hashlib.sha256).digest()
-    ).decode()
+    expected = base64.b64encode(hmac.new(signing_key, message, hashlib.sha256).digest()).decode()
 
     for token in signature_header.split(","):
         token = token.strip()
