@@ -42,6 +42,13 @@ Documentation = "https://docs.bria.ai"
 Repository = "https://github.com/Bria-AI/bria-client"
 Issues = "https://github.com/Bria-AI/bria-client/issues"
 
+[project.optional-dependencies]
+examples = [
+    "fastapi>=0.136.1",
+    "pyngrok>=8.1.2",
+    "uvicorn>=0.47.0",
+]
+
 [tool.uv-dynamic-versioning]
 fallback-version = "0.0.0"
 

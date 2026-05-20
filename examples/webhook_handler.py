@@ -7,21 +7,27 @@ Demonstrates how to:
   3. (Optional) Use pyngrok to expose localhost for local development.
 
 Requirements:
-    pip install fastapi uvicorn bria-client
-    pip install pyngrok          # only needed for local dev tunnel
+    uv run --extra examples python examples/webhook_handler.py
 
-Usage (local dev):
-    python examples/webhook_handler.py
+Local dev with ngrok tunnel:
+  ngrok requires a free account and auth token:
+    1. Sign up at https://dashboard.ngrok.com/signup (free)
+    2. Copy your authtoken from https://dashboard.ngrok.com/get-started/your-authtoken
+    3. Run: ngrok config add-authtoken <your-token>
+  Then run this script — it will open a tunnel automatically.
 
-    The script starts a FastAPI server on port 8080, opens an ngrok tunnel,
-    submits a job with the tunnel URL as the webhook, then waits.
-    When Bria finishes the job it will POST to your local server.
+  Alternatively, set WEBHOOK_URL to any publicly reachable URL and skip ngrok:
+    WEBHOOK_URL=https://your-server.example.com/webhook uv run --extra examples python examples/webhook_handler.py
 """
 
 import asyncio
 import json
 import logging
 import os
+
+from dotenv import load_dotenv
+
+load_dotenv()  # picks up BRIA_API_TOKEN and WEBHOOK_URL from a .env file if present
 
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request
@@ -37,6 +43,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+_shutdown_event = asyncio.Event()
 
 
 # ---------------------------------------------------------------------------
@@ -84,6 +91,9 @@ async def process_result(data: dict):
     logger.info("Processing result for request_id=%s status=%s", data.get("request_id"), data.get("status"))
     # Your processing logic here
 
+    # Shutdown the server
+    _shutdown_event.set()
+
 
 # ---------------------------------------------------------------------------
 # Submit a job with a webhook_url
@@ -109,25 +119,37 @@ async def submit_with_webhook(webhook_url: str):
 
 
 async def main():
-    if _ngrok is not None:
-        tunnel = _ngrok.connect(8080)
-        public_url = tunnel.public_url
-        logger.info("ngrok tunnel: %s", public_url)
-    else:
-        public_url = os.environ.get("WEBHOOK_URL")
-        if not public_url:
-            raise RuntimeError(
-                "pyngrok is not installed and WEBHOOK_URL is not set. Either `pip install pyngrok` or set WEBHOOK_URL to a publicly reachable URL."
+    public_url = os.environ.get("WEBHOOK_URL")
+
+    if not public_url and _ngrok is not None:
+        try:
+            tunnel = _ngrok.connect(8080)
+            public_url = tunnel.public_url
+            logger.info("ngrok tunnel opened: %s", public_url)
+        except Exception as e:
+            logger.warning(
+                "ngrok tunnel failed (%s). "
+                "Run 'ngrok config add-authtoken <token>' (free at https://dashboard.ngrok.com) "
+                "or set WEBHOOK_URL to a publicly reachable URL.",
+                e,
             )
-        logger.info("Using WEBHOOK_URL: %s", public_url)
+
+    if not public_url:
+        raise RuntimeError("No public URL available. Either configure an ngrok authtoken (ngrok config add-authtoken <token>) or set WEBHOOK_URL.")
 
     webhook_url = f"{public_url}/webhook"
 
     config = uvicorn.Config(app, host="0.0.0.0", port=8080, log_level="info")
     server = uvicorn.Server(config)
+
+    async def shutdown_when_done():
+        await _shutdown_event.wait()
+        server.should_exit = True
+
     await asyncio.gather(
         server.serve(),
         submit_with_webhook(webhook_url),
+        shutdown_when_done(),
     )
 
 
