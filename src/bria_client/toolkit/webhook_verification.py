@@ -2,11 +2,13 @@ import base64
 import hashlib
 import hmac
 
+WEBHOOK_SIGNING_SALT = b"bria-webhook-signing-v1"
+
 
 def _derive_signing_key(api_token: str) -> bytes:
     return hmac.new(
         api_token.encode(),
-        b"bria-webhook-signing-v1",
+        WEBHOOK_SIGNING_SALT,
         hashlib.sha256,
     ).digest()
 

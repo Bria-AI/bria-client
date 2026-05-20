@@ -4,7 +4,7 @@ import hmac
 
 import pytest
 
-from bria_client.toolkit.webhook_verification import verify_webhook_signature
+from bria_client.toolkit.webhook_verification import verify_webhook_signature, WEBHOOK_SIGNING_SALT
 
 API_TOKEN = "test-api-token"
 WEBHOOK_ID = "req_abc123"
@@ -13,7 +13,7 @@ PAYLOAD = b'{"status":"COMPLETED","request_id":"req_abc123"}'
 
 
 def _make_signature(api_token: str, webhook_id: str, timestamp: str, payload: bytes) -> str:
-    signing_key = hmac.new(api_token.encode(), b"bria-webhook-signing-v1", hashlib.sha256).digest()
+    signing_key = hmac.new(api_token.encode(), WEBHOOK_SIGNING_SALT, hashlib.sha256).digest()
     message = f"{webhook_id}.{timestamp}.{payload.decode()}".encode()
     sig = base64.b64encode(hmac.new(signing_key, message, hashlib.sha256).digest()).decode()
     return f"v1={sig}"
