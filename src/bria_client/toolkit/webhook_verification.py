@@ -5,14 +5,6 @@ import hmac
 WEBHOOK_SIGNING_SALT = b"bria-webhook-signing-v1"
 
 
-def _derive_signing_key(api_token: str) -> bytes:
-    return hmac.new(
-        api_token.encode(),
-        WEBHOOK_SIGNING_SALT,
-        hashlib.sha256,
-    ).digest()
-
-
 def verify_webhook_signature(
     payload: bytes,
     webhook_id: str,
@@ -45,3 +37,11 @@ def verify_webhook_signature(
             if hmac.compare_digest(candidate, expected):
                 return True
     return False
+
+
+def _derive_signing_key(api_token: str) -> bytes:
+    return hmac.new(
+        api_token.encode(),
+        WEBHOOK_SIGNING_SALT,
+        hashlib.sha256,
+    ).digest()

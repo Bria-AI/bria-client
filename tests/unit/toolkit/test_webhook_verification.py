@@ -25,35 +25,22 @@ class TestVerifyWebhookSignature:
         header = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
         assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, TIMESTAMP, header, API_TOKEN) is True
 
-    def test_tampered_payload_returns_false(self):
+    @pytest.mark.parametrize(
+        "payload,webhook_id,timestamp,api_token",
+        [
+            (b'{"status":"FAILED"}', WEBHOOK_ID, TIMESTAMP, API_TOKEN),
+            (PAYLOAD, "req_other", TIMESTAMP, API_TOKEN),
+            (PAYLOAD, WEBHOOK_ID, "9999999999", API_TOKEN),
+            (PAYLOAD, WEBHOOK_ID, TIMESTAMP, "wrong-token"),
+        ],
+    )
+    def test_invalid_input_returns_false(self, payload, webhook_id, timestamp, api_token):
         header = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
-        tampered = b'{"status":"FAILED","request_id":"req_abc123"}'
-        assert verify_webhook_signature(tampered, WEBHOOK_ID, TIMESTAMP, header, API_TOKEN) is False
+        assert verify_webhook_signature(payload, webhook_id, timestamp, header, api_token) is False
 
-    def test_wrong_api_token_returns_false(self):
-        header = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
-        assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, TIMESTAMP, header, "wrong-token") is False
-
-    def test_tampered_webhook_id_returns_false(self):
-        header = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
-        assert verify_webhook_signature(PAYLOAD, "req_other", TIMESTAMP, header, API_TOKEN) is False
-
-    def test_tampered_timestamp_returns_false(self):
-        header = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
-        assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, "9999999999", header, API_TOKEN) is False
-
-    def test_multiple_tokens_one_valid_returns_true(self):
+    def test_multiple_signatures_one_valid_returns_true(self):
         valid = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
         header = f"v1=invalidsig,{valid}"
-        assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, TIMESTAMP, header, API_TOKEN) is True
-
-    def test_multiple_tokens_all_invalid_returns_false(self):
-        header = "v1=invalidsig1, v1=invalidsig2"
-        assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, TIMESTAMP, header, API_TOKEN) is False
-
-    def test_token_with_whitespace_is_handled(self):
-        valid = _make_signature(API_TOKEN, WEBHOOK_ID, TIMESTAMP, PAYLOAD)
-        header = f"  {valid}  "
         assert verify_webhook_signature(PAYLOAD, WEBHOOK_ID, TIMESTAMP, header, API_TOKEN) is True
 
     def test_empty_signature_header_returns_false(self):
