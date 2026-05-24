@@ -69,7 +69,9 @@ class BriaSyncClient(BaseBriaClient):
             BriaResponse: The API response with request_id for polling
         """
         self._validate_submit_payload(payload)
-        merged_payload = {**payload, "sync": False, "webhook_url": webhook_url}
+        merged_payload = {**payload, "sync": False}
+        if webhook_url is not None:
+            merged_payload["webhook_url"] = webhook_url
         bria_response = self.engine.post(endpoint=endpoint, payload=merged_payload, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()

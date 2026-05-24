@@ -84,6 +84,21 @@ class TestAsyncClientWebhook:
         assert "webhook_url" not in payload_sent
 
     @pytest.mark.asyncio
+    async def test_submit_preserves_webhook_url_from_payload(self, mocker):
+        client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")
+        mock_response = BriaResponse(status=Status.RUNNING, request_id="test_222", result=None)
+        mock_post = mocker.patch.object(client.engine.client, "request", return_value=mock_response)
+
+        await client.submit(
+            endpoint="/test/endpoint",
+            payload={"test": "data", "webhook_url": "https://my-server.example.com/webhook"},
+        )
+
+        mock_post.assert_called_once()
+        payload_sent = mock_post.call_args.kwargs["payload"]
+        assert payload_sent["webhook_url"] == "https://my-server.example.com/webhook"
+
+    @pytest.mark.asyncio
     async def test_submit_does_not_mutate_original_payload(self, mocker):
         # Arrange
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="default_token")
