@@ -85,7 +85,7 @@ ignore = ["PERF203", "E402", "F821"]
 [dependency-groups]
 dev = [
     "pre-commit>=4.3.0",
-    "pyright>=1.1.407",
+    "pyright[nodejs]>=1.1.407",
     "ruff>=0.14.0",
 ]
 test = [

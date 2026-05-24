@@ -62,7 +62,7 @@ class BriaSyncClient(BaseBriaClient):
             raise_for_status: Whether to raise exception on error status
             webhook_url: Optional URL to receive a POST when the job reaches a terminal state.
                          Bria will sign the request with HMAC-SHA256; use
-                         ``verify_webhook_signature`` from ``bria_client`` to verify on receipt.
+                         ``verify_webhook_signature`` from ``bria_client.toolkit`` to verify on receipt.
             **kwargs: Additional arguments (e.g., api_token)
 
         Returns:

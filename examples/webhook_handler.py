@@ -37,7 +37,8 @@ try:
 except ImportError:
     _ngrok = None
 
-from bria_client import BriaAsyncClient, verify_webhook_signature
+from bria_client import BriaAsyncClient
+from bria_client.toolkit import verify_webhook_signature
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -123,7 +124,7 @@ async def main():
 
     if not public_url and _ngrok is not None:
         try:
-            tunnel = _ngrok.connect(8080)
+            tunnel = _ngrok.connect("8080")
             public_url = tunnel.public_url
             logger.info("ngrok tunnel opened: %s", public_url)
         except Exception as e:

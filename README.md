@@ -214,7 +214,8 @@ The following hooks run automatically on each commit:
 | `prettier` | Formats YAML and JSON files |
 | `ruff-format` | Formats Python code |
 | `ruff` | Lints Python code with auto-fix |
-| `pyright` | Type checking |
+| `pyright` | Type checking for `src/` and `tests/` |
+| `pyright-examples` | Type checking for `examples/` (requires `[examples]` extra) |
 | `uv-lock-check` | Ensures `uv.lock` is in sync with `pyproject.toml` |
 
 To run all hooks manually:

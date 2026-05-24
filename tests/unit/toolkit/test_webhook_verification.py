@@ -4,7 +4,7 @@ import hmac
 
 import pytest
 
-from bria_client.toolkit.webhook_verification import verify_webhook_signature, WEBHOOK_SIGNING_SALT
+from bria_client.toolkit.webhook_verification import WEBHOOK_SIGNING_SALT, verify_webhook_signature
 
 API_TOKEN = "test-api-token"
 WEBHOOK_ID = "req_abc123"
