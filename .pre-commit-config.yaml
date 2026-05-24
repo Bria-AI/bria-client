@@ -38,9 +38,17 @@ repos:
       - id: pyright
         name: Pyright
         entry: uv run --all-groups pyright
+        args: [src, tests]
         language: system
-        types: [python]
-        pass_filenames: true
+        files: ^(src/|tests/).*\.py$
+        pass_filenames: false
+      - id: pyright-examples
+        name: Pyright (examples)
+        entry: uv run --all-groups --extra examples pyright
+        args: [examples]
+        language: system
+        files: ^examples/.*\.py$
+        pass_filenames: false
       - id: uv-lock-check
         name: Check uv.lock is up to date
         entry: uv lock --check

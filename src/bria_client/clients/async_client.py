@@ -53,7 +53,7 @@ class BriaAsyncClient(BaseBriaClient):
             bria_response.raise_for_status()
         return bria_response
 
-    async def submit(self, endpoint: str, payload: dict, headers: dict | None = None, raise_for_status: bool = False, **kwargs):
+    async def submit(self, endpoint: str, payload: dict, headers: dict | None = None, raise_for_status: bool = False, webhook_url: str | None = None, **kwargs):
         """
         Submit an asynchronous request (sync=False)
 
@@ -62,14 +62,19 @@ class BriaAsyncClient(BaseBriaClient):
             payload: Request payload
             headers: Optional headers
             raise_for_status: Whether to raise exception on error status
+            webhook_url: Optional URL to receive a POST when the job reaches a terminal state.
+                         Bria will sign the request with HMAC-SHA256; use
+                         ``verify_webhook_signature`` from ``bria_client.toolkit`` to verify on receipt.
             **kwargs: Additional arguments (e.g., api_token)
 
         Returns:
             BriaResponse: The API response with request_id for polling
         """
         self._validate_submit_payload(payload)
-        # Unpack payload and headers to avoid mutating the original input
-        bria_response = await self.engine.post_async(endpoint=endpoint, payload={**payload, "sync": False}, headers={**(headers or {})}, **kwargs)
+        merged_payload = {**payload, "sync": False}
+        if webhook_url is not None:
+            merged_payload["webhook_url"] = webhook_url
+        bria_response = await self.engine.post_async(endpoint=endpoint, payload=merged_payload, headers={**(headers or {})}, **kwargs)
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
