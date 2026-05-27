@@ -1,12 +1,15 @@
 import asyncio
 import logging
 import time
+from pathlib import Path
 
+import httpx
 from httpx_retries import Retry
 
 from bria_client.clients.base import BaseBriaClient
 from bria_client.engines.base import AsyncHTTPRequest
 from bria_client.toolkit import BriaResponse
+from bria_client.toolkit.errors.exception import BriaException
 from bria_client.toolkit.models import Status
 
 logger = logging.getLogger(__name__)
@@ -98,6 +101,52 @@ class BriaAsyncClient(BaseBriaClient):
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
+
+    async def upload(self, path: str | Path, media_type: str, headers: dict | None = None, **kwargs) -> str:
+        """
+        Upload a local file to Bria's storage and return a URL ready for use in API calls.
+
+        Currently only video files are supported.
+
+        Args:
+            path: Local path to the file.
+            media_type: MIME type of the file (e.g. "video/mp4"). Stored as the file's Content-Type,
+                        which affects how web clients retrieve and render it.
+                        Only "video/*" types are currently accepted.
+            headers: Optional extra headers forwarded to the Bria API request.
+            **kwargs: Additional arguments forwarded to the Bria API call (e.g., api_token).
+
+        Returns:
+            str: A URL to pass as input to subsequent Bria API calls.
+                 Valid for 1 day; treat it as a secret — anyone with the URL can access the file.
+
+        Raises:
+            NotImplementedError: If media_type is not a video type.
+            BriaException: If the Bria API request or the file upload fails.
+        """
+        if not media_type.startswith("video/"):
+            raise NotImplementedError(f"Upload not yet supported for media type: {media_type!r}")
+        bria_response = await self.engine.post_async(
+            endpoint="video/upload",
+            payload={"media_type": media_type},
+            headers={**(headers or {})},
+            **kwargs,
+        )
+        bria_response.raise_for_status()
+        result = bria_response.result
+        assert result is not None
+        path = Path(path)
+        with path.open("rb") as f:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    result.upload_url,
+                    data={**result.upload_fields, "Content-Type": media_type},
+                    files={"file": (path.name, f, media_type)},
+                    timeout=None,
+                )
+        if response.status_code != 204:
+            raise BriaException(status_code=response.status_code, message="Upload failed", details=response.text)
+        return result.file_url
 
     async def status(self, request_id: str, headers: dict | None = None, **kwargs):
         """
