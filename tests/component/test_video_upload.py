@@ -5,7 +5,7 @@ import pytest
 from bria_client.clients.async_client import BriaAsyncClient
 from bria_client.clients.sync_client import BriaSyncClient
 from bria_client.toolkit import BriaResponse
-from bria_client.toolkit.models import BriaResult, Status, VideoUploadResult
+from bria_client.toolkit.models import BriaResult, Status
 
 UPLOAD_URL = "https://storage.example.com/bucket/upload"
 UPLOAD_FIELDS = {"key": "uploads/video.mp4", "policy": "abc123", "signature": "sig456"}
@@ -43,17 +43,6 @@ def video_file(tmp_path):
 
 @pytest.mark.component
 class TestSyncClientVideoUpload:
-    def test_request_video_upload(self, mocker):
-        client = BriaSyncClient(base_url="https://test.example.com", api_token="tok")
-        mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
-
-        result = client.request_video_upload(media_type="video/mp4")
-
-        assert isinstance(result, VideoUploadResult)
-        assert result.upload_url == UPLOAD_URL
-        assert result.upload_fields == UPLOAD_FIELDS
-        assert result.file_url == FILE_URL
-
     def test_upload(self, mocker, video_file):
         client = BriaSyncClient(base_url="https://test.example.com", api_token="tok")
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
@@ -84,16 +73,6 @@ class TestSyncClientVideoUpload:
 
 @pytest.mark.component
 class TestAsyncClientVideoUpload:
-    @pytest.mark.asyncio
-    async def test_request_video_upload(self, mocker):
-        client = BriaAsyncClient(base_url="https://test.example.com", api_token="tok")
-        mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
-
-        result = await client.request_video_upload(media_type="video/mp4")
-
-        assert isinstance(result, VideoUploadResult)
-        assert result.file_url == FILE_URL
-
     @pytest.mark.asyncio
     async def test_upload(self, mocker, video_file):
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="tok")

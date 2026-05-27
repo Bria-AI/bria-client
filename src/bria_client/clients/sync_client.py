@@ -8,7 +8,6 @@ from httpx_retries import Retry
 from bria_client.clients.base import BaseBriaClient
 from bria_client.engines.base.sync_http_request import SyncHTTPRequest
 from bria_client.toolkit import BriaResponse
-from bria_client.toolkit.models import VideoUploadResult
 
 logger = logging.getLogger(__name__)
 
@@ -100,35 +99,6 @@ class BriaSyncClient(BaseBriaClient):
             bria_response.raise_for_status()
         return bria_response
 
-    def request_video_upload(self, media_type: str | None = None, headers: dict | None = None, **kwargs) -> VideoUploadResult:
-        """
-        Request a presigned upload URL for uploading a video.
-
-        Args:
-            media_type: MIME type of the video (e.g. "video/mp4"). If omitted, any "video/*" type is accepted.
-            headers: Optional headers.
-            **kwargs: Additional arguments (e.g., api_token).
-
-        Returns:
-            VideoUploadResult: Contains upload_url, upload_fields, and file_url.
-                               Use file_url as input to video API endpoints after upload.
-        """
-        bria_response = self.engine.post(
-            endpoint="video/upload",
-            payload={"media_type": media_type},
-            headers={**(headers or {})},
-            **kwargs,
-        )
-        bria_response.raise_for_status()
-        result = bria_response.result
-        if result is None:
-            raise ValueError("Unexpected empty result from POST /v2/video/upload")
-        return VideoUploadResult(
-            upload_url=result.upload_url,
-            upload_fields=result.upload_fields,
-            file_url=result.file_url,
-        )
-
     def upload(self, path: str | Path, media_type: str | None = None, headers: dict | None = None, **kwargs) -> str:
         """
         Upload a local file to Bria's storage and return a URL ready for use in API calls.
@@ -149,19 +119,28 @@ class BriaSyncClient(BaseBriaClient):
         """
         if media_type is not None and not media_type.startswith("video/"):
             raise NotImplementedError(f"Upload not yet supported for media type: {media_type!r}")
-        upload_data = self.request_video_upload(media_type=media_type, headers=headers, **kwargs)
+        bria_response = self.engine.post(
+            endpoint="video/upload",
+            payload={"media_type": media_type},
+            headers={**(headers or {})},
+            **kwargs,
+        )
+        bria_response.raise_for_status()
+        result = bria_response.result
+        if result is None:
+            raise ValueError("Unexpected empty result from POST /v2/video/upload")
         path = Path(path)
         with path.open("rb") as f:
             with httpx.Client() as client:
                 response = client.post(
-                    upload_data.upload_url,
-                    data=upload_data.upload_fields,
+                    result.upload_url,
+                    data=result.upload_fields,
                     files={"file": (path.name, f, media_type)},
                     timeout=None,
                 )
         if response.status_code != 204:
             raise ValueError(f"Video upload failed with HTTP {response.status_code}: {response.text}")
-        return upload_data.file_url
+        return result.file_url
 
     def status(self, request_id: str, headers: dict | None = None, **kwargs):
         bria_response = self.engine.get(endpoint=f"status/{request_id}", headers=headers, **kwargs)
