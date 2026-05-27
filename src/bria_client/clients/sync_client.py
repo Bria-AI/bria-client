@@ -129,31 +129,34 @@ class BriaSyncClient(BaseBriaClient):
             file_url=result.file_url,
         )
 
-    def upload_video(self, video_path: str | Path, media_type: str = "video/mp4", headers: dict | None = None, **kwargs) -> str:
+    def upload(self, path: str | Path, media_type: str | None = None, headers: dict | None = None, **kwargs) -> str:
         """
-        Upload a local video file to Bria's storage and return a URL ready for use in video API calls.
+        Upload a local file to Bria's storage and return a URL ready for use in API calls.
 
         Args:
-            video_path: Local path to the video file.
-            media_type: MIME type of the video (default: "video/mp4").
+            path: Local path to the file.
+            media_type: MIME type of the file (e.g. "video/mp4"). If omitted, any "video/*" type is accepted.
             headers: Optional headers for the Bria API call.
             **kwargs: Additional arguments forwarded to the Bria API call (e.g., api_token).
 
         Returns:
-            str: The file_url to use as video input in subsequent Bria API calls.
+            str: The file_url to use as input in subsequent Bria API calls.
                  Valid for 1 day; keep it safe as anyone with the URL can access the file.
 
         Raises:
+            NotImplementedError: If the media type is not yet supported.
             ValueError: If the upload fails.
         """
+        if media_type is not None and not media_type.startswith("video/"):
+            raise NotImplementedError(f"Upload not yet supported for media type: {media_type!r}")
         upload_data = self.request_video_upload(media_type=media_type, headers=headers, **kwargs)
-        video_path = Path(video_path)
-        with video_path.open("rb") as f:
+        path = Path(path)
+        with path.open("rb") as f:
             with httpx.Client() as client:
                 response = client.post(
                     upload_data.upload_url,
                     data=upload_data.upload_fields,
-                    files={"file": (video_path.name, f, media_type)},
+                    files={"file": (path.name, f, media_type)},
                     timeout=None,
                 )
         if response.status_code != 204:

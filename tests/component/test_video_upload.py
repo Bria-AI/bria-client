@@ -54,12 +54,12 @@ class TestSyncClientVideoUpload:
         assert result.upload_fields == UPLOAD_FIELDS
         assert result.file_url == FILE_URL
 
-    def test_upload_video(self, mocker, video_file):
+    def test_upload(self, mocker, video_file):
         client = BriaSyncClient(base_url="https://test.example.com", api_token="tok")
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         mock_upload = _mock_sync_upload(mocker)
 
-        file_url = client.upload_video(video_file, media_type="video/mp4")
+        file_url = client.upload(video_file)
 
         assert file_url == FILE_URL
         call_kwargs = mock_upload.post.call_args
@@ -67,13 +67,19 @@ class TestSyncClientVideoUpload:
         assert call_kwargs.kwargs["data"] == UPLOAD_FIELDS
         assert "file" in call_kwargs.kwargs["files"]
 
-    def test_upload_video_raises_on_failure(self, mocker, video_file):
+    def test_upload_raises_not_implemented_for_non_video(self, mocker, video_file):
+        client = BriaSyncClient(base_url="https://test.example.com", api_token="tok")
+
+        with pytest.raises(NotImplementedError, match="image/png"):
+            client.upload(video_file, media_type="image/png")
+
+    def test_upload_raises_on_failure(self, mocker, video_file):
         client = BriaSyncClient(base_url="https://test.example.com", api_token="tok")
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         _mock_sync_upload(mocker, status_code=403, text="Access Denied")
 
         with pytest.raises(ValueError, match="Video upload failed with HTTP 403"):
-            client.upload_video(video_file)
+            client.upload(video_file)
 
 
 @pytest.mark.component
@@ -89,12 +95,12 @@ class TestAsyncClientVideoUpload:
         assert result.file_url == FILE_URL
 
     @pytest.mark.asyncio
-    async def test_upload_video(self, mocker, video_file):
+    async def test_upload(self, mocker, video_file):
         client = BriaAsyncClient(base_url="https://test.example.com", api_token="tok")
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         mock_upload = _mock_async_upload(mocker)
 
-        file_url = await client.upload_video(video_file, media_type="video/mp4")
+        file_url = await client.upload(video_file)
 
         assert file_url == FILE_URL
         call_kwargs = mock_upload.post.call_args
