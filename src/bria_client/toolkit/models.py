@@ -38,3 +38,9 @@ class Status(StrEnum):
     FAILED = "ERROR"
     COMPLETED = "COMPLETED"
     RUNNING = "IN_PROGRESS"
+
+
+class VideoUploadResult(BaseModel):
+    upload_url: str
+    upload_fields: dict[str, str]
+    file_url: str

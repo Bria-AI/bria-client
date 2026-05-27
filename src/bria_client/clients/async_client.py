@@ -1,13 +1,15 @@
 import asyncio
 import logging
 import time
+from pathlib import Path
 
+import httpx
 from httpx_retries import Retry
 
 from bria_client.clients.base import BaseBriaClient
 from bria_client.engines.base import AsyncHTTPRequest
 from bria_client.toolkit import BriaResponse
-from bria_client.toolkit.models import Status
+from bria_client.toolkit.models import Status, VideoUploadResult
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +100,66 @@ class BriaAsyncClient(BaseBriaClient):
         if raise_for_status:
             bria_response.raise_for_status()
         return bria_response
+
+    async def request_video_upload(self, media_type: str | None = None, headers: dict | None = None, **kwargs) -> VideoUploadResult:
+        """
+        Request a presigned upload URL for uploading a video.
+
+        Args:
+            media_type: MIME type of the video (e.g. "video/mp4"). If omitted, any "video/*" type is accepted.
+            headers: Optional headers.
+            **kwargs: Additional arguments (e.g., api_token).
+
+        Returns:
+            VideoUploadResult: Contains upload_url, upload_fields, and file_url.
+                               Use file_url as input to video API endpoints after upload.
+        """
+        bria_response = await self.engine.post_async(
+            endpoint="video/upload",
+            payload={"media_type": media_type},
+            headers={**(headers or {})},
+            **kwargs,
+        )
+        bria_response.raise_for_status()
+        result = bria_response.result
+        if result is None:
+            raise ValueError("Unexpected empty result from POST /v2/video/upload")
+        return VideoUploadResult(
+            upload_url=result.upload_url,
+            upload_fields=result.upload_fields,
+            file_url=result.file_url,
+        )
+
+    async def upload_video(self, video_path: str | Path, media_type: str = "video/mp4", headers: dict | None = None, **kwargs) -> str:
+        """
+        Upload a local video file to Bria's storage and return a URL ready for use in video API calls.
+
+        Args:
+            video_path: Local path to the video file.
+            media_type: MIME type of the video (default: "video/mp4").
+            headers: Optional headers for the Bria API call.
+            **kwargs: Additional arguments forwarded to the Bria API call (e.g., api_token).
+
+        Returns:
+            str: The file_url to use as video input in subsequent Bria API calls.
+                 Valid for 1 day; keep it safe as anyone with the URL can access the file.
+
+        Raises:
+            ValueError: If the upload fails.
+        """
+        upload_data = await self.request_video_upload(media_type=media_type, headers=headers, **kwargs)
+        video_path = Path(video_path)
+        with video_path.open("rb") as f:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    upload_data.upload_url,
+                    data=upload_data.upload_fields,
+                    files={"file": (video_path.name, f, media_type)},
+                    timeout=None,
+                )
+        if response.status_code != 204:
+            raise ValueError(f"Video upload failed with HTTP {response.status_code}: {response.text}")
+        return upload_data.file_url
 
     async def status(self, request_id: str, headers: dict | None = None, **kwargs):
         """
