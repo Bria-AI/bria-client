@@ -5,6 +5,7 @@ import pytest
 from bria_client.clients.async_client import BriaAsyncClient
 from bria_client.clients.sync_client import BriaSyncClient
 from bria_client.toolkit import BriaResponse
+from bria_client.toolkit.errors.exception import BriaException
 from bria_client.toolkit.models import BriaResult, Status
 
 UPLOAD_URL = "https://storage.example.com/bucket/upload"
@@ -67,8 +68,9 @@ class TestSyncClientVideoUpload:
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         _mock_sync_upload(mocker, status_code=403, text="Access Denied")
 
-        with pytest.raises(ValueError, match="Video upload failed with HTTP 403"):
+        with pytest.raises(BriaException) as exc_info:
             client.upload(video_file)
+        assert exc_info.value.code == 403
 
 
 @pytest.mark.component

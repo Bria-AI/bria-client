@@ -9,6 +9,7 @@ from httpx_retries import Retry
 from bria_client.clients.base import BaseBriaClient
 from bria_client.engines.base import AsyncHTTPRequest
 from bria_client.toolkit import BriaResponse
+from bria_client.toolkit.errors.exception import BriaException
 from bria_client.toolkit.models import Status
 
 logger = logging.getLogger(__name__)
@@ -129,8 +130,7 @@ class BriaAsyncClient(BaseBriaClient):
         )
         bria_response.raise_for_status()
         result = bria_response.result
-        if result is None:
-            raise ValueError("Unexpected empty result from POST /v2/video/upload")
+        assert result is not None
         path = Path(path)
         with path.open("rb") as f:
             async with httpx.AsyncClient() as client:
@@ -141,7 +141,7 @@ class BriaAsyncClient(BaseBriaClient):
                     timeout=None,
                 )
         if response.status_code != 204:
-            raise ValueError(f"Video upload failed with HTTP {response.status_code}: {response.text}")
+            raise BriaException(status_code=response.status_code, message="Upload failed", details=response.text)
         return result.file_url
 
     async def status(self, request_id: str, headers: dict | None = None, **kwargs):
