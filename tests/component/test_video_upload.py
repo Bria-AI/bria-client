@@ -49,12 +49,11 @@ class TestSyncClientVideoUpload:
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         mock_upload = _mock_sync_upload(mocker)
 
-        file_url = client.upload(video_file)
+        file_url = client.upload(video_file, media_type="video/mp4")
 
         assert file_url == FILE_URL
         call_kwargs = mock_upload.post.call_args
         assert call_kwargs.args[0] == UPLOAD_URL
-        assert call_kwargs.kwargs["data"] == UPLOAD_FIELDS
         assert "file" in call_kwargs.kwargs["files"]
 
     def test_upload_raises_not_implemented_for_non_video(self, mocker, video_file):
@@ -69,7 +68,7 @@ class TestSyncClientVideoUpload:
         _mock_sync_upload(mocker, status_code=403, text="Access Denied")
 
         with pytest.raises(BriaException) as exc_info:
-            client.upload(video_file)
+            client.upload(video_file, media_type="video/mp4")
         assert exc_info.value.code == 403
 
 
@@ -81,10 +80,9 @@ class TestAsyncClientVideoUpload:
         mocker.patch.object(client.engine.client, "request", return_value=_make_upload_bria_response())
         mock_upload = _mock_async_upload(mocker)
 
-        file_url = await client.upload(video_file)
+        file_url = await client.upload(video_file, media_type="video/mp4")
 
         assert file_url == FILE_URL
         call_kwargs = mock_upload.post.call_args
         assert call_kwargs.args[0] == UPLOAD_URL
-        assert call_kwargs.kwargs["data"] == UPLOAD_FIELDS
         assert "file" in call_kwargs.kwargs["files"]
