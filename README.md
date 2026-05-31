@@ -10,6 +10,11 @@ A Python client library for the Bria Engine API, designed to make integrating po
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Usage Guide](#usage-guide)
+  - [Two Client Types](#two-client-types)
+  - [Three Request Methods](#three-request-methods)
+  - [Payload Handling](#payload-handling)
+  - [Webhooks](#webhooks)
+  - [Video Upload](#video-upload)
 - [Examples](#examples)
 - [Development Setup](#development-setup)
 - [Contributing](#contributing)
@@ -109,6 +114,63 @@ response = client.run(
     }
 )
 ```
+
+### Webhooks
+
+Instead of polling, you can ask Bria to POST the result to your server as soon as a job completes. Pass `webhook_url` to `.submit()`:
+
+```python
+response = client.submit(
+    endpoint="video/edit/remove_background",
+    payload={"video": file_url},
+    webhook_url="https://your-server.example.com/webhook",
+)
+print(f"Submitted: {response.request_id}")
+```
+
+Bria signs every delivery with HMAC-SHA256. Verify the signature before processing the payload:
+
+```python
+from bria_client.toolkit import verify_webhook_signature
+
+# In your webhook receiver (e.g. a FastAPI POST handler):
+body = await request.body()
+is_valid = verify_webhook_signature(
+    payload=body,
+    webhook_id=request.headers["bria-webhook-id"],
+    timestamp=request.headers["bria-webhook-timestamp"],
+    signature_header=request.headers["bria-webhook-signature"],
+    api_token=os.environ["BRIA_API_TOKEN"],
+)
+if not is_valid:
+    raise HTTPException(status_code=401, detail="Invalid webhook signature")
+```
+
+**Best practices:**
+- Respond with a 2xx status within **10 seconds** — defer any heavy processing to a background task.
+- Always verify the signature before acting on the payload.
+
+See [`examples/webhook_handler.py`](examples/webhook_handler.py) for a complete FastAPI receiver with optional ngrok tunnel for local development.
+
+### Video Upload
+
+Video endpoints expect a hosted URL. If you have a local file, use `client.upload()` to get one via a presigned upload:
+
+```python
+file_url = client.upload("path/to/video.mp4", media_type="video/mp4")
+
+response = client.submit(
+    endpoint="video/edit/remove_background",
+    payload={"video": file_url},
+)
+
+result = client.poll(response, timeout=300)
+print(result.result)
+```
+
+The returned `file_url` is valid for approximately 24 hours.
+
+See [`examples/video_upload.py`](examples/video_upload.py) for the full example.
 
 ## Examples
 
