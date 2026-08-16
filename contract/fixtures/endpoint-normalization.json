@@ -1,0 +1,13 @@
+{
+  "$comment": "prepareEndpoint: strip surrounding slashes, drop a leading 'v2' segment if present, then join as {baseUrl}/v2/{endpoint}. baseUrl for these cases is https://engine.prod.bria-api.com",
+  "baseUrl": "https://engine.prod.bria-api.com",
+  "cases": [
+    { "input": "remove_background", "expected": "https://engine.prod.bria-api.com/v2/remove_background" },
+    { "input": "/remove_background", "expected": "https://engine.prod.bria-api.com/v2/remove_background" },
+    { "input": "/remove_background/", "expected": "https://engine.prod.bria-api.com/v2/remove_background" },
+    { "input": "v2/remove_background", "expected": "https://engine.prod.bria-api.com/v2/remove_background" },
+    { "input": "/v2/remove_background", "expected": "https://engine.prod.bria-api.com/v2/remove_background" },
+    { "input": "status/req-123", "expected": "https://engine.prod.bria-api.com/v2/status/req-123" },
+    { "input": "video/upload", "expected": "https://engine.prod.bria-api.com/v2/video/upload" }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "$comment": "preparePayload removes keys whose value is null (Python None / JS null|undefined). Nested objects are left as-is (only top-level keys are stripped). false, 0, and empty string are kept.",
+  "cases": [
+    {
+      "name": "strips_top_level_nulls_keeps_falsy",
+      "input": { "prompt": "a cat", "seed": null, "sync": false, "steps": 0, "note": "" },
+      "expected": { "prompt": "a cat", "sync": false, "steps": 0, "note": "" }
+    },
+    {
+      "name": "nested_untouched",
+      "input": { "prompt": "x", "opts": { "a": null, "b": 1 }, "drop": null },
+      "expected": { "prompt": "x", "opts": { "a": null, "b": 1 } }
+    }
+  ]
+}

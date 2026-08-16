@@ -1,0 +1,40 @@
+{
+  "$comment": "Single source of truth for behavior shared by ALL Bria SDKs. Edit here first; every SDK must stay green against these values and the fixtures/ next to this file. See README.md.",
+  "apiVersionPrefix": "v2",
+  "defaultBaseUrl": "https://engine.prod.bria-api.com",
+  "authHeaderName": "api_token",
+  "userAgentTemplate": "BriaSDK/{version} ({lang})",
+  "retry": {
+    "total": 3,
+    "backoffFactor": 2
+  },
+  "poll": {
+    "defaultIntervalSeconds": 1,
+    "defaultTimeoutSeconds": 60
+  },
+  "syncFlag": {
+    "run": true,
+    "submit": false
+  },
+  "endpoints": {
+    "upload": "video/upload",
+    "statusTemplate": "status/{request_id}"
+  },
+  "status": {
+    "UNKNOWN": "UNKNOWN",
+    "FAILED": "ERROR",
+    "COMPLETED": "COMPLETED",
+    "RUNNING": "IN_PROGRESS"
+  },
+  "webhook": {
+    "algorithm": "HMAC-SHA256",
+    "signingSalt": "bria-webhook-signing-v1",
+    "signatureTokenPrefix": "v1=",
+    "messageTemplate": "{webhook_id}.{timestamp}.{payload}",
+    "headers": {
+      "id": "Bria-Webhook-Id",
+      "timestamp": "Bria-Webhook-Timestamp",
+      "signature": "Bria-Webhook-Signature"
+    }
+  }
+}

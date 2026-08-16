@@ -12,13 +12,16 @@ permissions:
 
 jobs:
   release-please:
-    name: Create Release PR
+    name: Create Release PRs
     runs-on: ubuntu-latest
     steps:
+      # Manifest-driven: reads release-please-config.json + .release-please-manifest.json.
+      # packages/python keeps bare `vX.Y.Z` tags (include-component-in-tag: false) so
+      # uv-dynamic-versioning and the existing tag lineage are unaffected; packages/typescript
+      # tags as `@bria-ai/client-vX.Y.Z`.
       - name: Run release-please
-        id: release
         uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.TEMP_RELEASE_TOKEN }}
-          release-type: python
-          package-name: bria_client
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
