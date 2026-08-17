@@ -16,10 +16,8 @@ Applies to the `@bria-ai/client` package.
   public surface (internal `any` is allowed where the API is intentionally open, e.g. `BriaResult`).
 - Mirror the Python SDK's module boundaries (`client`, `engine`, `settings`, `toolkit/*`) and
   method names (`run`/`submit`/`get`/`upload`/`status`/`poll`) so the two stay recognizable.
-- Shared behavior lives in the repo-root `contract/`. Never hard-code a constant that the
-  contract already defines without a contract test asserting they agree.
+  When you change shared behavior here, make the matching change in the Python SDK.
 
 ## Testing
 
-- `test/contract/` replays the shared `contract/` fixtures — keep it green; it is the drift alarm.
 - Mock network with `vi.stubGlobal("fetch", …)`. No live API calls in unit tests.

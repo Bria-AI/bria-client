@@ -15,7 +15,11 @@
     "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@bria-ai/client": ["./src/index.ts"]
+    }
   },
-  "include": ["src", "test"]
+  "include": ["src", "test", "examples"]
 }

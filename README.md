@@ -1,7 +1,7 @@
 # Bria SDKs
 
 Official SDKs for the [Bria](https://bria.ai) Engine API — image & video editing. This is a
-monorepo containing one SDK per language plus a shared behavioral contract.
+monorepo containing one SDK per language.
 
 ## Packages
 
@@ -10,19 +10,14 @@ monorepo containing one SDK per language plus a shared behavioral contract.
 | [`packages/python`](packages/python) | Python 3.10+ | `pip install bria-client` |
 | [`packages/typescript`](packages/typescript) | TypeScript / Node 18+ | `npm install @bria-ai/client` |
 
-## Keeping the SDKs in sync
-
-The SDKs are hand-written (not generated from a spec), so a shared **[`contract/`](contract)**
-is the single source of truth for behavior every SDK must implement identically — auth,
-endpoint normalization, retry/poll defaults, response/status parsing, and webhook signature
-verification. Each SDK has contract tests that load `contract/` and fail CI on drift.
-
-**Change a shared behavior → edit `contract/` first**, then make every SDK green against it.
+The SDKs are hand-written (not generated from a spec) and deliberately mirror each other —
+same method names (`run`/`submit`/`get`/`upload`/`status`/`poll`), same toolkit, same behavior
+(auth, retry/poll defaults, response/status parsing, webhook verification). When you change
+shared behavior in one SDK, make the matching change in the other.
 
 ## Layout
 
 ```
-contract/            # shared constants.json + golden fixtures (the drift guard)
 packages/
   python/            # Python SDK (uv + hatchling)
   typescript/        # TypeScript SDK (npm + tsup)

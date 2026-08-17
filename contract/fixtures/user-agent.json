@@ -1,7 +1,0 @@
-{
-  "$comment": "User-Agent header value: BriaSDK/{version} ({lang}). lang is 'python' for the Python SDK and 'js' for the TypeScript/JS SDK.",
-  "cases": [
-    { "version": "0.2.2", "lang": "python", "expected": "BriaSDK/0.2.2 (python)" },
-    { "version": "1.0.0", "lang": "js", "expected": "BriaSDK/1.0.0 (js)" }
-  ]
-}

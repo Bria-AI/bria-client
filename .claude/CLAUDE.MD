@@ -2,19 +2,18 @@
 
 ## Monorepo
 
-SDKs for the Bria Engine API, one package per language, plus a shared behavioral contract.
+SDKs for the Bria Engine API, one package per language.
 
 ```
-contract/            → shared constants.json + fixtures/ (single source of truth; the drift guard)
 packages/
   python/            → bria-client (Python SDK)
   typescript/        → @bria-ai/client (TypeScript SDK)
 ```
 
-**Keeping SDKs in sync:** the SDKs are hand-written. `contract/` pins behavior every SDK must
-implement identically (auth, endpoint normalization, retry/poll defaults, response/status
-parsing, webhook verification). Each SDK has contract tests that load `contract/` and fail on
-drift. Change a shared behavior in `contract/` first, then make every SDK green.
+**Keeping SDKs in sync:** the SDKs are hand-written and deliberately mirror each other (same
+method names, toolkit, and behavior — auth, retry/poll defaults, response/status parsing,
+webhook verification). When changing shared behavior in one SDK, make the matching change in
+the other.
 
 ## Python package (`packages/python`)
 

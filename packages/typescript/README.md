@@ -53,8 +53,8 @@ Toolkit exports: `BriaResponse`, `Status`, `BriaException`, `Image`, `verifyWebh
 - **`Image`** accepts a URL, data URI, base64 string, local path, or `Buffer`/`Uint8Array`
   (and `Image.fromBlob` for a `Blob`). It does not accept PIL images or numpy arrays.
 
-Shared behavior (auth, retries, endpoint normalization, webhook signing, status parsing) is
-pinned by the repo-root [`contract/`](../../contract) and verified in both SDKs' test suites.
+This SDK deliberately mirrors the [Python SDK](../python) — same method names and behavior
+(auth, retries, endpoint normalization, webhook signing, status parsing).
 
 ## Webhook verification
 

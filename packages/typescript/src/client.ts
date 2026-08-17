@@ -27,7 +27,7 @@ interface CallOptions {
 /** A file source accepted by {@link BriaClient.upload}. */
 export type UploadSource = string | Buffer | Uint8Array | Blob;
 
-/** Default poll cadence (seconds). Kept in one place so it can be asserted against the contract. */
+/** Default poll cadence (seconds), mirroring the Python SDK. */
 export const POLL_DEFAULTS = { intervalSeconds: 1, timeoutSeconds: 60 } as const;
 
 /**
