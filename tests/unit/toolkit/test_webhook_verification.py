@@ -19,19 +19,6 @@ def _make_signature(api_token: str, webhook_id: str, timestamp: str, payload: by
     return f"v1={sig}"
 
 
-# Shared cross-repo contract vector — mirrored verbatim in
-# spring/services/common/api/outbound_webhook/signing_tests.py. If either
-# side's test on this vector fails, suspect an algorithm/format drift
-# between this verifier and the spring outbound-webhook signer before
-# touching the vector.
-#
-# Derived independently of both this module and spring's signing.py via:
-#   python3 -c "
-#   import hmac, hashlib, base64
-#   key = hmac.new(b'contract-test-shared-token', b'bria-webhook-signing-v1', hashlib.sha256).digest()
-#   msg = b'req_contract_test_001.1700000000.{\"status\":\"COMPLETED\",\"result\":{\"url\":\"https://cdn.bria.ai/final.png\"},\"request_id\":\"req_contract_test_001\"}'
-#   print(base64.b64encode(hmac.new(key, msg, hashlib.sha256).digest()).decode())
-#   "
 CONTRACT_API_TOKEN = "contract-test-shared-token"
 CONTRACT_WEBHOOK_ID = "req_contract_test_001"
 CONTRACT_TIMESTAMP = "1700000000"
