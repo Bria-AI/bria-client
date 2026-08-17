@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/Bria-AI/bria-client/compare/v0.2.2...v0.3.0) (2026-06-24)
+
+
+### Features
+
+* video upload API ([#112](https://github.com/Bria-AI/bria-client/issues/112)) ([05eb4c4](https://github.com/Bria-AI/bria-client/commit/05eb4c4ce44551fbc9152c6cfbb39668ab48c5e0))
+* webhook support ([#110](https://github.com/Bria-AI/bria-client/issues/110)) ([7bf83a4](https://github.com/Bria-AI/bria-client/commit/7bf83a42fd84d90dbadfdc204de1c048a669d006))
+
+
+### Documentation
+
+* add webhook and upload to readme ([#113](https://github.com/Bria-AI/bria-client/issues/113)) ([9fcbc0e](https://github.com/Bria-AI/bria-client/commit/9fcbc0e96120f9bb9e76e01d3738a7142081182a))
+
 ## [0.2.2](https://github.com/Bria-AI/bria-client/compare/v0.2.1...v0.2.2) (2026-04-26)
 
 
