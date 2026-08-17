@@ -19,6 +19,23 @@ def _make_signature(api_token: str, webhook_id: str, timestamp: str, payload: by
     return f"v1={sig}"
 
 
+CONTRACT_API_TOKEN = "contract-test-shared-token"
+CONTRACT_WEBHOOK_ID = "req_contract_test_001"
+CONTRACT_TIMESTAMP = "1700000000"
+CONTRACT_PAYLOAD = b'{"status":"COMPLETED","result":{"url":"https://cdn.bria.ai/final.png"},"request_id":"req_contract_test_001"}'
+CONTRACT_SIGNATURE = "v1=muClfnkuIXEqW69htILKVEwJdzC0LWB1tP53ptLm7SM="
+
+
+@pytest.mark.unit
+class TestVerifyWebhookSignatureAgainstSharedContractVector:
+    def test_shared_vector_signature_should_verify(self):
+        # Arrange / Act
+        result = verify_webhook_signature(CONTRACT_PAYLOAD, CONTRACT_WEBHOOK_ID, CONTRACT_TIMESTAMP, CONTRACT_SIGNATURE, CONTRACT_API_TOKEN)
+
+        # Assert
+        assert result is True
+
+
 @pytest.mark.unit
 class TestVerifyWebhookSignature:
     def test_valid_signature_returns_true(self):
