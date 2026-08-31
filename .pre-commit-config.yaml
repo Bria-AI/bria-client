@@ -21,37 +21,53 @@ repos:
         stages: [commit-msg]
   - repo: local
     hooks:
+      # --- Python (packages/python) ---
       - id: ruff-format
         name: Ruff Format
-        entry: uv run ruff
-        args: [format]
+        entry: bash -c 'cd packages/python && uv run ruff format'
         language: system
         types: [python]
         pass_filenames: false
       - id: ruff
         name: Ruff
-        entry: uv run ruff
-        args: ["check", "--fix", "--exit-non-zero-on-fix"]
-        types: [python]
+        entry: bash -c 'cd packages/python && uv run ruff check --fix --exit-non-zero-on-fix'
         language: system
+        types: [python]
         pass_filenames: false
       - id: pyright
         name: Pyright
-        entry: uv run --all-groups pyright
-        args: [src, tests]
+        entry: bash -c 'cd packages/python && uv run --all-groups pyright src tests'
         language: system
-        files: ^(src/|tests/).*\.py$
+        files: ^packages/python/(src|tests)/.*\.py$
         pass_filenames: false
       - id: pyright-examples
         name: Pyright (examples)
-        entry: uv run --all-groups --extra examples pyright
-        args: [examples]
+        entry: bash -c 'cd packages/python && uv run --all-groups --extra examples pyright examples'
         language: system
-        files: ^examples/.*\.py$
+        files: ^packages/python/examples/.*\.py$
         pass_filenames: false
       - id: uv-lock-check
         name: Check uv.lock is up to date
-        entry: uv lock --check
+        entry: bash -c 'cd packages/python && uv lock --check'
         language: system
-        files: ^(pyproject\.toml|uv\.lock)$
+        files: ^packages/python/(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
+      # --- TypeScript (packages/typescript). Requires `npm install` in packages/typescript. ---
+      - id: ts-format
+        name: Prettier (TypeScript)
+        entry: bash -c 'cd packages/typescript && npm run format:check'
+        language: system
+        files: ^packages/typescript/.*\.(ts|js|json|md)$
+        pass_filenames: false
+      - id: ts-lint
+        name: ESLint (TypeScript)
+        entry: bash -c 'cd packages/typescript && npm run lint'
+        language: system
+        files: ^packages/typescript/.*\.ts$
+        pass_filenames: false
+      - id: ts-typecheck
+        name: Type Check (TypeScript)
+        entry: bash -c 'cd packages/typescript && npm run typecheck'
+        language: system
+        files: ^packages/typescript/.*\.ts$
         pass_filenames: false
