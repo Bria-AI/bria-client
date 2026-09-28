@@ -1,6 +1,6 @@
 {
   "name": "@bria-ai/client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Bria.ai TypeScript/JavaScript SDK for the Bria Engine API",
   "license": "MIT",
   "author": "Bria.ai",
