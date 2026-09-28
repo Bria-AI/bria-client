@@ -14,7 +14,11 @@ async function main(): Promise<void> {
   });
   console.log("submitted:", submitted.requestId);
 
-  const result = await client.poll(submitted, { interval: 1, timeout: 300 });
+  const result = await client.poll(submitted, {
+    interval: 1,
+    timeout: 300,
+    onPoll: (r) => console.log("status:", r.status),
+  });
   console.log(result);
 }
 

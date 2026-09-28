@@ -99,6 +99,21 @@ describe("BriaClient.poll", () => {
     expect(callAt(fetchFn, 1)[0]).toBe("https://api.test/v2/status/r9");
   });
 
+  it("invokes onPoll with each status response", async () => {
+    mockFetch([
+      { body: { request_id: "r", status: "IN_PROGRESS" } },
+      { body: { request_id: "r", status: "COMPLETED", result: { ok: 1 } } },
+    ]);
+    const seen: Status[] = [];
+    const res = await client().poll("r", {
+      interval: 0.001,
+      timeout: 5,
+      onPoll: (r) => seen.push(r.status),
+    });
+    expect(seen).toEqual([Status.RUNNING, Status.COMPLETED]);
+    expect(res.status).toBe(Status.COMPLETED);
+  });
+
   it("throws on timeout", async () => {
     mockFetch([{ body: { request_id: "r", status: "IN_PROGRESS" } }]);
     await expect(client().poll("r", { interval: 0.005, timeout: 0.01 })).rejects.toThrow(/Timeout/);
