@@ -187,10 +187,15 @@ export class BriaClient {
    *
    * @param target    A `request_id` string or a {@link BriaResponse} from `submit`.
    * @param options   `interval`/`timeout` in seconds (defaults 1/60). `raiseForStatus` defaults true.
+   *                  `onPoll` is invoked with each status response as it arrives (progress updates).
    */
   async poll(
     target: string | BriaResponse,
-    options: CallOptions & { interval?: number; timeout?: number } = {},
+    options: CallOptions & {
+      interval?: number;
+      timeout?: number;
+      onPoll?: (response: BriaResponse) => void;
+    } = {},
   ): Promise<BriaResponse> {
     const requestId = typeof target === "string" ? target : target.requestId;
     const interval = options.interval ?? POLL_DEFAULTS.intervalSeconds;
@@ -212,11 +217,13 @@ export class BriaClient {
       });
 
     let response = await call();
+    options.onPoll?.(response);
     const start = Date.now();
     // UNKNOWN (no status/result/error yet) keeps polling.
     while (response.inProgress || response.status === Status.UNKNOWN) {
       await sleep(interval * 1000);
       response = await call();
+      options.onPoll?.(response);
       if ((Date.now() - start) / 1000 >= timeout) {
         throw new Error("Timeout reached while waiting for status request");
       }
