@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/Bria-AI/bria-client/compare/@bria-ai/client-v0.1.0...@bria-ai/client-v0.2.0) (2026-09-28)
+
+
+### Features
+
+* **typescript:** add onPoll progress callback to poll() ([#136](https://github.com/Bria-AI/bria-client/issues/136)) ([82fc319](https://github.com/Bria-AI/bria-client/commit/82fc319420a949640d640b470ede513122a01a1d))
+
 ## 0.1.0 (2026-09-28)
 
 
