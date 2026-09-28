@@ -15,9 +15,38 @@ defaults:
     working-directory: python
 
 jobs:
-  # ---------------- Python (python) ----------------
+  # Detect which language(s) changed so we only run the relevant jobs. `CI Gate`
+  # (below) is the single required check, so path-filtered/skipped jobs never
+  # block a PR.
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      typescript: ${{ steps.filter.outputs.typescript }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+      - name: Filter paths
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'python/**'
+              - '.github/workflows/ci.yml'
+            typescript:
+              - 'typescript/**'
+              - '.github/workflows/ci.yml'
+
+  # ---------------- Python (python/) ----------------
   format:
     name: Format Check
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,6 +58,8 @@ jobs:
 
   lint:
     name: Lint Check
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -40,6 +71,8 @@ jobs:
 
   typecheck:
     name: Type Check
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -53,7 +86,8 @@ jobs:
 
   test:
     name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
-    needs: [format, lint, typecheck]
+    needs: changes
+    if: ${{ needs.changes.outputs.python == 'true' }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -74,9 +108,11 @@ jobs:
       - name: Run unit tests
         run: uv run pytest -m unit
 
-  # ---------------- TypeScript (typescript) ----------------
+  # ---------------- TypeScript (typescript/) ----------------
   typescript:
     name: TypeScript (Node ${{ matrix.node-version }})
+    needs: changes
+    if: ${{ needs.changes.outputs.typescript == 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -106,3 +142,31 @@ jobs:
         run: npm run build
       - name: Test
         run: npm test
+
+  # Single required check. Passes if every job that ran succeeded; treats
+  # skipped (path-filtered) jobs as OK. Make THIS the required status check in
+  # branch protection instead of the individual jobs above.
+  ci-gate:
+    name: CI Gate
+    needs: [changes, format, lint, typecheck, test, typescript]
+    if: always()
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Verify required jobs succeeded
+        run: |
+          for r in \
+            "${{ needs.changes.result }}" \
+            "${{ needs.format.result }}" \
+            "${{ needs.lint.result }}" \
+            "${{ needs.typecheck.result }}" \
+            "${{ needs.test.result }}" \
+            "${{ needs.typescript.result }}"; do
+            if [ "$r" = "failure" ] || [ "$r" = "cancelled" ]; then
+              echo "::error::A required CI job did not pass (result: $r)"
+              exit 1
+            fi
+          done
+          echo "All CI jobs passed or were skipped."
