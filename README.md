@@ -8,7 +8,7 @@ monorepo containing one SDK per language.
 | Package | Language | Install |
 | --- | --- | --- |
 | [`python`](python) | Python 3.10+ | `pip install bria-client` |
-| [`typescript`](typescript) | TypeScript / Node 18+ | `npm install @bria-ai/client` |
+| [`typescript`](typescript) | TypeScript / Node 20+ | `npm install @bria-ai/client` |
 
 The SDKs are hand-written (not generated from a spec) and deliberately mirror each other —
 same method names (`run`/`submit`/`get`/`upload`/`status`/`poll`), same toolkit, same behavior

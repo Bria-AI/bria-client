@@ -2,7 +2,7 @@
 
 TypeScript/JavaScript SDK for the [Bria](https://bria.ai) Engine API — image & video editing.
 
-Requires **Node.js 18+** (uses the built-in `fetch`, `FormData`, and `Blob`).
+Requires **Node.js 20+** (uses the built-in `fetch`, `FormData`, and `Blob`).
 
 ## Install
 
