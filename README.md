@@ -7,8 +7,8 @@ monorepo containing one SDK per language.
 
 | Package | Language | Install |
 | --- | --- | --- |
-| [`packages/python`](packages/python) | Python 3.10+ | `pip install bria-client` |
-| [`packages/typescript`](packages/typescript) | TypeScript / Node 18+ | `npm install @bria-ai/client` |
+| [`python`](python) | Python 3.10+ | `pip install bria-client` |
+| [`typescript`](typescript) | TypeScript / Node 18+ | `npm install @bria-ai/client` |
 
 The SDKs are hand-written (not generated from a spec) and deliberately mirror each other —
 same method names (`run`/`submit`/`get`/`upload`/`status`/`poll`), same toolkit, same behavior
@@ -18,9 +18,8 @@ shared behavior in one SDK, make the matching change in the other.
 ## Layout
 
 ```
-packages/
-  python/            # Python SDK (uv + hatchling)
-  typescript/        # TypeScript SDK (npm + tsup)
+python/            # Python SDK (uv + hatchling)
+typescript/        # TypeScript SDK (npm + tsup)
 ```
 
 ## Development
@@ -29,16 +28,16 @@ Each package is self-contained — see its README for setup.
 
 ```bash
 # Python
-cd packages/python && uv sync && uv run pytest tests/unit tests/integration -v
+cd python && uv sync && uv run pytest tests/unit tests/integration -v
 
 # TypeScript
-cd packages/typescript && npm ci && npm run build && npm test
+cd typescript && npm ci && npm run build && npm test
 ```
 
 Whole-repo checks (from the repo root):
 
 ```bash
-uv run --project packages/python pre-commit run --all-files
+uv run --project python pre-commit run --all-files
 ```
 
 ## Releases

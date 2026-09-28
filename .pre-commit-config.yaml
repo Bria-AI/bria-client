@@ -21,53 +21,53 @@ repos:
         stages: [commit-msg]
   - repo: local
     hooks:
-      # --- Python (packages/python) ---
+      # --- Python (python) ---
       - id: ruff-format
         name: Ruff Format
-        entry: bash -c 'cd packages/python && uv run ruff format'
+        entry: bash -c 'cd python && uv run ruff format'
         language: system
         types: [python]
         pass_filenames: false
       - id: ruff
         name: Ruff
-        entry: bash -c 'cd packages/python && uv run ruff check --fix --exit-non-zero-on-fix'
+        entry: bash -c 'cd python && uv run ruff check --fix --exit-non-zero-on-fix'
         language: system
         types: [python]
         pass_filenames: false
       - id: pyright
         name: Pyright
-        entry: bash -c 'cd packages/python && uv run --all-groups pyright src tests'
+        entry: bash -c 'cd python && uv run --all-groups pyright src tests'
         language: system
-        files: ^packages/python/(src|tests)/.*\.py$
+        files: ^python/(src|tests)/.*\.py$
         pass_filenames: false
       - id: pyright-examples
         name: Pyright (examples)
-        entry: bash -c 'cd packages/python && uv run --all-groups --extra examples pyright examples'
+        entry: bash -c 'cd python && uv run --all-groups --extra examples pyright examples'
         language: system
-        files: ^packages/python/examples/.*\.py$
+        files: ^python/examples/.*\.py$
         pass_filenames: false
       - id: uv-lock-check
         name: Check uv.lock is up to date
-        entry: bash -c 'cd packages/python && uv lock --check'
+        entry: bash -c 'cd python && uv lock --check'
         language: system
-        files: ^packages/python/(pyproject\.toml|uv\.lock)$
+        files: ^python/(pyproject\.toml|uv\.lock)$
         pass_filenames: false
-      # --- TypeScript (packages/typescript). Requires `npm install` in packages/typescript. ---
+      # --- TypeScript (typescript). Requires `npm install` in typescript. ---
       - id: ts-format
         name: Prettier (TypeScript)
-        entry: bash -c 'cd packages/typescript && npm run format:check'
+        entry: bash -c 'cd typescript && npm run format:check'
         language: system
-        files: ^packages/typescript/.*\.(ts|js|json|md)$
+        files: ^typescript/.*\.(ts|js|json|md)$
         pass_filenames: false
       - id: ts-lint
         name: ESLint (TypeScript)
-        entry: bash -c 'cd packages/typescript && npm run lint'
+        entry: bash -c 'cd typescript && npm run lint'
         language: system
-        files: ^packages/typescript/.*\.ts$
+        files: ^typescript/.*\.ts$
         pass_filenames: false
       - id: ts-typecheck
         name: Type Check (TypeScript)
-        entry: bash -c 'cd packages/typescript && npm run typecheck'
+        entry: bash -c 'cd typescript && npm run typecheck'
         language: system
-        files: ^packages/typescript/.*\.ts$
+        files: ^typescript/.*\.ts$
         pass_filenames: false

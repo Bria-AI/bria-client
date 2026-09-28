@@ -12,10 +12,10 @@ permissions:
 
 defaults:
   run:
-    working-directory: packages/python
+    working-directory: python
 
 jobs:
-  # ---------------- Python (packages/python) ----------------
+  # ---------------- Python (python) ----------------
   format:
     name: Format Check
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
       - name: Run unit tests
         run: uv run pytest -m unit
 
-  # ---------------- TypeScript (packages/typescript) ----------------
+  # ---------------- TypeScript (typescript) ----------------
   typescript:
     name: TypeScript (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -84,7 +84,7 @@ jobs:
         node-version: ["18", "20", "22"]
     defaults:
       run:
-        working-directory: packages/typescript
+        working-directory: typescript
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -93,7 +93,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-          cache-dependency-path: packages/typescript/package-lock.json
+          cache-dependency-path: typescript/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Format check

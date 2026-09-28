@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Bria-AI/bria-client.git",
-    "directory": "packages/typescript"
+    "directory": "typescript"
   },
   "bugs": "https://github.com/Bria-AI/bria-client/issues",
   "keywords": [

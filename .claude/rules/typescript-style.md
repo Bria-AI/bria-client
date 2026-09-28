@@ -1,4 +1,4 @@
-# TypeScript Style (packages/typescript)
+# TypeScript Style (typescript)
 
 Applies to the `@bria-ai/client` package.
 
