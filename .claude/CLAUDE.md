@@ -27,7 +27,7 @@ the other.
 
 `@bria-ai/client` — a single async `BriaClient` (no sync/async split; JS HTTP is always async).
 
-- Build: npm + tsup (dual ESM/CJS). Test: vitest. Node 18+ (uses global `fetch`).
+- Build: npm + tsup (dual ESM/CJS). Test: vitest. Node 20+ (uses global `fetch`).
 - Layout: `src/{client,engine,settings}.ts`, `src/toolkit/`, `test/`
 - Setup: `cd typescript && npm ci`; then `npm run build|typecheck|lint|test`
 

@@ -1,6 +1,8 @@
 # Testing Rules
 
-Run tests: `uv run pytest` (testpaths configured to `tests/`).
+Applies to the Python SDK in `python/`. TypeScript testing lives in `typescript-style.md`.
+
+Run tests from `python/`: `uv run pytest` (testpaths configured to `tests/`).
 
 ## Structure
 
@@ -34,9 +36,9 @@ Run tests: `uv run pytest` (testpaths configured to `tests/`).
 
 ## After making changes
 
-1. Run unit + integration tests: `uv run pytest tests/unit/ tests/integration/ -v`
+1. Run unit + integration tests: `cd python && uv run pytest tests/unit/ tests/integration/ -v`
 2. Fix failures before considering work complete.
-3. Run `uv run pre-commit run --all-files`.
-4. Only at the very end, run component tests: `uv run pytest tests/component/ -m component -v`
+3. From the repo root, run `uv run --project python pre-commit run --all-files` (TS hooks need `npm ci` in `typescript/`).
+4. Only at the very end, run component tests: `cd python && uv run pytest tests/component/ -m component -v`
 
 Skip tests only if: docs-only change, test-file-only change, or user says to.

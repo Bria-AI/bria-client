@@ -1,5 +1,7 @@
 # Code Style
 
+Applies to the Python SDK in `python/`. TypeScript style lives in `typescript-style.md`.
+
 ## Formatting & Linting
 
 - **Ruff** for formatting and linting. Do not use black, isort, or flake8.
@@ -9,13 +11,16 @@
 
 ## Pre-commit hooks (fail_fast: true)
 
+Repo-wide (run from root; see `.pre-commit-config.yaml`). Python hooks run in `python/`,
+TypeScript hooks in `typescript/` (which need `npm ci` there).
+
 1. Gitleaks — secret scanning
 2. Prettier — YAML/JSON
 3. Commitizen — conventional commits (commit-msg stage)
-4. Ruff Format — Python formatting
-5. Ruff Check — `--fix --exit-non-zero-on-fix`
-6. Pyright — type checking
-7. uv lock --check — lock file sync
+4. Ruff Format / Ruff Check (`--fix --exit-non-zero-on-fix`) — Python
+5. Pyright, and Pyright (examples) — Python type checking
+6. uv lock --check — Python lock sync
+7. Prettier (TypeScript), ESLint (TypeScript), Type Check (TypeScript)
 
 ## Commit messages
 
