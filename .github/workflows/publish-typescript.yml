@@ -29,8 +29,9 @@ jobs:
           cache: npm
           cache-dependency-path: typescript/package-lock.json
       - name: Upgrade npm for trusted publishing
-        # OIDC trusted publishing requires npm >= 11.5.1.
-        run: npm install -g npm@latest
+        # OIDC trusted publishing needs npm >= 11.5.1. Pin to 11.x: `npm@latest`
+        # (12.x) requires Node >= 22.22 and would fail on this Node 20 runner.
+        run: npm install -g npm@^11.5.1
       - name: Install dependencies
         run: npm ci
       - name: Build
