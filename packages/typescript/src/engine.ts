@@ -1,7 +1,12 @@
+import { BriaException } from "./toolkit/errors.js";
 import { BriaResponse } from "./toolkit/response.js";
 import { VERSION } from "./version.js";
 
-const RETRYABLE_STATUS = new Set([429, 500, 502, 503, 504]);
+// Same status list and method allow-list as the Python SDK's httpx-retries defaults. POST is
+// never retried: a `run`/`submit` that timed out or got a 5xx may already have started a job.
+const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
+const RETRYABLE_METHODS: ReadonlySet<HttpMethod> = new Set<HttpMethod>(["GET"]);
+const DEFAULT_REQUEST_TIMEOUT_SECONDS = 30;
 
 /** Retry policy for transient failures. Defaults mirror the Python SDK (`total: 3`, `backoffFactor: 2`). */
 export interface RetryConfig {
@@ -22,17 +27,25 @@ export class ApiEngine {
   private readonly apiToken: string | null;
   private readonly defaultHeaders: Record<string, string>;
   private readonly retry: RetryConfig;
+  private readonly requestTimeoutMs: number;
 
   constructor(opts: {
     baseUrl: string;
     apiToken: string | null;
     defaultHeaders?: Record<string, string>;
     retry?: RetryConfig;
+    /** Per-request timeout in seconds (default 30, matching the Python SDK). */
+    requestTimeout?: number;
   }) {
     this.baseUrl = opts.baseUrl;
     this.apiToken = opts.apiToken;
     this.defaultHeaders = opts.defaultHeaders ?? {};
     this.retry = opts.retry ?? DEFAULT_RETRY;
+    const timeout = opts.requestTimeout ?? DEFAULT_REQUEST_TIMEOUT_SECONDS;
+    if (!Number.isFinite(timeout) || timeout <= 0) {
+      throw new Error(`requestTimeout must be a positive number of seconds, got ${timeout}`);
+    }
+    this.requestTimeoutMs = timeout * 1000;
   }
 
   get userAgentHeaders(): Record<string, string> {
@@ -54,10 +67,10 @@ export class ApiEngine {
     return token ? { api_token: token } : null;
   }
 
-  /** Strip a leading `/`, drop a leading `v2` segment, then prefix `/v2/`. */
+  /** Strip surrounding `/`, drop a leading `v2` path segment, then prefix `/v2/`. */
   prepareEndpoint(endpoint: string): string {
     const trimmed = endpoint.replace(/^\/+|\/+$/g, "");
-    const withoutV2 = trimmed.startsWith("v2") ? trimmed.slice(2) : trimmed;
+    const withoutV2 = trimmed === "v2" ? "" : trimmed.replace(/^v2\//, "");
     const clean = withoutV2.replace(/^\/+|\/+$/g, "");
     return `${this.baseUrl}/v2/${clean}`;
   }
@@ -102,30 +115,44 @@ export class ApiEngine {
     const headers = this.prepareHeaders(args.headers, args.authOverride);
     const payload = ApiEngine.preparePayload(args.payload);
 
-    const init: RequestInit = { method: args.method, headers, signal: args.signal };
+    const init: RequestInit = { method: args.method, headers };
     if (args.method === "POST") {
       headers["Content-Type"] = "application/json";
       init.body = JSON.stringify(payload ?? {});
     }
 
+    const maxAttempts = RETRYABLE_METHODS.has(args.method) ? this.retry.total + 1 : 1;
     let lastNetworkError: unknown = null;
-    for (let attempt = 0; attempt <= this.retry.total; attempt++) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      const timer = new TimeoutSignal(this.requestTimeoutMs, args.signal);
       try {
-        const res = await fetch(url, init);
-        if (RETRYABLE_STATUS.has(res.status) && attempt < this.retry.total) {
-          await sleep(this.backoffMs(attempt));
+        const res = await fetch(url, { ...init, signal: timer.signal });
+        if (RETRYABLE_STATUS.has(res.status) && attempt < maxAttempts - 1) {
+          await sleep(retryAfterMs(res) ?? this.backoffMs(attempt));
           continue;
         }
         return await toBriaResponse(res);
       } catch (e) {
-        lastNetworkError = e;
-        if (attempt < this.retry.total) {
+        if (args.signal?.aborted) throw e;
+        if (timer.timedOut) {
+          lastNetworkError = new BriaException({
+            statusCode: 408,
+            message: "Request timeout",
+            details: `No response within ${this.requestTimeoutMs / 1000}s: ${url}`,
+          });
+        } else {
+          lastNetworkError = e;
+        }
+        if (attempt < maxAttempts - 1) {
           await sleep(this.backoffMs(attempt));
           continue;
         }
+      } finally {
+        timer.clear();
       }
     }
 
+    if (lastNetworkError instanceof BriaException) throw lastNetworkError;
     // Connection failed after exhausting retries — mirror Python's ServerConnectionError (503).
     return BriaResponse.fromError({
       code: 503,
@@ -139,6 +166,45 @@ export class ApiEngine {
   private backoffMs(attempt: number): number {
     return this.retry.backoffFactor * 2 ** attempt * 1000;
   }
+}
+
+/**
+ * An AbortSignal that fires after `ms`, or when the caller's own signal fires. Node 18 has no
+ * `AbortSignal.any`, hence the manual link.
+ */
+class TimeoutSignal {
+  readonly signal: AbortSignal;
+  timedOut = false;
+  private readonly controller = new AbortController();
+  private readonly timer: ReturnType<typeof setTimeout>;
+  private readonly outer: AbortSignal | undefined;
+  private readonly onOuterAbort = () => this.controller.abort();
+
+  constructor(ms: number, outer?: AbortSignal) {
+    this.signal = this.controller.signal;
+    this.outer = outer;
+    this.timer = setTimeout(() => {
+      this.timedOut = true;
+      this.controller.abort();
+    }, ms);
+    if (outer) {
+      if (outer.aborted) this.controller.abort();
+      else outer.addEventListener("abort", this.onOuterAbort, { once: true });
+    }
+  }
+
+  clear(): void {
+    clearTimeout(this.timer);
+    this.outer?.removeEventListener("abort", this.onOuterAbort);
+  }
+}
+
+/** Honor a numeric `Retry-After` header (seconds), as the Python SDK's transport does. */
+function retryAfterMs(res: Response): number | null {
+  const raw = res.headers.get("retry-after");
+  if (raw === null) return null;
+  const seconds = Number(raw);
+  return Number.isFinite(seconds) && seconds >= 0 ? seconds * 1000 : null;
 }
 
 async function toBriaResponse(res: Response): Promise<BriaResponse> {

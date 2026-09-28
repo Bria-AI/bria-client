@@ -33,6 +33,10 @@ const done = await client.poll(submitted, { interval: 2, timeout: 120 });
 `apiToken` and `baseUrl` also fall back to the `BRIA_API_TOKEN` / `BRIA_BASE_URL` environment
 variables.
 
+Requests time out after 30 seconds by default (`requestTimeout`, in seconds). GET requests are
+retried on 429/502/503/504 and on network errors; POST requests (`run`/`submit`) are never retried,
+so a job is never started twice.
+
 ## API surface
 
 | Method                             | Purpose                                                     |
@@ -40,7 +44,7 @@ variables.
 | `run(endpoint, payload, opts?)`    | Run a synchronous job (`sync: true`).                       |
 | `submit(endpoint, payload, opts?)` | Submit an async job (`sync: false`); optional `webhookUrl`. |
 | `get(endpoint, opts?)`             | Raw GET with optional `params`.                             |
-| `upload(source, opts?)`            | Upload a local file/bytes, returns a `file_url`.            |
+| `upload(source, mediaType, opts?)` | Upload a local video file/bytes, returns a `file_url`.      |
 | `status(requestId, opts?)`         | Current `Status` of a job.                                  |
 | `poll(target, opts?)`              | Poll until terminal (`interval`/`timeout` in seconds).      |
 

@@ -8,7 +8,7 @@ jobs:
   # Python releases are tagged `vX.Y.Z` (no component prefix).
   pypi:
     name: Publish to PyPI
-    if: ${{ !startsWith(github.event.release.tag_name, '@bria-ai/client') }}
+    if: ${{ startsWith(github.event.release.tag_name, 'v') }}
     runs-on: ubuntu-latest
     environment:
       name: release

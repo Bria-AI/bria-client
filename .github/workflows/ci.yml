@@ -17,7 +17,7 @@ defaults:
 jobs:
   # ---------------- Python (packages/python) ----------------
   format:
-    name: Python Format Check
+    name: Format Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -28,7 +28,7 @@ jobs:
         run: uv run ruff format --check
 
   lint:
-    name: Python Lint Check
+    name: Lint Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -39,7 +39,7 @@ jobs:
         run: uv run --all-groups ruff check
 
   typecheck:
-    name: Python Type Check
+    name: Type Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
         run: uv run --all-groups --extra examples pyright examples
 
   test:
-    name: Python Test (${{ matrix.python-version }}, ${{ matrix.os }})
+    name: Test (Python ${{ matrix.python-version }}, ${{ matrix.os }})
     needs: [format, lint, typecheck]
     runs-on: ${{ matrix.os }}
     strategy:

@@ -16,6 +16,8 @@ describe("ApiEngine.prepareEndpoint", () => {
     ["/v2/remove_background", `${base}/remove_background`],
     ["status/req-123", `${base}/status/req-123`],
     ["video/upload", `${base}/video/upload`],
+    ["v2", `${base}/`],
+    ["v2abc", `${base}/v2abc`],
   ])("normalizes %s", (input, expected) => {
     expect(eng.prepareEndpoint(input)).toBe(expected);
   });

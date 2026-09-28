@@ -13,6 +13,8 @@ export interface BriaClientOptions {
   apiToken?: string | null;
   defaultHeaders?: Record<string, string>;
   retry?: RetryConfig;
+  /** Per-request timeout in seconds (default 30, matching the Python SDK). */
+  requestTimeout?: number;
 }
 
 /** Per-call options shared by most methods. */
@@ -52,6 +54,7 @@ export class BriaClient {
       apiToken: settings.apiToken,
       defaultHeaders: options.defaultHeaders,
       retry: options.retry,
+      requestTimeout: options.requestTimeout,
     });
   }
 
@@ -117,14 +120,16 @@ export class BriaClient {
 
   /**
    * Upload a local file (or bytes) to Bria storage and return a `file_url` usable as input to
-   * later API calls. The URL is valid for ~1 day.
+   * later API calls. The URL is valid for ~1 day. Only `video/*` media types are accepted.
+   *
+   * @param mediaType  MIME type of the file (e.g. `video/mp4`). Stored as the file's Content-Type.
    */
   async upload(
     source: UploadSource,
-    options: { mediaType?: string; headers?: Record<string, string>; apiToken?: string } = {},
+    mediaType: string,
+    options: { headers?: Record<string, string>; apiToken?: string } = {},
   ): Promise<string> {
-    const { mediaType } = options;
-    if (mediaType !== undefined && !mediaType.startsWith("video/")) {
+    if (!mediaType.startsWith("video/")) {
       throw new Error(`Upload not yet supported for media type: ${mediaType}`);
     }
 
@@ -145,7 +150,10 @@ export class BriaClient {
 
     const { blob, filename } = await toFilePart(source, mediaType);
     const form = new FormData();
-    for (const [key, value] of Object.entries(uploadFields)) form.append(key, value);
+    // The presigned policy constrains Content-Type; the field must be present in the form.
+    for (const [key, value] of Object.entries({ ...uploadFields, "Content-Type": mediaType })) {
+      form.append(key, value);
+    }
     form.append("file", blob, filename);
 
     const putRes = await fetch(uploadUrl, { method: "POST", body: form });
@@ -160,7 +168,10 @@ export class BriaClient {
   }
 
   /** Fetch the current {@link Status} of a submitted job. */
-  async status(requestId: string, options: CallOptions = {}): Promise<Status> {
+  async status(
+    requestId: string,
+    options: Omit<CallOptions, "raiseForStatus"> = {},
+  ): Promise<Status> {
     const response = await this.engine.request({
       endpoint: `status/${requestId}`,
       method: "GET",
@@ -185,6 +196,11 @@ export class BriaClient {
     const interval = options.interval ?? POLL_DEFAULTS.intervalSeconds;
     const timeout = options.timeout ?? POLL_DEFAULTS.timeoutSeconds;
     const raiseForStatus = options.raiseForStatus ?? true;
+    if (!Number.isFinite(interval) || interval <= 0 || !Number.isFinite(timeout) || timeout <= 0) {
+      throw new Error(
+        `poll interval and timeout must be positive seconds (got ${interval}/${timeout})`,
+      );
+    }
 
     const call = () =>
       this.engine.request({
@@ -197,7 +213,8 @@ export class BriaClient {
 
     let response = await call();
     const start = Date.now();
-    while (response.inProgress) {
+    // UNKNOWN (no status/result/error yet) keeps polling, as in the Python SDK.
+    while (response.inProgress || response.status === Status.UNKNOWN) {
       await sleep(interval * 1000);
       response = await call();
       if ((Date.now() - start) / 1000 >= timeout) {
@@ -218,19 +235,16 @@ function assertNoSyncFlag(payload: Record<string, unknown>, method: "run" | "sub
 
 async function toFilePart(
   source: UploadSource,
-  mediaType?: string,
+  mediaType: string,
 ): Promise<{ blob: Blob; filename: string }> {
   if (typeof source === "string") {
     const buf = await readFile(source);
-    return {
-      blob: new Blob([buf], mediaType ? { type: mediaType } : {}),
-      filename: basename(source),
-    };
+    return { blob: new Blob([buf], { type: mediaType }), filename: basename(source) };
   }
   if (source instanceof Blob) {
     return { blob: source, filename: "file" };
   }
-  return { blob: new Blob([source], mediaType ? { type: mediaType } : {}), filename: "file" };
+  return { blob: new Blob([source], { type: mediaType }), filename: "file" };
 }
 
 function sleep(ms: number): Promise<void> {

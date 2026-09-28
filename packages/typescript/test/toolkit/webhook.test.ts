@@ -14,6 +14,23 @@ function sign(payload: string, webhookId: string, timestamp: string, apiToken: s
   return createHmac("sha256", key).update(`${webhookId}.${timestamp}.${payload}`).digest("base64");
 }
 
+// Shared cross-repo contract vector (see packages/python/tests/unit/toolkit/test_webhook_verification.py).
+// Both SDKs and the backend must agree on this exact signature.
+const CONTRACT = {
+  apiToken: "contract-test-shared-token",
+  webhookId: "req_contract_test_001",
+  timestamp: "1700000000",
+  payload:
+    '{"status":"COMPLETED","result":{"url":"https://cdn.bria.ai/final.png"},"request_id":"req_contract_test_001"}',
+  signatureHeader: "v1=muClfnkuIXEqW69htILKVEwJdzC0LWB1tP53ptLm7SM=",
+};
+
+describe("verifyWebhookSignature shared contract vector", () => {
+  it("verifies the vector shared with the Python SDK and the backend", () => {
+    expect(verifyWebhookSignature(CONTRACT)).toBe(true);
+  });
+});
+
 describe("verifyWebhookSignature", () => {
   const validSig = sign(PAYLOAD, WEBHOOK_ID, TIMESTAMP, API_TOKEN);
 
