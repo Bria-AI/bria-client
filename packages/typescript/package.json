@@ -1,0 +1,57 @@
+{
+  "name": "@bria-ai/client",
+  "version": "0.1.0",
+  "description": "Bria.ai TypeScript/JavaScript SDK for the Bria Engine API",
+  "license": "MIT",
+  "author": "Bria.ai",
+  "homepage": "https://bria.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bria-AI/bria-client.git",
+    "directory": "packages/typescript"
+  },
+  "bugs": "https://github.com/Bria-AI/bria-client/issues",
+  "keywords": [
+    "bria",
+    "api-client",
+    "image-generation",
+    "sdk",
+    "typescript"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.0",
+    "tsup": "^8.2.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
