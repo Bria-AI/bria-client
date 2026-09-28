@@ -7,7 +7,7 @@ Applies to the `@bria-ai/client` package.
 - **ESLint** (flat config, `@typescript-eslint`) + **Prettier** (printWidth 100, double quotes,
   trailing commas). Do not hand-format — run `npm run format`.
 - **tsc** strict for type checking (`npm run typecheck`). Build with **tsup** (dual ESM/CJS + d.ts).
-- **vitest** for tests (`npm run test`). Node 18+ runtime (global `fetch`/`FormData`/`Blob`).
+- **vitest** for tests (`npm run test`). Node 20+ runtime (global `fetch`/`FormData`/`Blob`).
 
 ## Conventions
 
