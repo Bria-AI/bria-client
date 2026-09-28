@@ -11,6 +11,7 @@
     "packages/typescript": {
       "release-type": "node",
       "component": "@bria-ai/client",
+      "release-as": "0.1.0",
       "extra-files": [{ "type": "generic", "path": "src/version.ts" }]
     }
   }

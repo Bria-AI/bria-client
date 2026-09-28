@@ -63,6 +63,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Publish
-        run: npm publish --access public --provenance
+        # --provenance omitted while using the staging token; re-enable with the production release token.
+        run: npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_STAGING_RELEASE_TOKEN }}
