@@ -2,8 +2,7 @@ import { BriaException } from "./toolkit/errors.js";
 import { BriaResponse } from "./toolkit/response.js";
 import { VERSION } from "./version.js";
 
-// Same status list and method allow-list as the Python SDK's httpx-retries defaults. POST is
-// never retried: a `run`/`submit` that timed out or got a 5xx may already have started a job.
+// POST is never retried: a `run`/`submit` that timed out or got a 5xx may already have started a job.
 const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
 const RETRYABLE_METHODS: ReadonlySet<HttpMethod> = new Set<HttpMethod>(["GET"]);
 const DEFAULT_REQUEST_TIMEOUT_SECONDS = 30;
@@ -67,7 +66,6 @@ export class ApiEngine {
     return token ? { api_token: token } : null;
   }
 
-  /** Strip surrounding `/`, drop a leading `v2` path segment, then prefix `/v2/`. */
   prepareEndpoint(endpoint: string): string {
     const trimmed = endpoint.replace(/^\/+|\/+$/g, "");
     const withoutV2 = trimmed === "v2" ? "" : trimmed.replace(/^v2\//, "");
@@ -199,7 +197,7 @@ class TimeoutSignal {
   }
 }
 
-/** Honor a numeric `Retry-After` header (seconds), as the Python SDK's transport does. */
+/** Numeric `Retry-After` header, in seconds. */
 function retryAfterMs(res: Response): number | null {
   const raw = res.headers.get("retry-after");
   if (raw === null) return null;

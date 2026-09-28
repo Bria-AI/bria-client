@@ -213,7 +213,7 @@ export class BriaClient {
 
     let response = await call();
     const start = Date.now();
-    // UNKNOWN (no status/result/error yet) keeps polling, as in the Python SDK.
+    // UNKNOWN (no status/result/error yet) keeps polling.
     while (response.inProgress || response.status === Status.UNKNOWN) {
       await sleep(interval * 1000);
       response = await call();
