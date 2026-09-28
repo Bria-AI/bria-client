@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Manifest-driven: reads release-please-config.json + .release-please-manifest.json.
-      # packages/python keeps bare `vX.Y.Z` tags (include-component-in-tag: false) so
-      # uv-dynamic-versioning and the existing tag lineage are unaffected; packages/typescript
+      # python keeps bare `vX.Y.Z` tags (include-component-in-tag: false) so
+      # uv-dynamic-versioning and the existing tag lineage are unaffected; typescript
       # tags as `@bria-ai/client-vX.Y.Z`.
       - name: Run release-please
         uses: googleapis/release-please-action@v4

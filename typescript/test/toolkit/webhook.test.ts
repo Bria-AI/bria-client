@@ -14,7 +14,7 @@ function sign(payload: string, webhookId: string, timestamp: string, apiToken: s
   return createHmac("sha256", key).update(`${webhookId}.${timestamp}.${payload}`).digest("base64");
 }
 
-// Shared cross-repo contract vector (see packages/python/tests/unit/toolkit/test_webhook_verification.py).
+// Shared cross-repo contract vector (see python/tests/unit/toolkit/test_webhook_verification.py).
 // Both SDKs and the backend must agree on this exact signature.
 const CONTRACT = {
   apiToken: "contract-test-shared-token",

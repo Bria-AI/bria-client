@@ -1,6 +1,6 @@
 # Node / TypeScript
 node_modules/
-packages/typescript/dist/
+typescript/dist/
 *.tsbuildinfo
 
 # Byte-compiled / optimized / DLL files
