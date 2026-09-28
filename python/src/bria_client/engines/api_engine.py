@@ -104,5 +104,9 @@ class ApiEngine(ABC):
         return {**self.user_agent_headers, **self.default_headers, **additional_headers, **auth}
 
     def _prepare_endpoint(self, endpoint: str) -> str:
-        endpoint = endpoint.strip("/").removeprefix("v2").strip("/")
+        endpoint = endpoint.strip("/")
+        # Only strip a leading `v2/` segment (or an exact `v2`), not any word that
+        # merely starts with "v2" (e.g. "v2beta/foo" must stay intact).
+        endpoint = "" if endpoint == "v2" else endpoint.removeprefix("v2/")
+        endpoint = endpoint.strip("/")
         return f"{self.base_url}/v2/{endpoint}"

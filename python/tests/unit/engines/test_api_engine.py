@@ -30,3 +30,17 @@ class TestApiEngine:
         result = api_engine._prepare_endpoint(endpoint)
         # Assert
         assert result == correct_endpoint
+
+    @pytest.mark.parametrize(
+        "endpoint,expected",
+        [
+            ("v2beta/foo", "/v2/v2beta/foo"),
+            ("/v2beta/foo", "/v2/v2beta/foo"),
+            ("v2model", "/v2/v2model"),
+        ],
+    )
+    def test_prepare_endpoint_on_word_starting_with_v2_should_not_strip_it(self, endpoint, expected, api_engine):
+        # Act
+        result = api_engine._prepare_endpoint(endpoint)
+        # Assert
+        assert result == expected
