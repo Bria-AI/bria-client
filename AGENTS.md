@@ -1,8 +1,28 @@
-# CLAUDE.md
+Project rules live in `.agents/rules/`. Read and apply each:
 
-## Monorepo
+- `.agents/rules/**`
 
-SDKs for the Bria Engine API, one package per language.
+## Agent Configuration
+
+All agent rules are canonical in `.agents/rules/`. Each tool's files are thin stubs that point
+back to them, so every agent shares one source of truth:
+
+```
+.agents/
+└── rules/    Always-on rules — loaded by all agents on startup
+```
+
+| Tool        | Rules                                                              |
+| ----------- | ----------------------------------------------------------------- |
+| Claude Code | `CLAUDE.md` → `@AGENTS.md`; `.claude/rules/` stubs → `.agents/rules/` |
+| Cursor      | `.cursor/rules/*.mdc` (alwaysApply: true) → `.agents/rules/`       |
+
+To add a rule: create it in `.agents/rules/`, then add the matching stubs under `.claude/rules/`
+and `.cursor/rules/`.
+
+## Overview
+
+SDKs for the Bria Engine API — a monorepo, one package per language.
 
 ```
 python/            → bria-client (Python SDK)
@@ -14,7 +34,7 @@ method names, toolkit, and behavior — auth, retry/poll defaults, response/stat
 webhook verification). When changing shared behavior in one SDK, make the matching change in
 the other.
 
-## Python package (`python`)
+### Python package (`python`)
 
 `bria-client` — sync + async clients for image/video editing.
 
@@ -23,11 +43,11 @@ the other.
 - Layout: `src/bria_client/{clients,engines,toolkit}/`, `tests/{unit,integration,component}/`, `examples/`
 - Env: Python 3.10+, uv (`cd python && uv sync`); run via `uv run`
 
-## TypeScript package (`typescript`)
+### TypeScript package (`typescript`)
 
 `@bria-ai/client` — a single async `BriaClient` (no sync/async split; JS HTTP is always async).
 
-- Build: npm + tsup (dual ESM/CJS). Test: vitest. Node 18+ (uses global `fetch`).
+- Build: npm + tsup (dual ESM/CJS). Test: vitest. Node 20+ (uses global `fetch`).
 - Layout: `src/{client,engine,settings}.ts`, `src/toolkit/`, `test/`
 - Setup: `cd typescript && npm ci`; then `npm run build|typecheck|lint|test`
 
