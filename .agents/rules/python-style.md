@@ -1,4 +1,4 @@
-# Code Style
+# Python Style (python)
 
 Applies to the Python SDK in `python/`. TypeScript style lives in `typescript-style.md`.
 

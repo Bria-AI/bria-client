@@ -1,0 +1,6 @@
+---
+description: Python style, formatting, linting, commit messages, and conventions
+alwaysApply: true
+---
+
+@.agents/rules/python-style.md
