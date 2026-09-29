@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/Bria-AI/bria-client/compare/v0.3.0...v0.3.1) (2026-09-29)
+
+
+### Bug Fixes
+
+* **python:** only strip a leading v2/ segment in endpoint normalization ([#135](https://github.com/Bria-AI/bria-client/issues/135)) ([60d0d0b](https://github.com/Bria-AI/bria-client/commit/60d0d0b04664e7ce41a99def69a66f409cf5b172))
+
 ## [0.3.0](https://github.com/Bria-AI/bria-client/compare/v0.2.2...v0.3.0) (2026-06-24)
 
 
