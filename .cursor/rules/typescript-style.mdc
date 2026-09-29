@@ -1,0 +1,6 @@
+---
+description: TypeScript SDK style, tooling, and conventions
+alwaysApply: true
+---
+
+@.agents/rules/typescript-style.md

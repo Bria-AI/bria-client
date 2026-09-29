@@ -1,0 +1,6 @@
+---
+description: Python testing conventions and workflow
+alwaysApply: true
+---
+
+@.agents/rules/testing.md
